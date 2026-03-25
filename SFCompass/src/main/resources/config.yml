@@ -1,0 +1,38 @@
+database:
+  file: compass.db
+
+compass:
+  default-level: 1
+
+islands:
+  test_island:
+    display-name: "Isla de Prueba"
+    world: world
+    center:
+      x: 1000
+      z: 1000
+    radius: 100
+    buffer: 50
+    required-level: 2
+
+zone-effects:
+  damage-tick-interval: 10
+  base-damage-percent: 0.05
+  scale-factor: 5.0
+  blindness-duration: 60
+  nausea-duration: 100
+
+zone-warning:
+  warning-radius: 30            # bloques antes del borde exterior para mostrar efectos
+  bossbar-enabled: true
+  bossbar-color: RED            # RED, PURPLE, PINK, BLUE, GREEN, YELLOW, WHITE
+  particles-enabled: true
+  particle-color:               # color del anillo en el borde (RGB)
+    r: 255
+    g: 80
+    b: 30
+  particle-size: 2.5            # tamaño de partícula DUST (más grande = más visible de lejos)
+  particle-wall-spacing: 2.0   # bloques entre puntos del arco (menor = más denso)
+  darkness-enabled: true        # efecto DARKNESS al acercarse al borde
+  zone-particles-enabled: true  # niebla ASH+SMOKE dentro del volumen (visible desde lejos)
+  zone-particle-count: 20       # partículas de niebla por tick por isla

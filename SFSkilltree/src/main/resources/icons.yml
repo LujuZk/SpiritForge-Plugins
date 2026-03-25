@@ -1,0 +1,105 @@
+icons:
+
+  # Node States
+  node_available:
+    oraxen-id: st_node_available
+  node_exclusive:
+    oraxen-id: st_node_exclusive
+  node_locked:
+    oraxen-id: st_node_locked
+  node_unlocked:
+    oraxen-id: st_node_unlocked
+
+  # Connectors (ON)
+  connector_diag_down_on:
+    oraxen-id: st_connector_diag_down_on
+  connector_diag_up_on:
+    oraxen-id: st_connector_diag_up_on
+  connector_h_on:
+    oraxen-id: st_connector_h_on
+  connector_v_half_bottom_on:
+    oraxen-id: st_connector_v_half_bottom_on
+  connector_v_half_top_on:
+    oraxen-id: st_connector_v_half_top_on
+  connector_v_on:
+    oraxen-id: st_connector_v_on
+
+  # Connectors (OFF)
+  connector_diag_down_off:
+    oraxen-id: st_connector_diag_down_off
+  connector_diag_up_off:
+    oraxen-id: st_connector_diag_up_off
+  connector_h_off:
+    oraxen-id: st_connector_h_off
+  connector_v_half_bottom_off:
+    oraxen-id: st_connector_v_half_bottom_off
+  connector_v_half_top_off:
+    oraxen-id: st_connector_v_half_top_off
+  connector_v_off:
+    oraxen-id: st_connector_v_off
+
+  # Elbows (ON)
+  elbow_left_down_on:
+    oraxen-id: st_elbow_left_down_on
+  elbow_left_up_on:
+    oraxen-id: st_elbow_left_up_on
+  elbow_right_down_on:
+    oraxen-id: st_elbow_right_down_on
+  elbow_right_up_on:
+    oraxen-id: st_elbow_right_up_on
+
+  # Elbows (OFF)
+  elbow_left_down_off:
+    oraxen-id: st_elbow_left_down_off
+  elbow_left_up_off:
+    oraxen-id: st_elbow_left_up_off
+  elbow_right_down_off:
+    oraxen-id: st_elbow_right_down_off
+  elbow_right_up_off:
+    oraxen-id: st_elbow_right_up_off
+
+  # Skill Icons
+  axe_available:
+    oraxen-id: st_axe_available
+  axe_exclusive:
+    oraxen-id: st_axe_exclusive
+  axe_locked:
+    oraxen-id: st_axe_locked
+  axe_unlocked:
+    oraxen-id: st_axe_unlocked
+
+  # Pages
+  page_0:
+    oraxen-id: st_page_0
+  page_1:
+    oraxen-id: st_page_1
+  page_2:
+    oraxen-id: st_page_2
+  page_3:
+    oraxen-id: st_page_3
+  page_4:
+    oraxen-id: st_page_4
+  page_5:
+    oraxen-id: st_page_5
+  page_6:
+    oraxen-id: st_page_6
+  page_7:
+    oraxen-id: st_page_7
+  page_8:
+    oraxen-id: st_page_8
+  page_9:
+    oraxen-id: st_page_9
+
+  # Navigation
+  nav_next:
+    oraxen-id: st_nav_next
+  nav_next_disabled:
+    oraxen-id: st_nav_next_disabled
+  nav_prev:
+    oraxen-id: st_nav_prev
+  nav_prev_disabled:
+    oraxen-id: st_nav_prev_disabled
+
+  # Misc
+  transparent:
+    oraxen-id: st_transparent

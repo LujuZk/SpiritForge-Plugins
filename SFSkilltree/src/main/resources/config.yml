@@ -1,0 +1,37 @@
+database:
+  file: skilltree.db
+xp-per-level: 100
+xp-multiplier: 1.5
+max-level: 50
+skills:
+  mining:
+    display-name: ⛏ Minería
+    xp-per-block: 10
+  farming:
+    display-name: 🌾 Agricultura
+    xp-per-harvest: 8
+  fishing:
+    display-name: 🎣 Pesca
+    xp-per-catch: 15
+weapon-skills:
+  sword:
+    display-name: ⚔ Espada
+    xp-multiplier: 1
+  bow:
+    display-name: 🏹 Arco
+    xp-multiplier: 1.2
+  axe:
+    display-name: 🪓 Hacha
+    xp-multiplier: 1.1
+  trident:
+    display-name: 🔱 Tridente
+    xp-multiplier: 1.3
+  hacha:
+    display-name: Hachaza
+messages:
+  level-up: "&a¡Subiste a nivel &e{level}&a en &b{skill}&a!"
+  no-permission: "&cNo tenés permiso para hacer esto."
+connectors:
+  horizontal: connector_h
+  diag_up: connector_diag_up
+  diag_down: connector_diag_down

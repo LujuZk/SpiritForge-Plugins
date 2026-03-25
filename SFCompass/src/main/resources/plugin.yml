@@ -1,0 +1,20 @@
+name: SFCompass
+version: '1.0.0'
+main: dev.sfcompass.SFCompassPlugin
+api-version: '1.21'
+description: Sistema de brújula con niveles para acceso a islas
+author: LujuZk
+
+commands:
+  compass:
+    description: Comandos del sistema de brújula e islas
+    usage: /compass [give|setlevel|info|point] [args...]
+    aliases: [brujula]
+
+permissions:
+  sfcompass.admin:
+    description: Acceso a comandos de administración
+    default: op
+  sfcompass.use:
+    description: Usar el sistema de brújula
+    default: true

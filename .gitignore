@@ -1,0 +1,30 @@
+# Build outputs
+**/build/
+**/bin/
+**/.gradle/
+*.jar
+!**/gradle/wrapper/gradle-wrapper.jar
+
+# Misc
+error.txt
+**/error.txt
+**/*_err.txt
+
+# IDE
+.idea/
+*.iml
+.vscode/
+
+# Agent context (local only — not committed)
+CLAUDE.md
+**/CLAUDE.md
+AGENTS.md
+**/AGENTS.md
+agents/
+**/agents/
+.claude/
+memory/
+
+# Node / editor
+**/node_modules/
+**/dist/

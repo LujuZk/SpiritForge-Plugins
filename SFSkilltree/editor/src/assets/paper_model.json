@@ -1,0 +1,561 @@
+{
+    "model":  {
+                  "type":  "minecraft:range_dispatch",
+                  "property":  "minecraft:custom_model_data",
+                  "index":  0,
+                  "fallback":  {
+                                   "type":  "minecraft:model",
+                                   "model":  "minecraft:item/paper"
+                               },
+                  "entries":  [
+                                  {
+                                      "threshold":  1001,
+                                      "model":  {
+                                                    "type":  "minecraft:model",
+                                                    "model":  "minecraft:item/paper"
+                                                }
+                                  },
+                                  {
+                                      "threshold":  1002,
+                                      "model":  {
+                                                    "type":  "minecraft:model",
+                                                    "model":  "minecraft:item/paper"
+                                                }
+                                  },
+                                  {
+                                      "threshold":  1003,
+                                      "model":  {
+                                                    "type":  "minecraft:model",
+                                                    "model":  "minecraft:item/paper"
+                                                }
+                                  },
+                                  {
+                                      "threshold":  1004,
+                                      "model":  {
+                                                    "type":  "minecraft:model",
+                                                    "model":  "minecraft:item/paper"
+                                                }
+                                  },
+                                  {
+                                      "threshold":  1005,
+                                      "model":  {
+                                                    "type":  "minecraft:model",
+                                                    "model":  "minecraft:item/paper"
+                                                }
+                                  },
+                                  {
+                                      "threshold":  1006,
+                                      "model":  {
+                                                    "type":  "minecraft:model",
+                                                    "model":  "minecraft:item/paper"
+                                                }
+                                  },
+                                  {
+                                      "threshold":  1007,
+                                      "model":  {
+                                                    "type":  "minecraft:model",
+                                                    "model":  "minecraft:item/paper"
+                                                }
+                                  },
+                                  {
+                                      "threshold":  1008,
+                                      "model":  {
+                                                    "type":  "minecraft:model",
+                                                    "model":  "minecraft:item/paper"
+                                                }
+                                  },
+                                  {
+                                      "threshold":  1009,
+                                      "model":  {
+                                                    "type":  "minecraft:model",
+                                                    "model":  "minecraft:item/paper"
+                                                }
+                                  },
+                                  {
+                                      "threshold":  1010,
+                                      "model":  {
+                                                    "type":  "minecraft:model",
+                                                    "model":  "minecraft:item/paper"
+                                                }
+                                  },
+                                  {
+                                      "threshold":  1011,
+                                      "model":  {
+                                                    "type":  "minecraft:model",
+                                                    "model":  "minecraft:item/paper"
+                                                }
+                                  },
+                                  {
+                                      "threshold":  1012,
+                                      "model":  {
+                                                    "type":  "minecraft:model",
+                                                    "model":  "minecraft:item/paper"
+                                                }
+                                  },
+                                  {
+                                      "threshold":  1013,
+                                      "model":  {
+                                                    "type":  "minecraft:model",
+                                                    "model":  "minecraft:item/paper"
+                                                }
+                                  },
+                                  {
+                                      "threshold":  1014,
+                                      "model":  {
+                                                    "type":  "minecraft:model",
+                                                    "model":  "minecraft:item/paper"
+                                                }
+                                  },
+                                  {
+                                      "threshold":  1015,
+                                      "model":  {
+                                                    "type":  "minecraft:model",
+                                                    "model":  "minecraft:item/paper"
+                                                }
+                                  },
+                                  {
+                                      "threshold":  1016,
+                                      "model":  {
+                                                    "type":  "minecraft:model",
+                                                    "model":  "minecraft:item/paper"
+                                                }
+                                  },
+                                  {
+                                      "threshold":  1101,
+                                      "model":  {
+                                                    "type":  "minecraft:model",
+                                                    "model":  "minecraft:item/paper"
+                                                }
+                                  },
+                                  {
+                                      "threshold":  1102,
+                                      "model":  {
+                                                    "type":  "minecraft:model",
+                                                    "model":  "minecraft:item/paper"
+                                                }
+                                  },
+                                  {
+                                      "threshold":  1103,
+                                      "model":  {
+                                                    "type":  "minecraft:model",
+                                                    "model":  "minecraft:item/paper"
+                                                }
+                                  },
+                                  {
+                                      "threshold":  1104,
+                                      "model":  {
+                                                    "type":  "minecraft:model",
+                                                    "model":  "minecraft:item/paper"
+                                                }
+                                  },
+                                  {
+                                      "threshold":  1105,
+                                      "model":  {
+                                                    "type":  "minecraft:model",
+                                                    "model":  "minecraft:item/paper"
+                                                }
+                                  },
+                                  {
+                                      "threshold":  1106,
+                                      "model":  {
+                                                    "type":  "minecraft:model",
+                                                    "model":  "minecraft:item/paper"
+                                                }
+                                  },
+                                  {
+                                      "threshold":  1107,
+                                      "model":  {
+                                                    "type":  "minecraft:model",
+                                                    "model":  "minecraft:item/paper"
+                                                }
+                                  },
+                                  {
+                                      "threshold":  1108,
+                                      "model":  {
+                                                    "type":  "minecraft:model",
+                                                    "model":  "minecraft:item/paper"
+                                                }
+                                  },
+                                  {
+                                      "threshold":  1109,
+                                      "model":  {
+                                                    "type":  "minecraft:model",
+                                                    "model":  "minecraft:item/paper"
+                                                }
+                                  },
+                                  {
+                                      "threshold":  1110,
+                                      "model":  {
+                                                    "type":  "minecraft:model",
+                                                    "model":  "minecraft:item/paper"
+                                                }
+                                  },
+                                  {
+                                      "threshold":  1111,
+                                      "model":  {
+                                                    "type":  "minecraft:model",
+                                                    "model":  "minecraft:item/paper"
+                                                }
+                                  },
+                                  {
+                                      "threshold":  1112,
+                                      "model":  {
+                                                    "type":  "minecraft:model",
+                                                    "model":  "minecraft:item/paper"
+                                                }
+                                  },
+                                  {
+                                      "threshold":  1113,
+                                      "model":  {
+                                                    "type":  "minecraft:model",
+                                                    "model":  "minecraft:item/paper"
+                                                }
+                                  },
+                                  {
+                                      "threshold":  1114,
+                                      "model":  {
+                                                    "type":  "minecraft:model",
+                                                    "model":  "minecraft:item/paper"
+                                                }
+                                  },
+                                  {
+                                      "threshold":  1115,
+                                      "model":  {
+                                                    "type":  "minecraft:model",
+                                                    "model":  "minecraft:item/paper"
+                                                }
+                                  },
+                                  {
+                                      "threshold":  1201,
+                                      "model":  {
+                                                    "type":  "minecraft:model",
+                                                    "model":  "minecraft:item/paper"
+                                                }
+                                  },
+                                  {
+                                      "threshold":  1202,
+                                      "model":  {
+                                                    "type":  "minecraft:model",
+                                                    "model":  "minecraft:item/paper"
+                                                }
+                                  },
+                                  {
+                                      "threshold":  1203,
+                                      "model":  {
+                                                    "type":  "minecraft:model",
+                                                    "model":  "minecraft:item/paper"
+                                                }
+                                  },
+                                  {
+                                      "threshold":  1204,
+                                      "model":  {
+                                                    "type":  "minecraft:model",
+                                                    "model":  "minecraft:item/paper"
+                                                }
+                                  },
+                                  {
+                                      "threshold":  1205,
+                                      "model":  {
+                                                    "type":  "minecraft:model",
+                                                    "model":  "minecraft:item/paper"
+                                                }
+                                  },
+                                  {
+                                      "threshold":  1206,
+                                      "model":  {
+                                                    "type":  "minecraft:model",
+                                                    "model":  "minecraft:item/paper"
+                                                }
+                                  },
+                                  {
+                                      "threshold":  1207,
+                                      "model":  {
+                                                    "type":  "minecraft:model",
+                                                    "model":  "minecraft:item/paper"
+                                                }
+                                  },
+                                  {
+                                      "threshold":  1208,
+                                      "model":  {
+                                                    "type":  "minecraft:model",
+                                                    "model":  "minecraft:item/paper"
+                                                }
+                                  },
+                                  {
+                                      "threshold":  1209,
+                                      "model":  {
+                                                    "type":  "minecraft:model",
+                                                    "model":  "minecraft:item/paper"
+                                                }
+                                  },
+                                  {
+                                      "threshold":  1210,
+                                      "model":  {
+                                                    "type":  "minecraft:model",
+                                                    "model":  "minecraft:item/paper"
+                                                }
+                                  },
+                                  {
+                                      "threshold":  1211,
+                                      "model":  {
+                                                    "type":  "minecraft:model",
+                                                    "model":  "minecraft:item/paper"
+                                                }
+                                  },
+                                  {
+                                      "threshold":  1212,
+                                      "model":  {
+                                                    "type":  "minecraft:model",
+                                                    "model":  "minecraft:item/paper"
+                                                }
+                                  },
+                                  {
+                                      "threshold":  1213,
+                                      "model":  {
+                                                    "type":  "minecraft:model",
+                                                    "model":  "minecraft:item/paper"
+                                                }
+                                  },
+                                  {
+                                      "threshold":  1214,
+                                      "model":  {
+                                                    "type":  "minecraft:model",
+                                                    "model":  "minecraft:item/paper"
+                                                }
+                                  },
+                                  {
+                                      "threshold":  1215,
+                                      "model":  {
+                                                    "type":  "minecraft:model",
+                                                    "model":  "minecraft:item/paper"
+                                                }
+                                  },
+                                  {
+                                      "threshold":  1216,
+                                      "model":  {
+                                                    "type":  "minecraft:model",
+                                                    "model":  "minecraft:item/paper"
+                                                }
+                                  },
+                                  {
+                                      "threshold":  2001,
+                                      "model":  {
+                                                    "type":  "minecraft:model",
+                                                    "model":  "minecraft:item/skilltree/node_states/node_locked"
+                                                }
+                                  },
+                                  {
+                                      "threshold":  2002,
+                                      "model":  {
+                                                    "type":  "minecraft:model",
+                                                    "model":  "minecraft:item/skilltree/node_states/node_available"
+                                                }
+                                  },
+                                  {
+                                      "threshold":  2003,
+                                      "model":  {
+                                                    "type":  "minecraft:model",
+                                                    "model":  "minecraft:item/skilltree/node_states/node_unlocked"
+                                                }
+                                  },
+                                  {
+                                      "threshold":  2004,
+                                      "model":  {
+                                                    "type":  "minecraft:model",
+                                                    "model":  "minecraft:item/skilltree/node_states/node_exclusive_blocked"
+                                                }
+                                  },
+                                  {
+                                      "threshold":  3001,
+                                      "model":  {
+                                                    "type":  "minecraft:model",
+                                                    "model":  "minecraft:item/skilltree/connectors/on/connector_h"
+                                                }
+                                  },
+                                  {
+                                      "threshold":  3002,
+                                      "model":  {
+                                                    "type":  "minecraft:model",
+                                                    "model":  "minecraft:item/paper"
+                                                }
+                                  },
+                                  {
+                                      "threshold":  3003,
+                                      "model":  {
+                                                    "type":  "minecraft:model",
+                                                    "model":  "minecraft:item/skilltree/connectors/on/connector_diag_down"
+                                                }
+                                  },
+                                  {
+                                      "threshold":  3004,
+                                      "model":  {
+                                                    "type":  "minecraft:model",
+                                                    "model":  "minecraft:item/skilltree/connectors/on/connector_diag_up"
+                                                }
+                                  },
+                                  {
+                                      "threshold":  3005,
+                                      "model":  {
+                                                    "type":  "minecraft:model",
+                                                    "model":  "minecraft:item/paper"
+                                                }
+                                  },
+                                  {
+                                      "threshold":  3006,
+                                      "model":  {
+                                                    "type":  "minecraft:model",
+                                                    "model":  "minecraft:item/paper"
+                                                }
+                                  },
+                                  {
+                                      "threshold":  3011,
+                                      "model":  {
+                                                    "type":  "minecraft:model",
+                                                    "model":  "minecraft:item/skilltree/connectors/off/connector_h"
+                                                }
+                                  },
+                                  {
+                                      "threshold":  3012,
+                                      "model":  {
+                                                    "type":  "minecraft:model",
+                                                    "model":  "minecraft:item/paper"
+                                                }
+                                  },
+                                  {
+                                      "threshold":  3013,
+                                      "model":  {
+                                                    "type":  "minecraft:model",
+                                                    "model":  "minecraft:item/skilltree/connectors/off/connector_diag_down"
+                                                }
+                                  },
+                                  {
+                                      "threshold":  3014,
+                                      "model":  {
+                                                    "type":  "minecraft:model",
+                                                    "model":  "minecraft:item/skilltree/connectors/off/connector_diag_up"
+                                                }
+                                  },
+                                  {
+                                      "threshold":  3015,
+                                      "model":  {
+                                                    "type":  "minecraft:model",
+                                                    "model":  "minecraft:item/paper"
+                                                }
+                                  },
+                                  {
+                                      "threshold":  3016,
+                                      "model":  {
+                                                    "type":  "minecraft:model",
+                                                    "model":  "minecraft:item/paper"
+                                                }
+                                  },
+                                  {
+                                      "threshold":  4000,
+                                      "model":  {
+                                                    "type":  "minecraft:model",
+                                                    "model":  "minecraft:item/paper"
+                                                }
+                                  },
+                                  {
+                                      "threshold":  4001,
+                                      "model":  {
+                                                    "type":  "minecraft:model",
+                                                    "model":  "minecraft:item/paper"
+                                                }
+                                  },
+                                  {
+                                      "threshold":  4002,
+                                      "model":  {
+                                                    "type":  "minecraft:model",
+                                                    "model":  "minecraft:item/paper"
+                                                }
+                                  },
+                                  {
+                                      "threshold":  4003,
+                                      "model":  {
+                                                    "type":  "minecraft:model",
+                                                    "model":  "minecraft:item/paper"
+                                                }
+                                  },
+                                  {
+                                      "threshold":  4004,
+                                      "model":  {
+                                                    "type":  "minecraft:model",
+                                                    "model":  "minecraft:item/paper"
+                                                }
+                                  },
+                                  {
+                                      "threshold":  4005,
+                                      "model":  {
+                                                    "type":  "minecraft:model",
+                                                    "model":  "minecraft:item/paper"
+                                                }
+                                  },
+                                  {
+                                      "threshold":  4006,
+                                      "model":  {
+                                                    "type":  "minecraft:model",
+                                                    "model":  "minecraft:item/paper"
+                                                }
+                                  },
+                                  {
+                                      "threshold":  4007,
+                                      "model":  {
+                                                    "type":  "minecraft:model",
+                                                    "model":  "minecraft:item/paper"
+                                                }
+                                  },
+                                  {
+                                      "threshold":  4008,
+                                      "model":  {
+                                                    "type":  "minecraft:model",
+                                                    "model":  "minecraft:item/paper"
+                                                }
+                                  },
+                                  {
+                                      "threshold":  4009,
+                                      "model":  {
+                                                    "type":  "minecraft:model",
+                                                    "model":  "minecraft:item/paper"
+                                                }
+                                  },
+                                  {
+                                      "threshold":  4010,
+                                      "model":  {
+                                                    "type":  "minecraft:model",
+                                                    "model":  "minecraft:item/skilltree/arrow_left"
+                                                }
+                                  },
+                                  {
+                                      "threshold":  4011,
+                                      "model":  {
+                                                    "type":  "minecraft:model",
+                                                    "model":  "minecraft:item/skilltree/arrow_left"
+                                                }
+                                  },
+                                  {
+                                      "threshold":  4012,
+                                      "model":  {
+                                                    "type":  "minecraft:model",
+                                                    "model":  "minecraft:item/skilltree/arrow_right"
+                                                }
+                                  },
+                                  {
+                                      "threshold":  4013,
+                                      "model":  {
+                                                    "type":  "minecraft:model",
+                                                    "model":  "minecraft:item/skilltree/arrow_right"
+                                                }
+                                  },
+                                  {
+                                      "threshold":  9999,
+                                      "model":  {
+                                                    "type":  "minecraft:model",
+                                                    "model":  "minecraft:item/skilltree/slot_fill"
+                                                }
+                                  }
+                              ]
+              }
+}
+
+

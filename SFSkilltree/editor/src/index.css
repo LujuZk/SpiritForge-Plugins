@@ -1,0 +1,128 @@
+:root {
+  /* Medieval Theme Colors */
+  --bg-dark: #1a1209;
+  --bg-panel: #241a10;
+  --bg-panel-light: #2c2013;
+  
+  --border-color: #4a3820;
+  --border-highlight: #c8a03c; /* Gold */
+  --border-selected: #ffd700;  /* Bright Gold */
+  
+  --cell-hover: #2a2015;
+  --node-bg: #1a3a1a; /* Dark Green */
+  
+  --text-main: #e0d0b0;
+  --text-dim: #a09070;
+  --text-gold: #c8a03c;
+  
+  --grid-cell-size: 60px;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background-color: var(--bg-dark);
+  color: var(--text-main);
+  height: 100vh;
+  overflow: hidden;
+}
+
+/* Scrollbar styling for a better dark theme feel */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--bg-dark);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--border-color);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--border-highlight);
+}
+
+/* Main Layout */
+.app-container {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+}
+
+.main-content {
+  display: flex;
+  flex: 1;
+  overflow: hidden;
+  position: relative;
+}
+
+.center-workspace {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+  overflow: auto;
+}
+
+/* UI Components */
+.panel {
+  background-color: var(--bg-panel);
+  border: 1px solid var(--border-color);
+}
+
+.button {
+  background-color: var(--bg-panel-light);
+  color: var(--text-main);
+  border: 1px solid var(--border-highlight);
+  padding: 8px 16px;
+  cursor: pointer;
+  font-weight: bold;
+  transition: all 0.2s;
+}
+
+.button:hover {
+  background-color: var(--border-color);
+  color: #fff;
+}
+
+.button.danger {
+  border-color: #a03c3c;
+  color: #e0b0b0;
+}
+
+.button.danger:hover {
+  background-color: #a03c3c;
+  color: #fff;
+}
+
+.input, .select {
+  background-color: var(--bg-dark);
+  color: var(--text-main);
+  border: 1px solid var(--border-color);
+  padding: 6px 8px;
+  width: 100%;
+}
+
+.input:focus, .select:focus {
+  outline: none;
+  border-color: var(--border-highlight);
+}
+
+/* Utilities */
+.text-gold {
+  color: var(--text-gold);
+}
+
+.mono {
+  font-family: 'Courier New', Courier, monospace;
+}

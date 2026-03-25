@@ -1,0 +1,25 @@
+name: SkillTreePlugin
+version: '1.0.0'
+main: dev.skilltree.SkillTreePlugin
+api-version: '1.21'
+description: Sistema de habilidades con árbol de skills por arma y actividad
+author: LujuZk
+depend: [Oraxen, SFCore]
+
+commands:
+  skills:
+    description: Abre el menú de habilidades
+    usage: /skills
+    aliases: [skill, habilidades]
+  skillsadmin:
+    description: Comandos de administración
+    usage: /skillsadmin <reset|give|info> <jugador> [skill] [cantidad]
+    permission: skilltree.admin
+
+permissions:
+  skilltree.admin:
+    description: Acceso a comandos de administración
+    default: op
+  skilltree.use:
+    description: Usar el sistema de skills
+    default: true
