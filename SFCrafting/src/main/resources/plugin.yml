@@ -1,0 +1,19 @@
+name: SFCrafting
+version: 1.0.0
+main: dev.sfcrafting.SFCraftingPlugin
+api-version: '1.21'
+softdepend: [Oraxen]
+authors: [LujuZk]
+description: SpiritForge crafting and forging plugin
+
+commands:
+  sfcrafting:
+    description: SFCrafting admin commands
+    usage: /sfcrafting give <oraxen_id|material:id> [cantidad] [rareza]
+    permission: sfcrafting.admin
+    aliases: [cforge]
+
+permissions:
+  sfcrafting.admin:
+    description: Access to SFCrafting admin commands
+    default: op
