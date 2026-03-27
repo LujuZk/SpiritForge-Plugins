@@ -1,0 +1,46 @@
+gaussian:
+  width: 0.8
+  curveExponent: 1.5
+
+weights:
+  str: 0.30
+  mining: 0.30
+  class: 0.20
+  pickaxe: 0.20
+
+normalization:
+  strMax: 100.0
+  miningMax: 200.0
+  classMax: 100.0
+  pickaxeMax: 10.0
+
+minimumWeight: 0.01
+
+defaultClassBonus: 0.0
+
+debugGlobal: false
+
+pickaxePower:
+  WOODEN_PICKAXE: 2.0
+  STONE_PICKAXE: 4.0
+  IRON_PICKAXE: 6.0
+  GOLDEN_PICKAXE: 3.0
+  DIAMOND_PICKAXE: 8.0
+  NETHERITE_PICKAXE: 10.0
+
+oreDrops:
+  iron_ore: RAW_IRON
+  deepslate_iron_ore: RAW_IRON
+  copper_ore: raw_copper_ore
+  deepslate_copper_ore: raw_copper_ore
+  tin_ore: raw_tin_ore
+  gold_ore: RAW_GOLD
+  deepslate_gold_ore: RAW_GOLD
+  silver_ore: raw_silver_ore
+  mithil_ore: raw_mithil_ore
+  platinum_ore: raw_platinum_ore
+  diamond_ore: diamond
+  deepslate_diamond_ore: diamond
+  orichalcum_ore: raw_orichalcum_ore
+  crystalmush_log: crystalmush_log
+
