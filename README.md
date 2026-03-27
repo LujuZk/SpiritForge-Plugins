@@ -1,4 +1,4 @@
-# SpiritForge Plugins
+﻿# SpiritForge Plugins
 
 Suite de plugins para servidor Minecraft Paper 1.21.1 con sistema RPG completo.
 
