@@ -1,0 +1,173 @@
+forge:
+  gui-title-smelter: "&f\\uF80E\\uE10A"
+  gui-title-anvil: "&f\\uF80E\\uE10B"
+  smelter-item-id: spirit_forge
+  anvil-item-id: large_anvil
+  hammer-button-item-id: anvil_button
+  smelter-block-id: spirit_forge
+  display-name-contains: ""
+  default-cook-time-ticks: 200
+  debug: false
+  enable-pack-fixer: false
+  forging:
+    max-hits: 10
+    require-hot-input: true
+    temp-bonus-base: 20.0
+    temp-bonus-target-ratio: 0.7
+    temp-loss-min-percent: 0.01
+    temp-loss-max-percent: 0.02
+    hit-bonus-by-offset:
+    - 2
+    - 1
+    - 0
+    - -1
+    - -2
+    hammer-durability-loss:
+      default: 1
+      copper: 1
+      bronze: 1
+      iron: 1
+      steel: 2
+      silver: 1
+      gold: 1
+      mithil: 1
+      orichalcum: 2
+      platinum: 2
+  hot-items:
+    tin_ingot_hot:
+      cool-into: "ORAXEN:tin_ingot"
+      cool-time-seconds: 120
+      start-temp: 800
+      end-temp: 40
+    silver_ingot_hot:
+      cool-into: "ORAXEN:silver_ingot"
+      cool-time-seconds: 150
+      start-temp: 900
+      end-temp: 40
+    bronze_ingot_hot:
+      cool-into: "ORAXEN:bronze_ingot"
+      cool-time-seconds: 140
+      start-temp: 850
+      end-temp: 40
+    iron_ingot_hot:
+      cool-into: "MATERIAL:IRON_INGOT"
+      cool-time-seconds: 120
+      start-temp: 900
+      end-temp: 40
+    steel_ingot_hot:
+      cool-into: "ORAXEN:steel_ingot"
+      cool-time-seconds: 160
+      start-temp: 950
+      end-temp: 40
+    mithil_ingot_hot:
+      cool-into: "ORAXEN:mithil_ingot"
+      cool-time-seconds: 180
+      start-temp: 1050
+      end-temp: 40
+    orichalcum_ingot_hot:
+      cool-into: "ORAXEN:orichalcum_ingot"
+      cool-time-seconds: 180
+      start-temp: 1000
+      end-temp: 40
+    platinum_ingot_hot:
+      cool-into: "ORAXEN:platinum_ingot"
+      cool-time-seconds: 200
+      start-temp: 1100
+      end-temp: 40
+  recipes:
+    reheat_tin:
+      input-1: "ORAXEN:tin_ingot"
+      output: "ORAXEN:tin_ingot_hot"
+      time-ticks: 80
+    reheat_silver:
+      input-1: "ORAXEN:silver_ingot"
+      output: "ORAXEN:silver_ingot_hot"
+      time-ticks: 90
+    reheat_bronze:
+      input-1: "ORAXEN:bronze_ingot"
+      output: "ORAXEN:bronze_ingot_hot"
+      time-ticks: 90
+    reheat_iron:
+      input-1: "MATERIAL:IRON_INGOT"
+      output: "ORAXEN:iron_ingot_hot"
+      time-ticks: 90
+    reheat_steel:
+      input-1: "ORAXEN:steel_ingot"
+      output: "ORAXEN:steel_ingot_hot"
+      time-ticks: 110
+    reheat_mithil:
+      input-1: "ORAXEN:mithil_ingot"
+      output: "ORAXEN:mithil_ingot_hot"
+      time-ticks: 130
+    reheat_orichalcum:
+      input-1: "ORAXEN:orichalcum_ingot"
+      output: "ORAXEN:orichalcum_ingot_hot"
+      time-ticks: 100
+    reheat_platinum:
+      input-1: "ORAXEN:platinum_ingot"
+      output: "ORAXEN:platinum_ingot_hot"
+      time-ticks: 140
+    tin:
+      input-1: "ORAXEN:tin_ore"
+      output: "ORAXEN:tin_ingot_hot"
+      time-ticks: 160
+    silver:
+      input-1: "ORAXEN:silver_ore"
+      output: "ORAXEN:silver_ingot_hot"
+      time-ticks: 180
+    orichalcum:
+      input-1: "ORAXEN:orichalcum_ore"
+      output: "ORAXEN:orichalcum_ingot_hot"
+      time-ticks: 220
+    mithil:
+      input-1: "ORAXEN:mithil_ore"
+      output: "ORAXEN:mithil_ingot_hot"
+      time-ticks: 240
+    platinum:
+      input-1: "ORAXEN:platinum_ore"
+      output: "ORAXEN:platinum_ingot_hot"
+      time-ticks: 240
+    bronze:
+      input-1: "ORAXEN:tin_ingot"
+      input-2: "MATERIAL:COPPER_INGOT"
+      output: "ORAXEN:bronze_ingot_hot"
+      time-ticks: 200
+    steel:
+      input-1: "MATERIAL:IRON_INGOT"
+      input-2: "ORAXEN:carbon_dust"
+      output: "ORAXEN:steel_ingot_hot"
+      time-ticks: 220
+    anvil_bronze_sword:
+      input-1: "ORAXEN:mold_sword_bronze"
+      input-2: "ORAXEN:bronze_ingot_hot"
+      output: "ORAXEN:bronze_sword"
+      time-ticks: 200
+    anvil_steel_sword:
+      input-1: "ORAXEN:mold_sword_steel"
+      input-2: "ORAXEN:steel_ingot_hot"
+      output: "ORAXEN:steel_sword"
+      time-ticks: 200
+    anvil_silver_sword:
+      input-1: "ORAXEN:mold_sword_silver"
+      input-2: "ORAXEN:silver_ingot_hot"
+      output: "ORAXEN:silver_sword"
+      time-ticks: 200
+    anvil_mithil_sword:
+      input-1: "ORAXEN:mold_sword_mithil"
+      input-2: "ORAXEN:mithil_ingot_hot"
+      output: "ORAXEN:mithil_sword"
+      time-ticks: 200
+    anvil_orichalcum_sword:
+      input-1: "ORAXEN:mold_sword_orichalcum"
+      input-2: "ORAXEN:orichalcum_ingot_hot"
+      output: "ORAXEN:orichalcum_sword"
+      time-ticks: 200
+    anvil_platinum_sword:
+      input-1: "ORAXEN:mold_sword_platinum"
+      input-2: "ORAXEN:platinum_ingot_hot"
+      output: "ORAXEN:platinum_sword"
+      time-ticks: 200
+
+aura:
+  y: 3.0
+  scale: 2

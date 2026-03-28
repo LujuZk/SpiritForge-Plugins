@@ -1,0 +1,20 @@
+name: SFCharacter
+version: '1.0.0'
+main: dev.sfcharacter.SFCharacterPlugin
+api-version: '1.21'
+description: Sistema de creación y selección de personajes
+author: LujuZk
+
+commands:
+  character:
+    description: Abrir el menú de selección de personaje
+    usage: /character
+    aliases: [personaje, char]
+
+permissions:
+  sfcharacter.use:
+    description: Usar el sistema de personajes
+    default: true
+  sfcharacter.admin:
+    description: Comandos de administración de personajes
+    default: op

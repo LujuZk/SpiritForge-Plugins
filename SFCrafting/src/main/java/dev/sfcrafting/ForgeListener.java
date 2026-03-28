@@ -3,8 +3,6 @@ package dev.sfcrafting;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Entity;
-import org.bukkit.entity.HumanEntity;
-import org.bukkit.entity.Item;
 import org.bukkit.entity.ItemDisplay;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -18,9 +16,9 @@ import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.event.player.PlayerInteractAtEntityEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.Inventory;
-import org.bukkit.inventory.PlayerInventory;
 
 public final class ForgeListener implements Listener {
+
     private final ForgeManager manager;
 
     public ForgeListener(ForgeManager manager) {
@@ -40,7 +38,6 @@ public final class ForgeListener implements Listener {
         if (entity instanceof ItemDisplay display) {
             display.setRotation(player.getLocation().getYaw(), 0.0f);
         }
-
         manager.openForge(player, entity.getLocation(), type);
     }
 
@@ -76,8 +73,7 @@ public final class ForgeListener implements Listener {
 
     @EventHandler
     public void onForgeDisplaySpawn(EntitySpawnEvent event) {
-        Entity entity = event.getEntity();
-        if (!(entity instanceof ItemDisplay display)) {
+        if (!(event.getEntity() instanceof ItemDisplay display)) {
             return;
         }
 
@@ -91,22 +87,17 @@ public final class ForgeListener implements Listener {
 
     @EventHandler
     public void onForgeItemDrop(PlayerDropItemEvent event) {
-        Item dropped = event.getItemDrop();
-        if (!manager.isPendingItem(dropped.getItemStack())) {
+        if (!manager.isPendingItem(event.getItemDrop().getItemStack())) {
             return;
         }
-
-        manager.scheduleTempering(dropped);
+        manager.scheduleTempering(event.getItemDrop());
     }
 
     @EventHandler
     public void onForgeInventoryClick(InventoryClickEvent event) {
         Inventory inventory = event.getInventory();
-
-        HumanEntity clicker = event.getWhoClicked();
-        if (clicker instanceof Player player) {
-            PlayerInventory playerInventory = player.getInventory();
-            manager.hotItemManager().maybeCoolPlayer(playerInventory);
+        if (event.getWhoClicked() instanceof Player player) {
+            manager.hotItemManager().maybeCoolPlayer(player.getInventory());
         }
 
         if (!manager.isForgeInventory(inventory)) {
@@ -125,8 +116,7 @@ public final class ForgeListener implements Listener {
 
         if (manager.isButtonSlot(state, slot)) {
             event.setCancelled(true);
-            HumanEntity whoClicked = event.getWhoClicked();
-            if (whoClicked instanceof Player player) {
+            if (event.getWhoClicked() instanceof Player player) {
                 manager.handleButtonClick(inventory, player);
             }
             return;
@@ -182,7 +172,6 @@ public final class ForgeListener implements Listener {
         if (!manager.isForgeInventory(inventory)) {
             return;
         }
-
         manager.handleInventoryClose(inventory);
     }
 }

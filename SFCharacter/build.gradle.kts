@@ -1,31 +1,29 @@
-﻿plugins {
+plugins {
     java
     id("com.gradleup.shadow") version "9.0.0"
 }
 
-group = "dev.skilltree"
+group = "dev.sfcharacter"
 version = "1.0.0"
 
 java {
-    toolchain.languageVersion.set(JavaLanguageVersion.of(25))
+    toolchain.languageVersion.set(JavaLanguageVersion.of(21))
 }
 
 repositories {
     mavenCentral()
     maven("https://repo.papermc.io/repository/maven-public/")
-    maven("https://repo.oraxen.com/releases")
 }
 
 dependencies {
     compileOnly("io.papermc.paper:paper-api:1.21.1-R0.1-SNAPSHOT")
-    compileOnly("io.th0rgal:oraxen:1.210.0")
-    compileOnly(fileTree("../SFCore/build/libs") { include("SFCore-*.jar") })
     implementation("org.xerial:sqlite-jdbc:3.45.3.0")
 }
 
 tasks {
     shadowJar {
         archiveClassifier.set("")
+        relocate("org.sqlite", "dev.sfcharacter.libs.sqlite")
         minimize {
             exclude(dependency("org.xerial:sqlite-jdbc:.*"))
         }
@@ -35,6 +33,5 @@ tasks {
     }
     compileJava {
         options.encoding = "UTF-8"
-        options.release.set(21)
     }
 }
