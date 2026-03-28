@@ -1,7 +1,9 @@
 package dev.sfcrafting;
 
 import org.bukkit.Material;
+import org.bukkit.block.Block;
 import org.bukkit.entity.Entity;
+import org.bukkit.entity.ItemDisplay;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -9,11 +11,11 @@ import org.bukkit.event.block.Action;
 import org.bukkit.event.entity.EntitySpawnEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
+import org.bukkit.event.inventory.InventoryDragEvent;
 import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.event.player.PlayerInteractAtEntityEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.Inventory;
-import org.bukkit.entity.ItemDisplay;
 
 public final class ForgeListener implements Listener {
 
@@ -30,6 +32,7 @@ public final class ForgeListener implements Listener {
         if (type == null) {
             return;
         }
+
         event.setCancelled(true);
         Player player = event.getPlayer();
         if (entity instanceof ItemDisplay display) {
@@ -43,21 +46,26 @@ public final class ForgeListener implements Listener {
         if (event.getAction() != Action.RIGHT_CLICK_BLOCK || event.getClickedBlock() == null) {
             return;
         }
-        ForgeState.StationType blockType = manager.getStationTypeForBlock(event.getClickedBlock());
+
+        Block clicked = event.getClickedBlock();
+        ForgeState.StationType blockType = manager.getStationTypeForBlock(clicked);
         if (blockType != null) {
             event.setCancelled(true);
-            manager.openForge(event.getPlayer(), event.getClickedBlock().getLocation(), blockType);
+            manager.openForge(event.getPlayer(), clicked.getLocation(), blockType);
             return;
         }
-        if (event.getClickedBlock().getType() == Material.BARRIER) {
-            Entity forgeEntity = manager.findForgeEntityAt(event.getClickedBlock().getLocation());
+
+        if (clicked.getType() == Material.BARRIER) {
+            Entity forgeEntity = manager.findForgeEntityAt(clicked.getLocation());
             if (forgeEntity == null) {
                 return;
             }
+
             ForgeState.StationType entityType = manager.getStationTypeForEntity(forgeEntity);
             if (entityType == null) {
                 return;
             }
+
             event.setCancelled(true);
             manager.openForge(event.getPlayer(), forgeEntity.getLocation(), entityType);
         }
@@ -68,9 +76,11 @@ public final class ForgeListener implements Listener {
         if (!(event.getEntity() instanceof ItemDisplay display)) {
             return;
         }
+
         if (!manager.isForgeEntity(display)) {
             return;
         }
+
         float yaw = display.getLocation().getYaw();
         display.setRotation(yaw, 0.0f);
     }
@@ -89,17 +99,21 @@ public final class ForgeListener implements Listener {
         if (event.getWhoClicked() instanceof Player player) {
             manager.hotItemManager().maybeCoolPlayer(player.getInventory());
         }
+
         if (!manager.isForgeInventory(inventory)) {
             return;
         }
+
         ForgeState state = manager.getStateForInventory(inventory);
         if (state == null) {
             return;
         }
+
         int slot = event.getRawSlot();
         if (slot < 0 || slot >= inventory.getSize()) {
             return;
         }
+
         if (manager.isButtonSlot(state, slot)) {
             event.setCancelled(true);
             if (event.getWhoClicked() instanceof Player player) {
@@ -107,17 +121,49 @@ public final class ForgeListener implements Listener {
             }
             return;
         }
+
         if (manager.isRunning(state)) {
             event.setCancelled(true);
             return;
         }
+
         if (manager.isInputSlot(state, slot) || manager.isOutputSlot(state, slot)) {
             if (event.isShiftClick()) {
                 event.setCancelled(true);
             }
             return;
         }
+
         event.setCancelled(true);
+    }
+
+    @EventHandler
+    public void onForgeInventoryDrag(InventoryDragEvent event) {
+        Inventory inventory = event.getInventory();
+        if (!manager.isForgeInventory(inventory)) {
+            return;
+        }
+
+        ForgeState state = manager.getStateForInventory(inventory);
+        if (state == null) {
+            return;
+        }
+
+        int topSize = inventory.getSize();
+        for (int rawSlot : event.getRawSlots()) {
+            if (rawSlot < 0 || rawSlot >= topSize) {
+                continue;
+            }
+
+            boolean invalidTarget = manager.isRunning(state)
+                    || manager.isButtonSlot(state, rawSlot)
+                    || manager.isOutputSlot(state, rawSlot)
+                    || !manager.isInputSlot(state, rawSlot);
+            if (invalidTarget) {
+                event.setCancelled(true);
+                return;
+            }
+        }
     }
 
     @EventHandler
@@ -129,6 +175,3 @@ public final class ForgeListener implements Listener {
         manager.handleInventoryClose(inventory);
     }
 }
-
-
-
