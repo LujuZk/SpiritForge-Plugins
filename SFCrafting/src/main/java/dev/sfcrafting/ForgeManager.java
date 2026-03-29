@@ -804,17 +804,140 @@ Map<Integer, Double> buildRarityDistribution(
     }
 
     void consumeSlot(Inventory inventory, int slot) {
+        consumeSlot(inventory, slot, 1);
+    }
+
+    void consumeSlot(Inventory inventory, int slot, int amountToConsume) {
         ItemStack item = inventory.getItem(slot);
         if (item == null || item.getType().isAir()) {
             return;
         }
-        int amount = item.getAmount() - 1;
+        int amount = item.getAmount() - Math.max(1, amountToConsume);
         if (amount <= 0) {
             inventory.setItem(slot, null);
             return;
         }
         item.setAmount(amount);
         inventory.setItem(slot, item);
+    }
+
+    void consumeSmelterInputs(Inventory inventory, int slotA, int slotB, ForgeRecipe recipe) {
+        if (recipe == null) {
+            return;
+        }
+        ItemStack a = inventory.getItem(slotA);
+        ItemStack b = inventory.getItem(slotB);
+        if (recipe.inputB() == null) {
+            if (recipe.matchesSmelterDirect(a, b, oraxenResolver)) {
+                consumeSlot(inventory, slotA, recipe.inputAAmount());
+            } else if (recipe.matchesSmelterSwapped(a, b, oraxenResolver)) {
+                consumeSlot(inventory, slotB, recipe.inputAAmount());
+            }
+            return;
+        }
+        if (recipe.matchesSmelterDirect(a, b, oraxenResolver)) {
+            consumeSlot(inventory, slotA, recipe.inputAAmount());
+            consumeSlot(inventory, slotB, recipe.inputBAmount());
+            return;
+        }
+        if (recipe.matchesSmelterSwapped(a, b, oraxenResolver)) {
+            consumeSlot(inventory, slotA, recipe.inputBAmount());
+            consumeSlot(inventory, slotB, recipe.inputAAmount());
+        }
+    }
+
+    void consumeAnvilInputs(Inventory inventory, int slotMold, int slotIngot, int slotExtra, ForgeRecipe recipe) {
+        if (recipe == null) {
+            return;
+        }
+        consumeSlot(inventory, slotMold, recipe.inputAAmount());
+        if (recipe.inputB() != null) {
+            consumeSlot(inventory, slotIngot, recipe.inputBAmount());
+        }
+        if (recipe.inputC() != null) {
+            consumeSlot(inventory, slotExtra, recipe.inputCAmount());
+        }
+    }
+
+    boolean canShiftPlaceInInputSlot(ForgeState state, int slot, ItemStack item) {
+        if (state == null || item == null || item.getType().isAir() || !isInputSlot(state, slot)) {
+            return false;
+        }
+        return switch (state.stationType()) {
+            case SMELTER -> canShiftPlaceInSmelter(item);
+            case ANVIL -> canShiftPlaceInAnvil(state, slot, item);
+        };
+    }
+
+    private boolean canShiftPlaceInSmelter(ItemStack item) {
+        for (ForgeRecipe recipe : recipes) {
+            ItemStack out = recipe.buildOutput(oraxenResolver);
+            if (!hotItemManager.isHotItem(out)) {
+                continue;
+            }
+            if (ingredientMatchesType(recipe.inputA(), item) || ingredientMatchesType(recipe.inputB(), item)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private boolean canShiftPlaceInAnvil(ForgeState state, int slot, ItemStack item) {
+        int role = anvilInputRole(state, slot);
+        if (role < 0) {
+            return false;
+        }
+        for (ForgeRecipe recipe : recipes) {
+            ItemStack out = recipe.buildOutput(oraxenResolver);
+            if (hotItemManager.isHotItem(out)) {
+                continue;
+            }
+            if (role == 0 && ingredientMatchesType(recipe.inputA(), item)) {
+                return true;
+            }
+            if (role == 1 && ingredientMatchesType(recipe.inputB(), item)) {
+                return true;
+            }
+            if (role == 2 && ingredientMatchesType(recipe.inputC(), item)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private int anvilInputRole(ForgeState state, int slot) {
+        int first = Integer.MAX_VALUE;
+        int second = Integer.MAX_VALUE;
+        int third = Integer.MAX_VALUE;
+        for (int i = 0; i < state.inventory().getSize(); i++) {
+            if (!isInputSlot(state, i)) {
+                continue;
+            }
+            if (i < first) {
+                third = second;
+                second = first;
+                first = i;
+            } else if (i < second) {
+                third = second;
+                second = i;
+            } else if (i < third) {
+                third = i;
+            }
+        }
+        if (slot == first) {
+            return 0;
+        }
+        if (slot == second) {
+            return 1;
+        }
+        if (slot == third) {
+            return 2;
+        }
+        return -1;
+    }
+
+    private boolean ingredientMatchesType(ForgeIngredient ingredient, ItemStack item) {
+        return ingredient != null && ingredient.matches(item, oraxenResolver);
     }
 
     ForgeRecipe findSmelterRecipe(ItemStack a, ItemStack b) {
@@ -1184,6 +1307,9 @@ Map<Integer, Double> buildRarityDistribution(
             String input1 = section.getString(key + ".input-1");
             String input2 = section.getString(key + ".input-2");
             String input3 = section.getString(key + ".input-3");
+            int input1Amount = Math.max(1, section.getInt(key + ".input-1-amount", 1));
+            int input2Amount = Math.max(1, section.getInt(key + ".input-2-amount", 1));
+            int input3Amount = Math.max(1, section.getInt(key + ".input-3-amount", 1));
             String output = section.getString(key + ".output");
             int amount = Math.max(1, section.getInt(key + ".output-amount", 1));
             int time = Math.max(20, section.getInt(key + ".time-ticks", defaultCookTime));
@@ -1194,7 +1320,17 @@ Map<Integer, Double> buildRarityDistribution(
             if (ingredientA == null || result == null) {
                 continue;
             }
-            recipes.add(new ForgeRecipe(key, ingredientA, ingredientB, ingredientC, result, time));
+            recipes.add(new ForgeRecipe(
+                key,
+                ingredientA,
+                input1Amount,
+                ingredientB,
+                input2Amount,
+                ingredientC,
+                input3Amount,
+                result,
+                time
+            ));
         }
     }
 
@@ -1281,6 +1417,8 @@ Map<Integer, Double> buildRarityDistribution(
         return out.toString();
     }
 }
+
+
 
 
 

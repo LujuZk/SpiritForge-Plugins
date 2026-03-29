@@ -71,9 +71,7 @@ public final class AnvilBehavior implements StationBehavior {
             return;
         }
 
-        manager.consumeSlot(inventory, SLOT_MOLD);
-        manager.consumeSlot(inventory, SLOT_INGOT);
-        manager.consumeSlot(inventory, SLOT_EXTRA);
+        manager.consumeAnvilInputs(inventory, SLOT_MOLD, SLOT_INGOT, SLOT_EXTRA, recipe);
 
         int moldRarity = manager.readRarityLevel(mold);
         int materialRarity = manager.readRarityLevel(ingot);
@@ -217,6 +215,8 @@ public final class AnvilBehavior implements StationBehavior {
         return SLOT_OUTPUT;
     }
 }
+
+
 
 
 

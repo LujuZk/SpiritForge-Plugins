@@ -16,6 +16,7 @@ import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.event.player.PlayerInteractAtEntityEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.ItemStack;
 
 public final class ForgeListener implements Listener {
 
@@ -109,6 +110,17 @@ public final class ForgeListener implements Listener {
             return;
         }
 
+        if (event.isShiftClick()
+            && event.getClickedInventory() != null
+            && event.getClickedInventory() != inventory) {
+            event.setCancelled(true);
+            if (manager.isRunning(state)) {
+                return;
+            }
+            handleShiftIntoForgeInputs(event, inventory, state);
+            return;
+        }
+
         int slot = event.getRawSlot();
         if (slot < 0 || slot >= inventory.getSize()) {
             return;
@@ -135,6 +147,65 @@ public final class ForgeListener implements Listener {
         }
 
         event.setCancelled(true);
+    }
+
+    private void handleShiftIntoForgeInputs(InventoryClickEvent event, Inventory topInventory, ForgeState state) {
+        ItemStack source = event.getCurrentItem();
+        if (source == null || source.getType().isAir()) {
+            return;
+        }
+
+        int targetSlot = findShiftTargetSlot(topInventory, state, source, true);
+        if (targetSlot < 0) {
+            targetSlot = findShiftTargetSlot(topInventory, state, source, false);
+        }
+        if (targetSlot < 0) {
+            return;
+        }
+
+        ItemStack target = topInventory.getItem(targetSlot);
+        int maxStack = source.getMaxStackSize();
+        int movable;
+        if (target == null || target.getType().isAir()) {
+            movable = Math.min(source.getAmount(), maxStack);
+            topInventory.setItem(targetSlot, source.asQuantity(movable));
+        } else {
+            int free = maxStack - target.getAmount();
+            if (free <= 0) {
+                return;
+            }
+            movable = Math.min(source.getAmount(), free);
+            target.setAmount(target.getAmount() + movable);
+            topInventory.setItem(targetSlot, target);
+        }
+
+        int remaining = source.getAmount() - movable;
+        if (remaining <= 0) {
+            event.setCurrentItem(null);
+        } else {
+            source.setAmount(remaining);
+            event.setCurrentItem(source);
+        }
+    }
+
+    private int findShiftTargetSlot(Inventory topInventory, ForgeState state, ItemStack source, boolean preferMerge) {
+        for (int slot = 0; slot < topInventory.getSize(); slot++) {
+            if (!manager.isInputSlot(state, slot) || !manager.canShiftPlaceInInputSlot(state, slot, source)) {
+                continue;
+            }
+            ItemStack target = topInventory.getItem(slot);
+            boolean empty = target == null || target.getType().isAir();
+            if (preferMerge) {
+                if (!empty && target.isSimilar(source) && target.getAmount() < source.getMaxStackSize()) {
+                    return slot;
+                }
+            } else {
+                if (empty) {
+                    return slot;
+                }
+            }
+        }
+        return -1;
     }
 
     @EventHandler

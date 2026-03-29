@@ -1,4 +1,4 @@
-﻿forge:
+forge:
   gui-title-smelter: "&f\\uF80E\\uE10A"
   gui-title-anvil: "&f\\uF80E\\uE10B"
   smelter-item-id: spirit_forge
@@ -153,562 +153,765 @@
   recipes:
     reheat_tin:
       input-1: "ORAXEN:raw_tin_ore"
+      input-1-amount: 1
       output: "ORAXEN:tin_ingot_hot"
       time-ticks: 80
     reheat_silver:
       input-1: "ORAXEN:silver_ingot"
+      input-1-amount: 1
       output: "ORAXEN:silver_ingot_hot"
       time-ticks: 90
     reheat_bronze:
       input-1: "ORAXEN:bronze_ingot"
+      input-1-amount: 1
       output: "ORAXEN:bronze_ingot_hot"
       time-ticks: 90
     reheat_iron:
       input-1: "MATERIAL:IRON_INGOT"
+      input-1-amount: 1
       output: "ORAXEN:iron_ingot_hot"
       time-ticks: 90
     reheat_steel:
       input-1: "ORAXEN:steel_ingot"
+      input-1-amount: 1
       output: "ORAXEN:steel_ingot_hot"
       time-ticks: 110
     reheat_mithil:
       input-1: "ORAXEN:mithil_ingot"
+      input-1-amount: 1
       output: "ORAXEN:mithil_ingot_hot"
       time-ticks: 130
     reheat_orichalcum:
       input-1: "ORAXEN:orichalcum_ingot"
+      input-1-amount: 1
       output: "ORAXEN:orichalcum_ingot_hot"
       time-ticks: 100
     reheat_platinum:
       input-1: "ORAXEN:platinum_ingot"
+      input-1-amount: 1
       output: "ORAXEN:platinum_ingot_hot"
       time-ticks: 140
     tin:
       input-1: "ORAXEN:raw_tin_ore"
+      input-1-amount: 1
       output: "ORAXEN:tin_ingot_hot"
       time-ticks: 160
     copper:
       input-1: "ORAXEN:raw_copper_ore"
+      input-1-amount: 5
       output: "ORAXEN:copper_ingot_hot"
       time-ticks: 160
     gold:
       input-1: "MATERIAL:raw_gold"
+      input-1-amount: 1
       output: "ORAXEN:gold_ingot_hot"
       time-ticks: 240
     silver:
       input-1: "ORAXEN:raw_silver_ore"
+      input-1-amount: 1
       output: "ORAXEN:silver_ingot_hot"
       time-ticks: 180
     orichalcum:
       input-1: "ORAXEN:raw_orichalcum_ore"
+      input-1-amount: 1
       output: "ORAXEN:orichalcum_ingot_hot"
       time-ticks: 220
     mithil:
       input-1: "ORAXEN:raw_mithil_ore"
+      input-1-amount: 1
       output: "ORAXEN:mithil_ingot_hot"
       time-ticks: 240
     platinum:
       input-1: "ORAXEN:raw_platinum_ore"
+      input-1-amount: 1
       output: "ORAXEN:platinum_ingot_hot"
       time-ticks: 240
     steel:
       input-1: "MATERIAL:RAW_IRON"
+      input-1-amount: 1
       input-2: "ORAXEN:carbon_dust"
+      input-2-amount: 1
       output: "ORAXEN:steel_ingot_hot"
       time-ticks: 240
     bronze:
       input-1: "ORAXEN:raw_tin_ore"
+      input-1-amount: 1
       input-2: "ORAXEN:raw_copper_ore"
+      input-2-amount: 1
       output: "ORAXEN:bronze_ingot_hot"
       time-ticks: 200
     dark_steel:
       input-1: "ORAXEN:steel_ingot"
+      input-1-amount: 1
       input-2: "ORAXEN:obsidian_shard"
+      input-2-amount: 1
       output: "ORAXEN:dark_steel_ingot_hot"
       time-ticks: 240
     anvil_bronze_sword:
       input-1: "ORAXEN:mold_sword_bronze"
+      input-1-amount: 1
       input-2: "ORAXEN:bronze_ingot_hot"
+      input-2-amount: 1
       output: "ORAXEN:bronze_sword"
       time-ticks: 200
     anvil_steel_sword:
       input-1: "ORAXEN:mold_sword_steel"
+      input-1-amount: 1
       input-2: "ORAXEN:steel_ingot_hot"
+      input-2-amount: 1
       output: "ORAXEN:steel_sword"
       time-ticks: 200
     anvil_silver_sword:
       input-1: "ORAXEN:mold_sword_silver"
+      input-1-amount: 1
       input-2: "ORAXEN:silver_ingot_hot"
+      input-2-amount: 1
       output: "ORAXEN:silver_sword"
       time-ticks: 200
     anvil_mithil_sword:
       input-1: "ORAXEN:mold_sword_mithil"
+      input-1-amount: 1
       input-2: "ORAXEN:mithil_ingot_hot"
+      input-2-amount: 1
       output: "ORAXEN:mithil_sword"
       time-ticks: 200
     anvil_orichalcum_sword:
       input-1: "ORAXEN:mold_sword_orichalcum"
+      input-1-amount: 1
       input-2: "ORAXEN:orichalcum_ingot_hot"
+      input-2-amount: 1
       output: "ORAXEN:orichalcum_sword"
       time-ticks: 200
     anvil_platinum_sword:
       input-1: "ORAXEN:mold_sword_platinum"
+      input-1-amount: 1
       input-2: "ORAXEN:platinum_ingot_hot"
+      input-2-amount: 1
       output: "ORAXEN:platinum_sword"
       time-ticks: 200
     reheat_copper:
       input-1: "MATERIAL:COPPER_INGOT"
+      input-1-amount: 1
       output: "ORAXEN:copper_ingot_hot"
       time-ticks: 140
     anvil_copper_sword:
       input-1: "ORAXEN:mold_sword_copper"
+      input-1-amount: 1
       input-2: "ORAXEN:copper_ingot_hot"
+      input-2-amount: 1
       output: "ORAXEN:copper_sword"
       time-ticks: 220
     anvil_copper_axe:
       input-1: "ORAXEN:mold_axe_copper"
+      input-1-amount: 1
       input-2: "ORAXEN:copper_ingot_hot"
+      input-2-amount: 1
       output: "ORAXEN:copper_axe"
       time-ticks: 220
     anvil_copper_pickaxe:
       input-1: "ORAXEN:mold_pickaxe_copper"
+      input-1-amount: 1
       input-2: "ORAXEN:copper_ingot_hot"
+      input-2-amount: 1
       output: "ORAXEN:copper_pickaxe"
       time-ticks: 220
     anvil_copper_hammer:
       input-1: "ORAXEN:mold_hammer_copper"
+      input-1-amount: 1
       input-2: "ORAXEN:copper_ingot_hot"
+      input-2-amount: 1
       output: "ORAXEN:copper_hammer"
       time-ticks: 220
     anvil_bronze_axe:
       input-1: "ORAXEN:mold_axe_bronze"
+      input-1-amount: 1
       input-2: "ORAXEN:bronze_ingot_hot"
+      input-2-amount: 1
       output: "ORAXEN:bronze_axe"
       time-ticks: 220
     anvil_bronze_pickaxe:
       input-1: "ORAXEN:mold_pickaxe_bronze"
+      input-1-amount: 1
       input-2: "ORAXEN:bronze_ingot_hot"
+      input-2-amount: 1
       output: "ORAXEN:bronze_pickaxe"
       time-ticks: 220
     anvil_bronze_hammer:
       input-1: "ORAXEN:mold_hammer_bronze"
+      input-1-amount: 1
       input-2: "ORAXEN:bronze_ingot_hot"
+      input-2-amount: 1
       output: "ORAXEN:bronze_hammer"
       time-ticks: 220
     anvil_iron_sword:
       input-1: "ORAXEN:mold_sword_iron"
+      input-1-amount: 1
       input-2: "ORAXEN:iron_ingot_hot"
+      input-2-amount: 1
       output: "ORAXEN:iron_sword"
       time-ticks: 220
     anvil_iron_axe:
       input-1: "ORAXEN:mold_axe_iron"
+      input-1-amount: 1
       input-2: "ORAXEN:iron_ingot_hot"
+      input-2-amount: 1
       output: "ORAXEN:iron_axe"
       time-ticks: 220
     anvil_iron_pickaxe:
       input-1: "ORAXEN:mold_pickaxe_iron"
+      input-1-amount: 1
       input-2: "ORAXEN:iron_ingot_hot"
+      input-2-amount: 1
       output: "ORAXEN:iron_pickaxe"
       time-ticks: 220
     anvil_iron_hammer:
       input-1: "ORAXEN:mold_hammer_iron"
+      input-1-amount: 1
       input-2: "ORAXEN:iron_ingot_hot"
+      input-2-amount: 1
       output: "ORAXEN:iron_hammer"
       time-ticks: 220
     anvil_steel_axe:
       input-1: "ORAXEN:mold_axe_steel"
+      input-1-amount: 1
       input-2: "ORAXEN:steel_ingot_hot"
+      input-2-amount: 1
       output: "ORAXEN:steel_axe"
       time-ticks: 220
     anvil_steel_pickaxe:
       input-1: "ORAXEN:mold_pickaxe_steel"
+      input-1-amount: 1
       input-2: "ORAXEN:steel_ingot_hot"
+      input-2-amount: 1
       output: "ORAXEN:steel_pickaxe"
       time-ticks: 220
     anvil_steel_hammer:
       input-1: "ORAXEN:mold_hammer_steel"
+      input-1-amount: 1
       input-2: "ORAXEN:steel_ingot_hot"
+      input-2-amount: 1
       output: "ORAXEN:steel_hammer"
       time-ticks: 220
     anvil_silver_axe:
       input-1: "ORAXEN:mold_axe_silver"
+      input-1-amount: 1
       input-2: "ORAXEN:silver_ingot_hot"
+      input-2-amount: 1
       output: "ORAXEN:silver_axe"
       time-ticks: 220
     anvil_silver_pickaxe:
       input-1: "ORAXEN:mold_pickaxe_silver"
+      input-1-amount: 1
       input-2: "ORAXEN:silver_ingot_hot"
+      input-2-amount: 1
       output: "ORAXEN:silver_pickaxe"
       time-ticks: 220
     anvil_silver_hammer:
       input-1: "ORAXEN:mold_hammer_silver"
+      input-1-amount: 1
       input-2: "ORAXEN:silver_ingot_hot"
+      input-2-amount: 1
       output: "ORAXEN:silver_hammer"
       time-ticks: 220
     reheat_gold:
       input-1: "MATERIAL:GOLD_INGOT"
+      input-1-amount: 1
       output: "ORAXEN:gold_ingot_hot"
       time-ticks: 140
     anvil_gold_sword:
       input-1: "ORAXEN:mold_sword_gold"
+      input-1-amount: 1
       input-2: "ORAXEN:gold_ingot_hot"
+      input-2-amount: 1
       output: "ORAXEN:gold_sword"
       time-ticks: 220
     anvil_gold_axe:
       input-1: "ORAXEN:mold_axe_gold"
+      input-1-amount: 1
       input-2: "ORAXEN:gold_ingot_hot"
+      input-2-amount: 1
       output: "ORAXEN:gold_axe"
       time-ticks: 220
     anvil_gold_pickaxe:
       input-1: "ORAXEN:mold_pickaxe_gold"
+      input-1-amount: 1
       input-2: "ORAXEN:gold_ingot_hot"
+      input-2-amount: 1
       output: "ORAXEN:gold_pickaxe"
       time-ticks: 220
     anvil_gold_hammer:
       input-1: "ORAXEN:mold_hammer_gold"
+      input-1-amount: 1
       input-2: "ORAXEN:gold_ingot_hot"
+      input-2-amount: 1
       output: "ORAXEN:gold_hammer"
       time-ticks: 220
     anvil_platinum_axe:
       input-1: "ORAXEN:mold_axe_platinum"
+      input-1-amount: 1
       input-2: "ORAXEN:platinum_ingot_hot"
+      input-2-amount: 1
       output: "ORAXEN:platinum_axe"
       time-ticks: 220
     anvil_platinum_pickaxe:
       input-1: "ORAXEN:mold_pickaxe_platinum"
+      input-1-amount: 1
       input-2: "ORAXEN:platinum_ingot_hot"
+      input-2-amount: 1
       output: "ORAXEN:platinum_pickaxe"
       time-ticks: 220
     anvil_platinum_hammer:
       input-1: "ORAXEN:mold_hammer_platinum"
+      input-1-amount: 1
       input-2: "ORAXEN:platinum_ingot_hot"
+      input-2-amount: 1
       output: "ORAXEN:platinum_hammer"
       time-ticks: 220
     reheat_diamond:
       input-1: "MATERIAL:DIAMOND"
+      input-1-amount: 1
       output: "ORAXEN:diamond_hot"
       time-ticks: 140
     anvil_diamond_sword:
       input-1: "ORAXEN:mold_sword_diamond"
+      input-1-amount: 1
       input-2: "ORAXEN:diamond_hot"
+      input-2-amount: 1
       output: "ORAXEN:diamond_sword"
       time-ticks: 220
     anvil_diamond_axe:
       input-1: "ORAXEN:mold_axe_diamond"
+      input-1-amount: 1
       input-2: "ORAXEN:diamond_hot"
+      input-2-amount: 1
       output: "ORAXEN:diamond_axe"
       time-ticks: 220
     anvil_diamond_pickaxe:
       input-1: "ORAXEN:mold_pickaxe_diamond"
+      input-1-amount: 1
       input-2: "ORAXEN:diamond_hot"
+      input-2-amount: 1
       output: "ORAXEN:diamond_pickaxe"
       time-ticks: 220
     anvil_diamond_hammer:
       input-1: "ORAXEN:mold_hammer_diamond"
+      input-1-amount: 1
       input-2: "ORAXEN:diamond_hot"
+      input-2-amount: 1
       output: "ORAXEN:diamond_hammer"
       time-ticks: 220
     reheat_obsidian:
       input-1: "ORAXEN:obsidian_shard"
+      input-1-amount: 1
       output: "ORAXEN:obsidian_hot"
       time-ticks: 140
     anvil_obsidian_sword:
       input-1: "ORAXEN:mold_sword_obsidian"
+      input-1-amount: 1
       input-2: "ORAXEN:obsidian_hot"
+      input-2-amount: 1
       output: "ORAXEN:obsidian_sword"
       time-ticks: 220
     anvil_obsidian_axe:
       input-1: "ORAXEN:mold_axe_obsidian"
+      input-1-amount: 1
       input-2: "ORAXEN:obsidian_hot"
+      input-2-amount: 1
       output: "ORAXEN:obsidian_axe"
       time-ticks: 220
     anvil_obsidian_pickaxe:
       input-1: "ORAXEN:mold_pickaxe_obsidian"
+      input-1-amount: 1
       input-2: "ORAXEN:obsidian_hot"
+      input-2-amount: 1
       output: "ORAXEN:obsidian_pickaxe"
       time-ticks: 220
     anvil_obsidian_hammer:
       input-1: "ORAXEN:mold_hammer_obsidian"
+      input-1-amount: 1
       input-2: "ORAXEN:obsidian_hot"
+      input-2-amount: 1
       output: "ORAXEN:obsidian_hammer"
       time-ticks: 220
     anvil_dark_steel_sword:
       input-1: "ORAXEN:mold_sword_dark_steel"
+      input-1-amount: 1
       input-2: "ORAXEN:dark_steel_ingot_hot"
+      input-2-amount: 1
       output: "ORAXEN:dark_steel_sword"
       time-ticks: 220
     anvil_dark_steel_axe:
       input-1: "ORAXEN:mold_axe_dark_steel"
+      input-1-amount: 1
       input-2: "ORAXEN:dark_steel_ingot_hot"
+      input-2-amount: 1
       output: "ORAXEN:dark_steel_axe"
       time-ticks: 220
     anvil_dark_steel_pickaxe:
       input-1: "ORAXEN:mold_pickaxe_dark_steel"
+      input-1-amount: 1
       input-2: "ORAXEN:dark_steel_ingot_hot"
+      input-2-amount: 1
       output: "ORAXEN:dark_steel_pickaxe"
       time-ticks: 220
     anvil_dark_steel_hammer:
       input-1: "ORAXEN:mold_hammer_dark_steel"
+      input-1-amount: 1
       input-2: "ORAXEN:dark_steel_ingot_hot"
+      input-2-amount: 1
       output: "ORAXEN:dark_steel_hammer"
       time-ticks: 220
     reheat_netherite_ingot:
       input-1: "MATERIAL:NETHERITE_INGOT"
+      input-1-amount: 1
       output: "ORAXEN:netherite_ingot_hot"
       time-ticks: 140
     reheat_netherite_scrap:
       input-1: "MATERIAL:NETHERITE_SCRAP"
+      input-1-amount: 1
       output: "ORAXEN:netherite_ingot_hot"
       time-ticks: 160
     anvil_netherite_sword:
       input-1: "ORAXEN:mold_sword_netherite"
+      input-1-amount: 1
       input-2: "ORAXEN:netherite_ingot_hot"
+      input-2-amount: 1
       output: "ORAXEN:netherite_sword"
       time-ticks: 220
     anvil_netherite_axe:
       input-1: "ORAXEN:mold_axe_netherite"
+      input-1-amount: 1
       input-2: "ORAXEN:netherite_ingot_hot"
+      input-2-amount: 1
       output: "ORAXEN:netherite_axe"
       time-ticks: 220
     anvil_netherite_pickaxe:
       input-1: "ORAXEN:mold_pickaxe_netherite"
+      input-1-amount: 1
       input-2: "ORAXEN:netherite_ingot_hot"
+      input-2-amount: 1
       output: "ORAXEN:netherite_pickaxe"
       time-ticks: 220
     anvil_netherite_hammer:
       input-1: "ORAXEN:mold_hammer_netherite"
+      input-1-amount: 1
       input-2: "ORAXEN:netherite_ingot_hot"
+      input-2-amount: 1
       output: "ORAXEN:netherite_hammer"
       time-ticks: 220
     anvil_mithil_axe:
       input-1: "ORAXEN:mold_axe_mithil"
+      input-1-amount: 1
       input-2: "ORAXEN:mithil_ingot_hot"
+      input-2-amount: 1
       output: "ORAXEN:mithil_axe"
       time-ticks: 220
     anvil_mithil_pickaxe:
       input-1: "ORAXEN:mold_pickaxe_mithil"
+      input-1-amount: 1
       input-2: "ORAXEN:mithil_ingot_hot"
+      input-2-amount: 1
       output: "ORAXEN:mithil_pickaxe"
       time-ticks: 220
     anvil_mithil_hammer:
       input-1: "ORAXEN:mold_hammer_mithil"
+      input-1-amount: 1
       input-2: "ORAXEN:mithil_ingot_hot"
+      input-2-amount: 1
       output: "ORAXEN:mithil_hammer"
       time-ticks: 220
     anvil_orichalcum_axe:
       input-1: "ORAXEN:mold_axe_orichalcum"
+      input-1-amount: 1
       input-2: "ORAXEN:orichalcum_ingot_hot"
+      input-2-amount: 1
       output: "ORAXEN:orichalcum_axe"
       time-ticks: 220
     anvil_orichalcum_pickaxe:
       input-1: "ORAXEN:mold_pickaxe_orichalcum"
+      input-1-amount: 1
       input-2: "ORAXEN:orichalcum_ingot_hot"
+      input-2-amount: 1
       output: "ORAXEN:orichalcum_pickaxe"
       time-ticks: 220
     anvil_orichalcum_hammer:
       input-1: "ORAXEN:mold_hammer_orichalcum"
+      input-1-amount: 1
       input-2: "ORAXEN:orichalcum_ingot_hot"
+      input-2-amount: 1
       output: "ORAXEN:orichalcum_hammer"
       time-ticks: 220
     reheat_adamantite:
       input-1: "ORAXEN:adamantite_ingot"
+      input-1-amount: 1
       output: "ORAXEN:adamantite_ingot_hot"
       time-ticks: 140
     adamantite:
       input-1: "ORAXEN:raw_adamantite_ore"
+      input-1-amount: 1
       output: "ORAXEN:adamantite_ingot_hot"
       time-ticks: 260
     anvil_adamantite_sword:
       input-1: "ORAXEN:mold_sword_adamantite"
+      input-1-amount: 1
       input-2: "ORAXEN:adamantite_ingot_hot"
+      input-2-amount: 1
       output: "ORAXEN:adamantite_sword"
       time-ticks: 220
     anvil_adamantite_axe:
       input-1: "ORAXEN:mold_axe_adamantite"
+      input-1-amount: 1
       input-2: "ORAXEN:adamantite_ingot_hot"
+      input-2-amount: 1
       output: "ORAXEN:adamantite_axe"
       time-ticks: 220
     anvil_adamantite_pickaxe:
       input-1: "ORAXEN:mold_pickaxe_adamantite"
+      input-1-amount: 1
       input-2: "ORAXEN:adamantite_ingot_hot"
+      input-2-amount: 1
       output: "ORAXEN:adamantite_pickaxe"
       time-ticks: 220
     anvil_adamantite_hammer:
       input-1: "ORAXEN:mold_hammer_adamantite"
+      input-1-amount: 1
       input-2: "ORAXEN:adamantite_ingot_hot"
+      input-2-amount: 1
       output: "ORAXEN:adamantite_hammer"
       time-ticks: 220
     reheat_demonite:
       input-1: "ORAXEN:demonite_ingot"
+      input-1-amount: 1
       output: "ORAXEN:demonite_ingot_hot"
       time-ticks: 140
     demonite:
       input-1: "ORAXEN:raw_demonite_ore"
+      input-1-amount: 1
       output: "ORAXEN:demonite_ingot_hot"
       time-ticks: 260
     anvil_demonite_sword:
       input-1: "ORAXEN:mold_sword_demonite"
+      input-1-amount: 1
       input-2: "ORAXEN:demonite_ingot_hot"
+      input-2-amount: 1
       output: "ORAXEN:demonite_sword"
       time-ticks: 220
     anvil_demonite_axe:
       input-1: "ORAXEN:mold_axe_demonite"
+      input-1-amount: 1
       input-2: "ORAXEN:demonite_ingot_hot"
+      input-2-amount: 1
       output: "ORAXEN:demonite_axe"
       time-ticks: 220
     anvil_demonite_pickaxe:
       input-1: "ORAXEN:mold_pickaxe_demonite"
+      input-1-amount: 1
       input-2: "ORAXEN:demonite_ingot_hot"
+      input-2-amount: 1
       output: "ORAXEN:demonite_pickaxe"
       time-ticks: 220
     anvil_demonite_hammer:
       input-1: "ORAXEN:mold_hammer_demonite"
+      input-1-amount: 1
       input-2: "ORAXEN:demonite_ingot_hot"
+      input-2-amount: 1
       output: "ORAXEN:demonite_hammer"
       time-ticks: 220
     reheat_dragonite:
       input-1: "ORAXEN:dragonite_ingot"
+      input-1-amount: 1
       output: "ORAXEN:dragonite_ingot_hot"
       time-ticks: 140
     dragonite:
       input-1: "ORAXEN:raw_dragonite_ore"
+      input-1-amount: 1
       output: "ORAXEN:dragonite_ingot_hot"
       time-ticks: 260
     anvil_dragonite_sword:
       input-1: "ORAXEN:mold_sword_dragonite"
+      input-1-amount: 1
       input-2: "ORAXEN:dragonite_ingot_hot"
+      input-2-amount: 1
       output: "ORAXEN:dragonite_sword"
       time-ticks: 220
     anvil_dragonite_axe:
       input-1: "ORAXEN:mold_axe_dragonite"
+      input-1-amount: 1
       input-2: "ORAXEN:dragonite_ingot_hot"
+      input-2-amount: 1
       output: "ORAXEN:dragonite_axe"
       time-ticks: 220
     anvil_dragonite_pickaxe:
       input-1: "ORAXEN:mold_pickaxe_dragonite"
+      input-1-amount: 1
       input-2: "ORAXEN:dragonite_ingot_hot"
+      input-2-amount: 1
       output: "ORAXEN:dragonite_pickaxe"
       time-ticks: 220
     anvil_dragonite_hammer:
       input-1: "ORAXEN:mold_hammer_dragonite"
+      input-1-amount: 1
       input-2: "ORAXEN:dragonite_ingot_hot"
+      input-2-amount: 1
       output: "ORAXEN:dragonite_hammer"
       time-ticks: 220
     reheat_aetherium:
       input-1: "ORAXEN:aetherium_ingot"
+      input-1-amount: 1
       output: "ORAXEN:aetherium_ingot_hot"
       time-ticks: 140
     aetherium:
       input-1: "ORAXEN:raw_aetherium_ore"
+      input-1-amount: 1
       output: "ORAXEN:aetherium_ingot_hot"
       time-ticks: 260
     anvil_aetherium_sword:
       input-1: "ORAXEN:mold_sword_aetherium"
+      input-1-amount: 1
       input-2: "ORAXEN:aetherium_ingot_hot"
+      input-2-amount: 1
       output: "ORAXEN:aetherium_sword"
       time-ticks: 220
     anvil_aetherium_axe:
       input-1: "ORAXEN:mold_axe_aetherium"
+      input-1-amount: 1
       input-2: "ORAXEN:aetherium_ingot_hot"
+      input-2-amount: 1
       output: "ORAXEN:aetherium_axe"
       time-ticks: 220
     anvil_aetherium_pickaxe:
       input-1: "ORAXEN:mold_pickaxe_aetherium"
+      input-1-amount: 1
       input-2: "ORAXEN:aetherium_ingot_hot"
+      input-2-amount: 1
       output: "ORAXEN:aetherium_pickaxe"
       time-ticks: 220
     anvil_aetherium_hammer:
       input-1: "ORAXEN:mold_hammer_aetherium"
+      input-1-amount: 1
       input-2: "ORAXEN:aetherium_ingot_hot"
+      input-2-amount: 1
       output: "ORAXEN:aetherium_hammer"
       time-ticks: 220
     reheat_astralium:
       input-1: "ORAXEN:astralium_ingot"
+      input-1-amount: 1
       output: "ORAXEN:astralium_ingot_hot"
       time-ticks: 140
     astralium:
       input-1: "ORAXEN:raw_astralium_ore"
+      input-1-amount: 1
       output: "ORAXEN:astralium_ingot_hot"
       time-ticks: 260
     anvil_astralium_sword:
       input-1: "ORAXEN:mold_sword_astralium"
+      input-1-amount: 1
       input-2: "ORAXEN:astralium_ingot_hot"
+      input-2-amount: 1
       output: "ORAXEN:astralium_sword"
       time-ticks: 220
     anvil_astralium_axe:
       input-1: "ORAXEN:mold_axe_astralium"
+      input-1-amount: 1
       input-2: "ORAXEN:astralium_ingot_hot"
+      input-2-amount: 1
       output: "ORAXEN:astralium_axe"
       time-ticks: 220
     anvil_astralium_pickaxe:
       input-1: "ORAXEN:mold_pickaxe_astralium"
+      input-1-amount: 1
       input-2: "ORAXEN:astralium_ingot_hot"
+      input-2-amount: 1
       output: "ORAXEN:astralium_pickaxe"
       time-ticks: 220
     anvil_astralium_hammer:
       input-1: "ORAXEN:mold_hammer_astralium"
+      input-1-amount: 1
       input-2: "ORAXEN:astralium_ingot_hot"
+      input-2-amount: 1
       output: "ORAXEN:astralium_hammer"
       time-ticks: 220
     reheat_eternium:
       input-1: "ORAXEN:eternium_ingot"
+      input-1-amount: 1
       output: "ORAXEN:eternium_ingot_hot"
       time-ticks: 140
     eternium:
       input-1: "ORAXEN:raw_eternium_ore"
+      input-1-amount: 1
       output: "ORAXEN:eternium_ingot_hot"
       time-ticks: 260
     anvil_eternium_sword:
       input-1: "ORAXEN:mold_sword_eternium"
+      input-1-amount: 1
       input-2: "ORAXEN:eternium_ingot_hot"
+      input-2-amount: 1
       output: "ORAXEN:eternium_sword"
       time-ticks: 220
     anvil_eternium_axe:
       input-1: "ORAXEN:mold_axe_eternium"
+      input-1-amount: 1
       input-2: "ORAXEN:eternium_ingot_hot"
+      input-2-amount: 1
       output: "ORAXEN:eternium_axe"
       time-ticks: 220
     anvil_eternium_pickaxe:
       input-1: "ORAXEN:mold_pickaxe_eternium"
+      input-1-amount: 1
       input-2: "ORAXEN:eternium_ingot_hot"
+      input-2-amount: 1
       output: "ORAXEN:eternium_pickaxe"
       time-ticks: 220
     anvil_eternium_hammer:
       input-1: "ORAXEN:mold_hammer_eternium"
+      input-1-amount: 1
       input-2: "ORAXEN:eternium_ingot_hot"
+      input-2-amount: 1
       output: "ORAXEN:eternium_hammer"
       time-ticks: 220
     reheat_deus_matter:
       input-1: "ORAXEN:deus_matter_ingot"
+      input-1-amount: 1
       output: "ORAXEN:deus_matter_ingot_hot"
       time-ticks: 140
     deus_matter:
       input-1: "ORAXEN:raw_deus_matter_ore"
+      input-1-amount: 1
       output: "ORAXEN:deus_matter_ingot_hot"
       time-ticks: 260
     anvil_deus_matter_sword:
       input-1: "ORAXEN:mold_sword_deus_matter"
+      input-1-amount: 1
       input-2: "ORAXEN:deus_matter_ingot_hot"
+      input-2-amount: 1
       output: "ORAXEN:deus_matter_sword"
       time-ticks: 220
     anvil_deus_matter_axe:
       input-1: "ORAXEN:mold_axe_deus_matter"
+      input-1-amount: 1
       input-2: "ORAXEN:deus_matter_ingot_hot"
+      input-2-amount: 1
       output: "ORAXEN:deus_matter_axe"
       time-ticks: 220
     anvil_deus_matter_pickaxe:
       input-1: "ORAXEN:mold_pickaxe_deus_matter"
+      input-1-amount: 1
       input-2: "ORAXEN:deus_matter_ingot_hot"
+      input-2-amount: 1
       output: "ORAXEN:deus_matter_pickaxe"
       time-ticks: 220
     anvil_deus_matter_hammer:
       input-1: "ORAXEN:mold_hammer_deus_matter"
+      input-1-amount: 1
       input-2: "ORAXEN:deus_matter_ingot_hot"
+      input-2-amount: 1
       output: "ORAXEN:deus_matter_hammer"
       time-ticks: 220
     aura:
   y: 3.0
   scale: 2
+
+
 
 
 
