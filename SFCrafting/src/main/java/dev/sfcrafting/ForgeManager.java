@@ -455,6 +455,15 @@ public final class ForgeManager {
         if (key.startsWith("mold_sword_")) {
             key = key.substring("mold_sword_".length());
         }
+        if (key.startsWith("mold_axe_")) {
+            key = key.substring("mold_axe_".length());
+        }
+        if (key.startsWith("mold_pickaxe_")) {
+            key = key.substring("mold_pickaxe_".length());
+        }
+        if (key.startsWith("mold_hammer_")) {
+            key = key.substring("mold_hammer_".length());
+        }
         if (key.endsWith("_ingot_hot")) {
             key = key.substring(0, key.length() - "_ingot_hot".length());
         }
@@ -463,6 +472,15 @@ public final class ForgeManager {
         }
         if (key.endsWith("_sword")) {
             key = key.substring(0, key.length() - "_sword".length());
+        }
+        if (key.endsWith("_axe")) {
+            key = key.substring(0, key.length() - "_axe".length());
+        }
+        if (key.endsWith("_pickaxe")) {
+            key = key.substring(0, key.length() - "_pickaxe".length());
+        }
+        if (key.endsWith("_hammer")) {
+            key = key.substring(0, key.length() - "_hammer".length());
         }
         return key;
     }

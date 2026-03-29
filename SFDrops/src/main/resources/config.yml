@@ -42,5 +42,14 @@ oreDrops:
   diamond_ore: diamond
   deepslate_diamond_ore: diamond
   orichalcum_ore: raw_orichalcum_ore
+  adamantite_ore: raw_adamantite_ore
+  demonite_ore: raw_demonite_ore
+  dragonite_ore: raw_dragonite_ore
+  aetherium_ore: raw_aetherium_ore
+  astralium_ore: raw_astralium_ore
+  eternium_ore: raw_eternium_ore
+  deus_matter_ore: raw_deus_matter_ore
+  crying_obsidian: obsidian_shard
+  ancient_debris: NETHERITE_SCRAP
   crystalmush_log: crystalmush_log
 

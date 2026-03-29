@@ -13,7 +13,7 @@ import org.bukkit.inventory.ItemStack;
 
 public final class MoldRecipeListener implements Listener {
 
-    private enum TargetType { SWORD, PICKAXE, HAMMER }
+    private enum TargetType { SWORD, AXE, PICKAXE, HAMMER }
 
     private record IngotRequirement(Type type, Material material, String oraxenId) {
         enum Type { MATERIAL, ORAXEN }
@@ -37,39 +37,34 @@ public final class MoldRecipeListener implements Listener {
         this.manager = manager;
         this.resolver = new OraxenItemResolver(plugin);
 
-        recipes.addAll(Arrays.asList(
-            new MoldRecipe("mold_sword_copper", IngotRequirement.material(Material.COPPER_INGOT), TargetType.SWORD),
-            new MoldRecipe("mold_sword_bronze", IngotRequirement.oraxen("bronze_ingot"), TargetType.SWORD),
-            new MoldRecipe("mold_sword_iron", IngotRequirement.material(Material.IRON_INGOT), TargetType.SWORD),
-            new MoldRecipe("mold_sword_steel", IngotRequirement.oraxen("steel_ingot"), TargetType.SWORD),
-            new MoldRecipe("mold_sword_silver", IngotRequirement.oraxen("silver_ingot"), TargetType.SWORD),
-            new MoldRecipe("mold_sword_gold", IngotRequirement.material(Material.GOLD_INGOT), TargetType.SWORD),
-            new MoldRecipe("mold_sword_platinum", IngotRequirement.oraxen("platinum_ingot"), TargetType.SWORD),
-            new MoldRecipe("mold_sword_mithil", IngotRequirement.oraxen("mithil_ingot"), TargetType.SWORD),
-            new MoldRecipe("mold_sword_orichalcum", IngotRequirement.oraxen("orichalcum_ingot"), TargetType.SWORD)
-        ));
+        registerMaterial("copper", IngotRequirement.material(Material.COPPER_INGOT));
+        registerMaterial("bronze", IngotRequirement.oraxen("bronze_ingot"));
+        registerMaterial("iron", IngotRequirement.material(Material.IRON_INGOT));
+        registerMaterial("steel", IngotRequirement.oraxen("steel_ingot"));
+        registerMaterial("silver", IngotRequirement.oraxen("silver_ingot"));
+        registerMaterial("gold", IngotRequirement.material(Material.GOLD_INGOT));
+        registerMaterial("platinum", IngotRequirement.oraxen("platinum_ingot"));
+        registerMaterial("diamond", IngotRequirement.material(Material.DIAMOND));
+        registerMaterial("obsidian", IngotRequirement.oraxen("obsidian_shard"));
+        registerMaterial("dark_steel", IngotRequirement.oraxen("dark_steel_ingot"));
+        registerMaterial("netherite", IngotRequirement.material(Material.NETHERITE_INGOT));
+        registerMaterial("mithil", IngotRequirement.oraxen("mithil_ingot"));
+        registerMaterial("orichalcum", IngotRequirement.oraxen("orichalcum_ingot"));
+        registerMaterial("adamantite", IngotRequirement.oraxen("adamantite_ingot"));
+        registerMaterial("demonite", IngotRequirement.oraxen("demonite_ingot"));
+        registerMaterial("dragonite", IngotRequirement.oraxen("dragonite_ingot"));
+        registerMaterial("aetherium", IngotRequirement.oraxen("aetherium_ingot"));
+        registerMaterial("astralium", IngotRequirement.oraxen("astralium_ingot"));
+        registerMaterial("eternium", IngotRequirement.oraxen("eternium_ingot"));
+        registerMaterial("deus_matter", IngotRequirement.oraxen("deus_matter_ingot"));
+    }
 
+    private void registerMaterial(String materialKey, IngotRequirement ingot) {
         recipes.addAll(Arrays.asList(
-            new MoldRecipe("mold_pickaxe_bronze", IngotRequirement.oraxen("bronze_ingot"), TargetType.PICKAXE),
-            new MoldRecipe("mold_pickaxe_iron", IngotRequirement.material(Material.IRON_INGOT), TargetType.PICKAXE),
-            new MoldRecipe("mold_pickaxe_steel", IngotRequirement.oraxen("steel_ingot"), TargetType.PICKAXE),
-            new MoldRecipe("mold_pickaxe_silver", IngotRequirement.oraxen("silver_ingot"), TargetType.PICKAXE),
-            new MoldRecipe("mold_pickaxe_gold", IngotRequirement.material(Material.GOLD_INGOT), TargetType.PICKAXE),
-            new MoldRecipe("mold_pickaxe_platinum", IngotRequirement.oraxen("platinum_ingot"), TargetType.PICKAXE),
-            new MoldRecipe("mold_pickaxe_mithil", IngotRequirement.oraxen("mithil_ingot"), TargetType.PICKAXE),
-            new MoldRecipe("mold_pickaxe_orichalcum", IngotRequirement.oraxen("orichalcum_ingot"), TargetType.PICKAXE),
-            new MoldRecipe("mold_pickaxe_diamond", IngotRequirement.material(Material.DIAMOND), TargetType.PICKAXE),
-            new MoldRecipe("mold_pickaxe_obsidian", IngotRequirement.material(Material.OBSIDIAN), TargetType.PICKAXE)
-        ));
-
-        recipes.addAll(Arrays.asList(
-            new MoldRecipe("mold_hammer_bronze", IngotRequirement.oraxen("bronze_ingot"), TargetType.HAMMER),
-            new MoldRecipe("mold_hammer_iron", IngotRequirement.material(Material.IRON_INGOT), TargetType.HAMMER),
-            new MoldRecipe("mold_hammer_steel", IngotRequirement.oraxen("steel_ingot"), TargetType.HAMMER),
-            new MoldRecipe("mold_hammer_silver", IngotRequirement.oraxen("silver_ingot"), TargetType.HAMMER),
-            new MoldRecipe("mold_hammer_platinum", IngotRequirement.oraxen("platinum_ingot"), TargetType.HAMMER),
-            new MoldRecipe("mold_hammer_mithil", IngotRequirement.oraxen("mithil_ingot"), TargetType.HAMMER),
-            new MoldRecipe("mold_hammer_orichalcum", IngotRequirement.oraxen("orichalcum_ingot"), TargetType.HAMMER)
+                new MoldRecipe("mold_sword_" + materialKey, ingot, TargetType.SWORD),
+                new MoldRecipe("mold_axe_" + materialKey, ingot, TargetType.AXE),
+                new MoldRecipe("mold_pickaxe_" + materialKey, ingot, TargetType.PICKAXE),
+                new MoldRecipe("mold_hammer_" + materialKey, ingot, TargetType.HAMMER)
         ));
     }
 
@@ -133,6 +128,9 @@ public final class MoldRecipeListener implements Listener {
         if (isPickaxe(center)) {
             return TargetType.PICKAXE;
         }
+        if (isAxe(center)) {
+            return TargetType.AXE;
+        }
         return null;
     }
 
@@ -164,17 +162,15 @@ public final class MoldRecipeListener implements Listener {
     }
 
     private boolean isSword(ItemStack item) {
-        if (item == null || item.getType().isAir()) {
-            return false;
-        }
-        return item.getType().name().endsWith("_SWORD");
+        return item != null && !item.getType().isAir() && item.getType().name().endsWith("_SWORD");
     }
 
     private boolean isPickaxe(ItemStack item) {
-        if (item == null || item.getType().isAir()) {
-            return false;
-        }
-        return item.getType().name().endsWith("_PICKAXE");
+        return item != null && !item.getType().isAir() && item.getType().name().endsWith("_PICKAXE");
+    }
+
+    private boolean isAxe(ItemStack item) {
+        return item != null && !item.getType().isAir() && item.getType().name().endsWith("_AXE");
     }
 
     private boolean isHammer(ItemStack item) {
