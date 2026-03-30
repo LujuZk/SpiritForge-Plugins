@@ -6,6 +6,7 @@ const initialState = {
     id: "sword",
     displayName: "⚔ Espada",
     skillType: "SWORD",
+    treeMode: "POINTS",
     cells: {}, // key: "page,col,row"
     edges: [], // edges are global across pages
     availableAssets: { nodes: [], connectors: [] },

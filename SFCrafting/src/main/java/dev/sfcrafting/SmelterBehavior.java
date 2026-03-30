@@ -59,6 +59,7 @@ public final class SmelterBehavior implements StationBehavior {
             player.sendMessage(ChatColor.RED + "La forja solo funde lingotes calientes.");
             return;
         }
+        state.setLastPlayerUuid(player.getUniqueId());
         manager.consumeSmelterInputs(inventory, SLOT_INPUT_A, SLOT_INPUT_B, recipe);
         manager.startSmelt(state, recipe, manager.locationFrom(inventory), SLOT_OUTPUT);
         manager.updateButton(state);

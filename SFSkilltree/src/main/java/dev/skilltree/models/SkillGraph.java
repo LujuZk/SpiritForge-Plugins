@@ -13,7 +13,8 @@ public class SkillGraph {
     private final String id;
     private final String displayName;
     private final SkillType skillType;
-    
+    private final TreeMode treeMode;
+
     // id -> nodo
     private final Map<String, SkillNode> nodes = new LinkedHashMap<>();
     
@@ -29,10 +30,11 @@ public class SkillGraph {
     // Path mappings (which connector cells belong to which edge)
     private final List<PathMapping> pathMappings = new ArrayList<>();
 
-    public SkillGraph(String id, String displayName, SkillType skillType) {
+    public SkillGraph(String id, String displayName, SkillType skillType, TreeMode treeMode) {
         this.id = id;
         this.displayName = displayName;
         this.skillType = skillType;
+        this.treeMode = treeMode;
     }
 
     /**
@@ -148,6 +150,10 @@ public class SkillGraph {
 
     public SkillType getSkillType() {
         return skillType;
+    }
+
+    public TreeMode getTreeMode() {
+        return treeMode;
     }
 
     public Map<String, SkillNode> getNodes() {

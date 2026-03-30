@@ -5,6 +5,7 @@ import dev.skilltree.models.IconDefinition;
 import dev.skilltree.models.NodeState;
 import dev.skilltree.models.SkillGraph;
 import dev.skilltree.models.SkillNode;
+import dev.skilltree.models.TreeMode;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextDecoration;
@@ -56,17 +57,19 @@ public class GridRenderer {
                            SkillGraph graph,
                            Set<String> unlockedNodes,
                            int page,
-                           int availablePoints) {
+                           int availablePoints,
+                           int playerLevel) {
 
         Set<String> unlocked = unlockedNodes == null ? Collections.emptySet() : unlockedNodes;
+        TreeMode treeMode = graph.getTreeMode();
 
         clearTreeArea(inventory);
         clearNavigationRow(inventory);
 
         if (graph.hasGridData()) {
-            renderFromGrid(inventory, graph, unlocked, page, availablePoints);
+            renderFromGrid(inventory, graph, unlocked, page, availablePoints, playerLevel, treeMode);
         } else {
-            renderFallback(inventory, graph, unlocked, availablePoints);
+            renderFallback(inventory, graph, unlocked, availablePoints, playerLevel, treeMode);
         }
     }
 
@@ -76,7 +79,9 @@ public class GridRenderer {
                                 SkillGraph graph,
                                 Set<String> unlocked,
                                 int page,
-                                int availablePoints) {
+                                int availablePoints,
+                                int playerLevel,
+                                TreeMode treeMode) {
 
         // Build a set of connector cells that should be "on"
         Set<String> onConnectorCells = buildOnConnectorCells(graph, unlocked);
@@ -92,7 +97,7 @@ public class GridRenderer {
                 SkillNode node = graph.getNode(cell.id());
                 if (node == null) continue;
                 NodeState state = graph.getNodeState(node.getId(), unlocked);
-                inventory.setItem(slot, createNodeItem(node, state, availablePoints));
+                inventory.setItem(slot, createNodeItem(node, state, availablePoints, playerLevel, treeMode));
             } else if ("connector".equals(cell.type())) {
                 String connectorBase = cell.id();
                 String cellKey = cell.col() + "," + cell.row();
@@ -124,14 +129,16 @@ public class GridRenderer {
     private void renderFallback(Inventory inventory,
                                 SkillGraph graph,
                                 Set<String> unlocked,
-                                int availablePoints) {
+                                int availablePoints,
+                                int playerLevel,
+                                TreeMode treeMode) {
         // Simple fallback: place nodes in order, left to right, top to bottom
         List<SkillNode> sorted = graph.getNodesSorted();
         int slot = 0;
         for (SkillNode node : sorted) {
             if (slot >= TREE_ROWS * INVENTORY_COLS) break;
             NodeState state = graph.getNodeState(node.getId(), unlocked);
-            inventory.setItem(slot, createNodeItem(node, state, availablePoints));
+            inventory.setItem(slot, createNodeItem(node, state, availablePoints, playerLevel, treeMode));
             slot++;
         }
     }
@@ -152,7 +159,13 @@ public class GridRenderer {
         }
     }
 
-    private ItemStack createNodeItem(SkillNode node, NodeState state, int availablePoints) {
+    private ItemStack createNodeItem(SkillNode node, NodeState state, int availablePoints,
+                                      int playerLevel, TreeMode treeMode) {
+        boolean isLevelMode = treeMode == TreeMode.LEVEL;
+        boolean canAfford = isLevelMode
+                ? playerLevel >= node.getCost()
+                : availablePoints >= node.getCost();
+
         String baseIconId = node.getIconId();
         boolean useSkillIcon = baseIconId != null && !baseIconId.isBlank() && !baseIconId.startsWith("node_");
 
@@ -160,7 +173,7 @@ public class GridRenderer {
         if (useSkillIcon) {
             iconId = switch (state) {
                 case UNLOCKED -> baseIconId + "_unlocked";
-                case AVAILABLE -> availablePoints >= node.getCost()
+                case AVAILABLE -> canAfford
                         ? baseIconId + "_available"
                         : baseIconId + "_locked";
                 case EXCLUSIVE_BLOCKED -> baseIconId + "_exclusive";
@@ -169,7 +182,7 @@ public class GridRenderer {
         } else {
             iconId = switch (state) {
                 case UNLOCKED -> "node_unlocked";
-                case AVAILABLE -> availablePoints >= node.getCost() ? "node_available" : "node_locked";
+                case AVAILABLE -> canAfford ? "node_available" : "node_locked";
                 case EXCLUSIVE_BLOCKED -> "node_exclusive";
                 case LOCKED -> "node_locked";
             };
@@ -195,8 +208,14 @@ public class GridRenderer {
         lore.add(Component.text(node.getDescription(), NamedTextColor.GRAY)
                 .decoration(TextDecoration.ITALIC, false));
         lore.add(Component.text(" ").decoration(TextDecoration.ITALIC, false));
-        lore.add(Component.text("Costo: " + node.getCost() + " punto" + (node.getCost() == 1 ? "" : "s"),
-                NamedTextColor.AQUA).decoration(TextDecoration.ITALIC, false));
+
+        if (isLevelMode) {
+            lore.add(Component.text("Nivel requerido: " + node.getCost(),
+                    NamedTextColor.AQUA).decoration(TextDecoration.ITALIC, false));
+        } else {
+            lore.add(Component.text("Costo: " + node.getCost() + " punto" + (node.getCost() == 1 ? "" : "s"),
+                    NamedTextColor.AQUA).decoration(TextDecoration.ITALIC, false));
+        }
 
         if (!node.getRequires().isEmpty()) {
             String requiresLabel = node.isRequiresAll() ? "Requiere todos: " : "Requiere uno de: ";
@@ -204,14 +223,26 @@ public class GridRenderer {
                     .decoration(TextDecoration.ITALIC, false));
         }
 
-        String stateLabel = switch (state) {
-            case UNLOCKED -> "Estado: Desbloqueado";
-            case AVAILABLE -> availablePoints >= node.getCost()
-                    ? "Estado: Disponible (click para desbloquear)"
-                    : "Estado: Puntos insuficientes (" + availablePoints + "/" + node.getCost() + ")";
-            case EXCLUSIVE_BLOCKED -> "Estado: Bloqueado por exclusividad";
-            case LOCKED -> "Estado: Prerequisitos no cumplidos";
-        };
+        String stateLabel;
+        if (isLevelMode) {
+            stateLabel = switch (state) {
+                case UNLOCKED -> "Estado: Desbloqueado";
+                case AVAILABLE -> canAfford
+                        ? "Estado: Disponible (click para desbloquear)"
+                        : "Estado: Nivel insuficiente (Lv " + playerLevel + "/" + node.getCost() + ")";
+                case EXCLUSIVE_BLOCKED -> "Estado: Bloqueado por exclusividad";
+                case LOCKED -> "Estado: Prerequisitos no cumplidos";
+            };
+        } else {
+            stateLabel = switch (state) {
+                case UNLOCKED -> "Estado: Desbloqueado";
+                case AVAILABLE -> canAfford
+                        ? "Estado: Disponible (click para desbloquear)"
+                        : "Estado: Puntos insuficientes (" + availablePoints + "/" + node.getCost() + ")";
+                case EXCLUSIVE_BLOCKED -> "Estado: Bloqueado por exclusividad";
+                case LOCKED -> "Estado: Prerequisitos no cumplidos";
+            };
+        }
         lore.add(Component.text(stateLabel, NamedTextColor.WHITE)
                 .decoration(TextDecoration.ITALIC, false));
 

@@ -1,5 +1,5 @@
 import React, { useRef } from 'react';
-import { SKILL_TYPES } from '../utils/constants';
+import { SKILL_TYPES, TREE_MODES } from '../utils/constants';
 import { importFromYaml } from '../utils/exporter';
 import { exportToZip } from '../utils/zipExporter';
 
@@ -91,6 +91,19 @@ function Toolbar({ treeState, onExport }) {
                     >
                         {SKILL_TYPES.map(type => (
                             <option key={type} value={type}>{type}</option>
+                        ))}
+                    </select>
+                </div>
+
+                <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+                    <label className="text-dim">Mode:</label>
+                    <select
+                        className="select"
+                        value={treeContext.treeMode || 'POINTS'}
+                        onChange={(e) => updateTreeMetadata('treeMode', e.target.value)}
+                    >
+                        {TREE_MODES.map(mode => (
+                            <option key={mode} value={mode}>{mode}</option>
                         ))}
                     </select>
                 </div>

@@ -3,6 +3,8 @@ package dev.sfcrafting;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.scheduler.BukkitTask;
 
+import java.util.UUID;
+
 public final class ForgeState {
     public enum StationType {
         SMELTER,
@@ -30,6 +32,8 @@ public final class ForgeState {
     private int failures;
     private String tempTier = "";
     private String temperType = "";
+
+    private UUID lastPlayerUuid;
 
     private int barIndex;
     private int barDirection = 1;
@@ -235,6 +239,14 @@ public final class ForgeState {
 
     public void setBarTickCounter(int barTickCounter) {
         this.barTickCounter = barTickCounter;
+    }
+
+    public UUID lastPlayerUuid() {
+        return lastPlayerUuid;
+    }
+
+    public void setLastPlayerUuid(UUID lastPlayerUuid) {
+        this.lastPlayerUuid = lastPlayerUuid;
     }
 }
 

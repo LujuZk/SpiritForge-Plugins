@@ -20,6 +20,7 @@ dependencies {
     compileOnly("io.papermc.paper:paper-api:1.21.1-R0.1-SNAPSHOT")
     compileOnly("io.th0rgal:oraxen:1.210.0")
     compileOnly(fileTree("../SFCore/build/libs") { include("SFCore-*.jar") })
+    compileOnly(fileTree("../SFCrafting/build/libs") { include("SFCrafting-*.jar") })
     implementation("org.xerial:sqlite-jdbc:3.45.3.0")
 }
 

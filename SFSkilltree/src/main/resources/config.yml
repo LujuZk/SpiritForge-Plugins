@@ -13,6 +13,34 @@ skills:
   fishing:
     display-name: 🎣 Pesca
     xp-per-catch: 15
+  smithing:
+    display-name: 🔨 Smithing
+    material-values:
+      tin: 5
+      copper: 8
+      bronze: 12
+      iron: 15
+      steel: 20
+      silver: 18
+      gold: 22
+      platinum: 30
+      mithil: 40
+      orichalcum: 50
+      dark_steel: 35
+      netherite: 55
+      adamantite: 65
+      demonite: 70
+      dragonite: 80
+      aetherium: 90
+      astralium: 95
+      eternium: 100
+      deus_matter: 120
+    rarity-multipliers:
+      "0": 1
+      "1": 1.5
+      "2": 2
+      "3": 3
+      "4": 5
 weapon-skills:
   sword:
     display-name: ⚔ Espada
