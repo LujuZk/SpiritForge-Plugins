@@ -17,7 +17,7 @@ repositories {
 
 dependencies {
     compileOnly("io.papermc.paper:paper-api:1.21.1-R0.1-SNAPSHOT")
-    compileOnly(files("../../../plugins/Oraxen-Plugin-1.21.11.jar"))
+    compileOnly(files("../../Server/plugins/Oraxen-Plugin-1.21.11.jar"))
     compileOnly(fileTree("../SFCore/build/libs") { include("SFCore-*.jar") })
     compileOnly(fileTree("../SFSkilltree/build/libs") { include("*.jar") })
 }

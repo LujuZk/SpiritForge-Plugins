@@ -4,6 +4,7 @@ import dev.skilltree.SkillTreePlugin;
 import dev.skilltree.models.IconDefinition;
 import dev.skilltree.models.SkillGraph;
 import dev.skilltree.models.SkillType;
+import dev.skilltree.models.TreeMode;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -116,7 +117,9 @@ public class TreeManager {
             return;
         }
 
-        SkillGraph graph = new SkillGraph(id, displayName, skillType);
+        TreeMode treeMode = TreeMode.fromString(treeConfig.getString("tree-mode", "POINTS"));
+
+        SkillGraph graph = new SkillGraph(id, displayName, skillType, treeMode);
         graph.loadFromConfig(treeConfig);
 
         graphs.put(skillType, graph);

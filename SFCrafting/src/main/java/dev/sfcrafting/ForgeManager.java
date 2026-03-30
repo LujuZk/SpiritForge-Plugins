@@ -987,6 +987,16 @@ Map<Integer, Double> buildRarityDistribution(
         state.setActiveRecipe(null);
         state.setProgressTicks(0);
         state.setTotalTicks(0);
+
+        // Disparar evento de fundición completada
+        if (state.lastPlayerUuid() != null) {
+            org.bukkit.entity.Player smelter = plugin.getServer().getPlayer(state.lastPlayerUuid());
+            if (smelter != null && smelter.isOnline()) {
+                SmeltCompleteEvent smeltEvent = new SmeltCompleteEvent(smelter, recipe.id(), state.rarityLevel());
+                plugin.getServer().getPluginManager().callEvent(smeltEvent);
+            }
+        }
+
         Inventory inventory = state.inventory();
         ItemStack output = inventory.getItem(outputSlot);
         ItemStack result = buildRecipeOutput(recipe);

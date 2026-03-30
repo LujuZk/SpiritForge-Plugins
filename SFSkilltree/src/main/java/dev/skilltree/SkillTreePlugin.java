@@ -6,6 +6,7 @@ import dev.skilltree.database.DatabaseManager;
 import dev.skilltree.listeners.CombatListener;
 import dev.skilltree.listeners.GatheringListener;
 import dev.skilltree.listeners.GUIListener;
+import dev.skilltree.listeners.SmithingListener;
 import dev.skilltree.managers.SkillManager;
 import dev.skilltree.managers.SkillPointManager;
 import dev.skilltree.managers.TreeManager;
@@ -55,6 +56,12 @@ public class SkillTreePlugin extends JavaPlugin {
         getServer().getPluginManager().registerEvents(new CombatListener(this), this);
         getServer().getPluginManager().registerEvents(new GatheringListener(this), this);
         getServer().getPluginManager().registerEvents(new GUIListener(this), this);
+
+        // Registrar listener de smithing si SFCrafting está presente
+        if (getServer().getPluginManager().getPlugin("SFCrafting") != null) {
+            getServer().getPluginManager().registerEvents(new SmithingListener(this), this);
+            getLogger().info("SFCrafting detectado — XP de Herrería habilitada.");
+        }
 
         getLogger().info("SkillTreePlugin habilitado correctamente!");
     }

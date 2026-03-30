@@ -5,6 +5,7 @@ import dev.skilltree.models.IconDefinition;
 import dev.skilltree.models.PlayerSkillData;
 import dev.skilltree.models.SkillGraph;
 import dev.skilltree.models.SkillType;
+import dev.skilltree.models.TreeMode;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextDecoration;
@@ -59,6 +60,8 @@ public class SkillTreeDetailGUI {
         PlayerSkillData data = plugin.getSkillManager().getData(player);
         Set<String> unlocked = data.getUnlockedNodes(skill);
         int points = data.getAvailablePoints(skill);
+        int playerLevel = data.getLevel(skill);
+        TreeMode treeMode = graph.getTreeMode();
 
         // \uE00A desplaza -48px para centrar la textura de 256px en la GUI de 176px
         // ꐟ (U+A41F) = glifo Oraxen st_background (256×256, ascent 15)
@@ -70,12 +73,12 @@ public class SkillTreeDetailGUI {
         Inventory inv = Bukkit.createInventory(null, 54, title);
 
         // Renderizar la página actual del grafo
-        gridRenderer.renderPage(inv, graph, unlocked, page, points);
+        gridRenderer.renderPage(inv, graph, unlocked, page, points, playerLevel);
 
         // ─── Hotbar de navegación ────────────────────────────────────────────
         // Guardar y limpiar inventario ANTES de poner los botones
         plugin.getInventoryManager().saveAndClearInventory(player);
-        renderNavigationBar(player, inv, page, totalPages, points);
+        renderNavigationBar(player, inv, page, totalPages, points, treeMode, playerLevel);
 
         player.openInventory(inv);
 
@@ -93,22 +96,33 @@ public class SkillTreeDetailGUI {
 
     // ─── Construcción de ítems ────────────────────────────────────────────────
 
-    private ItemStack buildPointsInfo(int points) {
+    private ItemStack buildPointsInfo(int points, TreeMode treeMode, int playerLevel) {
         ItemStack item = new ItemStack(Material.NETHER_STAR);
         ItemMeta meta = item.getItemMeta();
-        meta.displayName(Component.text("Puntos disponibles: " + points,
-                NamedTextColor.AQUA, TextDecoration.BOLD)
-                .decoration(TextDecoration.ITALIC, false));
         List<Component> lore = new ArrayList<>();
         lore.add(Component.empty());
-        lore.add(Component.text("  Ganás 1 punto por nivel subido", NamedTextColor.GRAY)
-                .decoration(TextDecoration.ITALIC, false));
+
+        if (treeMode == TreeMode.LEVEL) {
+            meta.displayName(Component.text("Nivel actual: " + playerLevel,
+                    NamedTextColor.AQUA, TextDecoration.BOLD)
+                    .decoration(TextDecoration.ITALIC, false));
+            lore.add(Component.text("  Desbloqueá nodos al alcanzar el nivel requerido", NamedTextColor.GRAY)
+                    .decoration(TextDecoration.ITALIC, false));
+        } else {
+            meta.displayName(Component.text("Puntos disponibles: " + points,
+                    NamedTextColor.AQUA, TextDecoration.BOLD)
+                    .decoration(TextDecoration.ITALIC, false));
+            lore.add(Component.text("  Ganás 1 punto por nivel subido", NamedTextColor.GRAY)
+                    .decoration(TextDecoration.ITALIC, false));
+        }
+
         meta.lore(lore);
         item.setItemMeta(meta);
         return item;
     }
 
-    private void renderNavigationBar(Player player, Inventory inv, int page, int totalPages, int points) {
+    private void renderNavigationBar(Player player, Inventory inv, int page, int totalPages, int points,
+                                      TreeMode treeMode, int playerLevel) {
         for (int slot = 45; slot <= 53; slot++) {
             inv.setItem(slot, null);
         }
@@ -125,8 +139,8 @@ public class SkillTreeDetailGUI {
         // Botón volver al menú principal en primer slot del inventario del jugador.
         pInv.setItem(PLAYER_SLOT_BACK, makeBackButton());
 
-        // Estrella de puntos en el centro del inventario del jugador.
-        pInv.setItem(PLAYER_SLOT_INFO, buildPointsInfo(points));
+        // Estrella de puntos/nivel en el centro del inventario del jugador.
+        pInv.setItem(PLAYER_SLOT_INFO, buildPointsInfo(points, treeMode, playerLevel));
 
         // Flecha anterior en hotbar.
         boolean hasPrev = page > 0;

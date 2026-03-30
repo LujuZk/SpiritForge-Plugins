@@ -5,6 +5,7 @@ api-version: '1.21'
 description: Sistema de habilidades con árbol de skills por arma y actividad
 author: LujuZk
 depend: [Oraxen, SFCore]
+softdepend: [SFCrafting]
 
 commands:
   skills:

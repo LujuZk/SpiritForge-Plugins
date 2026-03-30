@@ -107,7 +107,9 @@ function NodePropertiesPanel({ treeState }) {
 
                         <div style={{ display: 'flex', gap: '8px' }}>
                             <div style={{ flex: 1 }}>
-                                <label className="text-dim" style={{ display: 'block', marginBottom: '4px' }}>Cost</label>
+                                <label className="text-dim" style={{ display: 'block', marginBottom: '4px' }}>
+                                    {treeContext.treeMode === 'LEVEL' ? 'Required Level' : 'Cost (points)'}
+                                </label>
                                 <input
                                     type="number"
                                     className="input"

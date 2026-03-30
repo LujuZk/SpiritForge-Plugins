@@ -12,7 +12,9 @@ import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.entity.Player;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 
 public class SkillManager {
@@ -20,6 +22,8 @@ public class SkillManager {
     private final SkillTreePlugin plugin;
     // Cache en memoria mientras el jugador está online
     private final Map<UUID, PlayerSkillData> cache = new HashMap<>();
+    // Jugadores con debug de XP activado (en memoria, se pierde al reiniciar)
+    private final Set<UUID> debugPlayers = new HashSet<>();
 
     public SkillManager(SkillTreePlugin plugin) {
         this.plugin = plugin;
@@ -70,6 +74,23 @@ public class SkillManager {
         cache.values().forEach(plugin.getDatabaseManager()::savePlayer);
     }
 
+    // ─── Debug ──────────────────────────────────────────────────────────────
+
+    public boolean toggleDebug(Player player) {
+        UUID uuid = player.getUniqueId();
+        if (debugPlayers.contains(uuid)) {
+            debugPlayers.remove(uuid);
+            return false;
+        } else {
+            debugPlayers.add(uuid);
+            return true;
+        }
+    }
+
+    public boolean isDebug(Player player) {
+        return debugPlayers.contains(player.getUniqueId());
+    }
+
     // ─── XP y niveles ────────────────────────────────────────────────────────
 
     public void addXP(Player player, SkillType skill, double amount) {
@@ -97,6 +118,18 @@ public class SkillManager {
 
         int levelAfter = data.getLevel(skill);
         int levelsGained = levelAfter - levelBefore;
+
+        // Debug message
+        if (isDebug(player)) {
+            double required = data.getXPRequired(skill, baseXP, multiplier);
+            player.sendMessage(Component.text(
+                    "[DEBUG] +" + String.format("%.1f", amount) + " XP → "
+                            + skill.getDisplayName()
+                            + " (Total: " + String.format("%.1f", data.getXP(skill))
+                            + "/" + String.format("%.0f", required)
+                            + ", Lv " + levelAfter + ")",
+                    NamedTextColor.GRAY));
+        }
 
         if (levelsGained > 0) {
             // 1 punto por cada nivel subido

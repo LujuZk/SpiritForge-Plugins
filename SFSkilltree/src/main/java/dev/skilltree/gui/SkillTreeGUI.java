@@ -21,13 +21,16 @@ public class SkillTreeGUI {
     private static final String GUI_TITLE = "✦ Árbol de Habilidades ✦";
 
     // Slots para cada skill en el inventario 3x9 (27 slots)
+    // Row 1: gathering (col 1,3,5,7)
     private static final int SLOT_MINING = 10;
     private static final int SLOT_FARMING = 12;
     private static final int SLOT_FISHING = 14;
-    private static final int SLOT_SWORD = 20;
-    private static final int SLOT_AXE = 22;
-    private static final int SLOT_BOW = 24;
-    private static final int SLOT_TRIDENT = 16;
+    private static final int SLOT_SMITHING = 16;
+    // Row 2: weapons (col 1,3,5,7)
+    private static final int SLOT_SWORD = 19;
+    private static final int SLOT_AXE = 21;
+    private static final int SLOT_BOW = 23;
+    private static final int SLOT_TRIDENT = 25;
 
     private final SkillTreePlugin plugin;
 
@@ -50,6 +53,7 @@ public class SkillTreeGUI {
         inv.setItem(SLOT_MINING, buildSkillItem(SkillType.MINING, data, Material.DIAMOND_PICKAXE));
         inv.setItem(SLOT_FARMING, buildSkillItem(SkillType.FARMING, data, Material.WHEAT));
         inv.setItem(SLOT_FISHING, buildSkillItem(SkillType.FISHING, data, Material.FISHING_ROD));
+        inv.setItem(SLOT_SMITHING, buildSkillItem(SkillType.SMITHING, data, Material.ANVIL));
         inv.setItem(SLOT_SWORD, buildSkillItem(SkillType.WEAPON_SWORD, data, Material.DIAMOND_SWORD));
         inv.setItem(SLOT_AXE, buildSkillItem(SkillType.WEAPON_AXE, data, Material.DIAMOND_AXE));
         inv.setItem(SLOT_BOW, buildSkillItem(SkillType.WEAPON_BOW, data, Material.BOW));
@@ -128,6 +132,7 @@ public class SkillTreeGUI {
             case SLOT_MINING -> SkillType.MINING;
             case SLOT_FARMING -> SkillType.FARMING;
             case SLOT_FISHING -> SkillType.FISHING;
+            case SLOT_SMITHING -> SkillType.SMITHING;
             case SLOT_SWORD -> SkillType.WEAPON_SWORD;
             case SLOT_AXE -> SkillType.WEAPON_AXE;
             case SLOT_BOW -> SkillType.WEAPON_BOW;
