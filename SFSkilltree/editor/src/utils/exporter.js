@@ -2,7 +2,7 @@ import jsyaml from 'js-yaml';
 import { GRID_COLS } from './constants';
 
 export function exportToYaml(treeCtx, paths = []) {
-    const { id, displayName, skillType, cells, edges } = treeCtx;
+    const { id, displayName, skillType, treeMode, cells, edges } = treeCtx;
 
     // Group cells by page
     const cellsByPage = {};
@@ -21,6 +21,7 @@ export function exportToYaml(treeCtx, paths = []) {
         id,
         "display-name": displayName,
         "skill-type": skillType,
+        "tree-mode": treeMode || "POINTS",
         "max-tier": Math.max(...Object.keys(cellsByPage).map(Number), 0) + 1,
         nodes: {},
         cells: []
@@ -155,6 +156,7 @@ export function importFromYaml(yamlString) {
         id: data.id,
         displayName: data["display-name"] || data.id,
         skillType: data["skill-type"] || "SWORD",
+        treeMode: data["tree-mode"] || "POINTS",
         cells: {},
         edges: data.edges ? data.edges.map(e => ({ from: e.from, to: e.to })) : [],
         availableAssets: { nodes: [], connectors: [] }

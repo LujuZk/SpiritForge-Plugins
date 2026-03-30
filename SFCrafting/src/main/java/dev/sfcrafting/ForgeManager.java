@@ -1011,6 +1011,17 @@ Map<Integer, Double> buildRarityDistribution(
         } else if (location != null && location.getWorld() != null) {
             location.getWorld().dropItemNaturally(location, result);
         }
+
+        // Notificar a otros plugins (ej: SFSkilltree para XP de herrería)
+        UUID playerUuid = state.lastPlayerUuid();
+        if (playerUuid != null) {
+            Player smeltPlayer = Bukkit.getPlayer(playerUuid);
+            if (smeltPlayer != null) {
+                Bukkit.getPluginManager().callEvent(
+                        new SmeltCompleteEvent(smeltPlayer, recipe.id(), state.rarityLevel()));
+            }
+        }
+
         updateButton(state);
     }
 

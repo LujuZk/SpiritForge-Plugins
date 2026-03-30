@@ -2,6 +2,7 @@ package dev.sfdrops.listener;
 
 import dev.sfcore.api.SFCoreAPI;
 import dev.sfcore.api.StatType;
+import dev.sfdrops.ResourceDropEvent;
 import dev.sfdrops.SFDropsPlugin;
 import dev.sfdrops.model.Rarity;
 import dev.sfdrops.service.MiningRarityGaussian;
@@ -11,6 +12,7 @@ import dev.skilltree.models.SkillType;
 import io.th0rgal.oraxen.api.OraxenBlocks;
 import io.th0rgal.oraxen.api.OraxenItems;
 import io.th0rgal.oraxen.items.ItemBuilder;
+import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.block.Block;
@@ -115,6 +117,16 @@ public final class OreDropListener implements Listener {
         }
 
         applyRarity(stack, rarity);
+
+        // Notificar a otros plugins (ej: SFSkilltree para XP de minería/tala)
+        int rarityInt = switch (rarity) {
+            case COMMON -> 0;
+            case UNCOMMON -> 1;
+            case RARE -> 2;
+            case EPIC -> 3;
+            case LEGENDARY -> 4;
+        };
+        Bukkit.getPluginManager().callEvent(new ResourceDropEvent(player, blockId, rarityInt));
 
         Map<Integer, ItemStack> leftovers = player.getInventory().addItem(stack);
         leftovers.values().forEach(item -> player.getWorld().dropItemNaturally(player.getLocation(), item));

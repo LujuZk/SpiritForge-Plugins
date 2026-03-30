@@ -2,6 +2,7 @@ package dev.sfcrafting;
 
 import org.bukkit.inventory.Inventory;
 import org.bukkit.scheduler.BukkitTask;
+import java.util.UUID;
 
 public final class ForgeState {
     public enum StationType {
@@ -30,6 +31,8 @@ public final class ForgeState {
     private int failures;
     private String tempTier = "";
     private String temperType = "";
+
+    private UUID lastPlayerUuid;
 
     private int barIndex;
     private int barDirection = 1;
@@ -204,6 +207,9 @@ public final class ForgeState {
     public void setTemperType(String temperType) {
         this.temperType = temperType == null ? "" : temperType;
     }
+
+    public UUID lastPlayerUuid() { return lastPlayerUuid; }
+    public void setLastPlayerUuid(UUID uuid) { this.lastPlayerUuid = uuid; }
 
     public int barIndex() {
         return barIndex;

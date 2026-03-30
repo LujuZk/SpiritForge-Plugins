@@ -20,14 +20,10 @@ public class SkillTreeGUI {
 
     private static final String GUI_TITLE = "✦ Árbol de Habilidades ✦";
 
-    // Slots para cada skill en el inventario 3x9 (27 slots)
-    private static final int SLOT_MINING = 10;
-    private static final int SLOT_FARMING = 12;
-    private static final int SLOT_FISHING = 14;
-    private static final int SLOT_SWORD = 20;
-    private static final int SLOT_AXE = 22;
-    private static final int SLOT_BOW = 24;
-    private static final int SLOT_TRIDENT = 16;
+    // Slots para cada skill activo en el inventario 3x9 (27 slots)
+    private static final int SLOT_MINING = 11;
+    private static final int SLOT_SMITHING = 13;
+    private static final int SLOT_WOODCUTTING = 15;
 
     private final SkillTreePlugin plugin;
 
@@ -46,14 +42,10 @@ public class SkillTreeGUI {
         for (int i = 0; i < 27; i++)
             inv.setItem(i, filler);
 
-        // Colocar cada skill
+        // Colocar skills activos
         inv.setItem(SLOT_MINING, buildSkillItem(SkillType.MINING, data, Material.DIAMOND_PICKAXE));
-        inv.setItem(SLOT_FARMING, buildSkillItem(SkillType.FARMING, data, Material.WHEAT));
-        inv.setItem(SLOT_FISHING, buildSkillItem(SkillType.FISHING, data, Material.FISHING_ROD));
-        inv.setItem(SLOT_SWORD, buildSkillItem(SkillType.WEAPON_SWORD, data, Material.DIAMOND_SWORD));
-        inv.setItem(SLOT_AXE, buildSkillItem(SkillType.WEAPON_AXE, data, Material.DIAMOND_AXE));
-        inv.setItem(SLOT_BOW, buildSkillItem(SkillType.WEAPON_BOW, data, Material.BOW));
-        inv.setItem(SLOT_TRIDENT, buildSkillItem(SkillType.WEAPON_TRIDENT, data, Material.TRIDENT));
+        inv.setItem(SLOT_SMITHING, buildSkillItem(SkillType.SMITHING, data, Material.ANVIL));
+        inv.setItem(SLOT_WOODCUTTING, buildSkillItem(SkillType.WOODCUTTING, data, Material.OAK_LOG));
 
         // Guardar y limpiar el inventario del jugador
         plugin.getInventoryManager().saveAndClearInventory(player);
@@ -126,12 +118,8 @@ public class SkillTreeGUI {
     public static SkillType getSkillForSlot(int slot) {
         return switch (slot) {
             case SLOT_MINING -> SkillType.MINING;
-            case SLOT_FARMING -> SkillType.FARMING;
-            case SLOT_FISHING -> SkillType.FISHING;
-            case SLOT_SWORD -> SkillType.WEAPON_SWORD;
-            case SLOT_AXE -> SkillType.WEAPON_AXE;
-            case SLOT_BOW -> SkillType.WEAPON_BOW;
-            case SLOT_TRIDENT -> SkillType.WEAPON_TRIDENT;
+            case SLOT_SMITHING -> SkillType.SMITHING;
+            case SLOT_WOODCUTTING -> SkillType.WOODCUTTING;
             default -> null;
         };
     }

@@ -18,8 +18,10 @@ export const CONNECTORS = [
 ];
 
 export const SKILL_TYPES = [
-    "SWORD", "AXE", "MINING", "FARMING", "FISHING", "BOW", "TRIDENT"
+    "SWORD", "AXE", "MINING", "FARMING", "FISHING", "BOW", "TRIDENT", "SMITHING", "WOODCUTTING"
 ];
+
+export const TREE_MODES = ["POINTS", "LEVEL"];
 
 // Helper to check if a cell is reserved (last row for hotbar)
 export const isReservedRow = (row) => row === 5;
