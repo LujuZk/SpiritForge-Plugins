@@ -7,10 +7,11 @@ Suite de plugins para servidor Minecraft Paper 1.21.1 con sistema RPG completo.
 | Plugin | Descripción | Dependencias |
 |--------|-------------|--------------|
 | **SFCore** | Sistema central de stats (STR/VIT/INT/AGI/daño/vida/etc.) + API para otros plugins | Paper |
+| **SFCharacter** | Sistema de personajes múltiples con inventario/ubicación aislados por personaje | Paper |
 | **SFCompass** | Navegación por islas con niveles de brújula y zonas con efectos visuales | Paper |
-| **SFCrafting** | Sistema de crafteo y forja de SpiritForge (smelter, anvil, rarezas, aura) | Paper, Oraxen |
-| **SFDrops** | Manejo de drops de ores/logs con rareza gaussiana conectada a SFCore/SFSkilltree | Paper, Oraxen, SFCore, SkillTreePlugin |
-| **SFSkilltree** | Árbol de habilidades RPG con 7 skills, XP, puntos y editor web | Paper, Oraxen, SFCore |
+| **SFCrafting** | Sistema de crafteo y forja (smelter, anvil, rarezas, hot items, aura) | Paper, Oraxen |
+| **SFDrops** | Drops de ores/logs con rareza gaussiana conectada a SFCore/SFSkilltree | Paper, Oraxen, SFCore, SkillTreePlugin |
+| **SFSkilltree** | Árbol de habilidades RPG con 8 skills, XP, puntos/niveles y editor web | Paper, Oraxen, SFCore |
 
 ## Requisitos
 
@@ -24,6 +25,7 @@ Suite de plugins para servidor Minecraft Paper 1.21.1 con sistema RPG completo.
 ```text
 SpiritForge-Plugins/
 ├── SFCore/         # API de stats central
+├── SFCharacter/    # Sistema de personajes múltiples
 ├── SFCompass/      # Sistema de islas y brújula
 ├── SFCrafting/     # Crafteo y forja de SpiritForge
 ├── SFDrops/        # Drops de ores/logs con rareza
@@ -38,6 +40,9 @@ Cada plugin se compila de forma independiente desde su carpeta:
 ```bash
 cd SFCore
 ./gradlew shadowJar   # → build/libs/SFCore-1.0.0.jar
+
+cd SFCharacter
+./gradlew shadowJar   # → build/libs/SFCharacter-1.0.jar
 
 cd SFCompass
 ./gradlew shadowJar   # → build/libs/SFCompass-1.0.0.jar
@@ -54,17 +59,21 @@ cd SFSkilltree
 
 ## Dependencias entre plugins
 
-SFSkilltree depende de SFCore en tiempo de compilación:
+SFSkilltree depende de SFCore y SFCrafting en tiempo de compilación:
 
 ```kotlin
 // SFSkilltree/build.gradle.kts
 compileOnly(fileTree("../SFCore/build/libs") { include("SFCore-*.jar") })
+compileOnly(fileTree("../SFCrafting/build/libs") { include("SFCrafting-*.jar") })
 ```
 
-SFDrops depende de SFCore y SFSkilltree en compilación:
+SFDrops depende de SFCore, SFSkilltree y SFCrafting en compilación:
 
 ```kotlin
 // SFDrops/build.gradle.kts
 compileOnly(fileTree("../SFCore/build/libs") { include("SFCore-*.jar") })
 compileOnly(fileTree("../SFSkilltree/build/libs") { include("*.jar") })
+compileOnly(fileTree("../SFCrafting/build/libs") { include("SFCrafting-*.jar") })
 ```
+
+Los demás plugins (SFCharacter, SFCompass) son standalone y no tienen dependencias de compilación entre plugins.

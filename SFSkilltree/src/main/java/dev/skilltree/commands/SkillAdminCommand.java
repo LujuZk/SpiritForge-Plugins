@@ -123,7 +123,7 @@ public class SkillAdminCommand implements CommandExecutor {
         sender.sendMessage(Component.text("/skillsadmin reset <jugador>", NamedTextColor.YELLOW));
         sender.sendMessage(Component.text("/skillsadmin give <jugador> <skill> <cantidad>", NamedTextColor.YELLOW));
         sender.sendMessage(Component.text("/skillsadmin info <jugador>", NamedTextColor.YELLOW));
-        sender.sendMessage(Component.text("Skills válidos: mining, farming, fishing, sword, axe, bow, trident", NamedTextColor.GRAY));
+        sender.sendMessage(Component.text("Skills válidos: mining, farming, fishing, smithing, sword, axe, bow, trident", NamedTextColor.GRAY));
         sender.sendMessage(Component.text("/skillsadmin resettree <jugador> <skill>", NamedTextColor.YELLOW));
         sender.sendMessage(Component.text("/skillsadmin debug", NamedTextColor.YELLOW));
     }

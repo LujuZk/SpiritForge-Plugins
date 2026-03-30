@@ -8,6 +8,7 @@ import dev.skilltree.models.PlayerSkillData;
 import dev.skilltree.models.SkillGraph;
 import dev.skilltree.models.SkillNode;
 import dev.skilltree.models.SkillType;
+import dev.skilltree.models.TreeMode;
 import org.bukkit.entity.Player;
 
 /**
@@ -48,11 +49,16 @@ public class SkillPointManager {
         if (state == NodeState.LOCKED)              return UnlockResult.PREREQUISITES_NOT_MET;
         if (state == NodeState.EXCLUSIVE_BLOCKED)   return UnlockResult.BLOCKED_BY_EXCLUSIVE;
 
-        // Verificar puntos
-        if (data.getAvailablePoints(skill) < node.getCost()) return UnlockResult.NOT_ENOUGH_POINTS;
+        // Verificar requisito según modo del árbol
+        if (graph.getTreeMode() == TreeMode.LEVEL) {
+            if (data.getLevel(skill) < node.getCost()) return UnlockResult.NOT_ENOUGH_POINTS;
+            // En modo LEVEL no se gastan puntos
+        } else {
+            if (data.getAvailablePoints(skill) < node.getCost()) return UnlockResult.NOT_ENOUGH_POINTS;
+            data.spendPoints(skill, node.getCost());
+        }
 
         // Desbloquear
-        data.spendPoints(skill, node.getCost());
         data.unlockNode(skill, nodeId);
 
         // Registrar bonus en SFCore si el nodo tiene efecto
@@ -72,9 +78,9 @@ public class SkillPointManager {
     public void resetTree(Player player, SkillType skill) {
         PlayerSkillData data = plugin.getSkillManager().getData(player);
 
-        // Devolver los puntos gastados
+        // Devolver los puntos gastados (solo en modo POINTS)
         SkillGraph graph = plugin.getTreeManager().getTree(skill);
-        if (graph != null) {
+        if (graph != null && graph.getTreeMode() == TreeMode.POINTS) {
             int spent = data.getUnlockedNodes(skill).stream()
                     .mapToInt(nodeId -> {
                         SkillNode n = graph.getNode(nodeId);
