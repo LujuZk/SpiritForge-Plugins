@@ -10,7 +10,8 @@ import org.bukkit.event.Listener;
 
 /**
  * Escucha eventos de fundición de SFCrafting para otorgar XP de smithing.
- * XP = materialValue * rarityMultiplier
+ * XP = materialValue × rarityMultiplier
+ * Cada material y sus multiplicadores se configuran en config.yml bajo skills.smithing.
  */
 public class SmithingListener implements Listener {
 

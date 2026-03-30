@@ -21,6 +21,7 @@ dependencies {
     compileOnly("io.th0rgal:oraxen:1.210.0")
     compileOnly(fileTree("../SFCore/build/libs") { include("SFCore-*.jar") })
     compileOnly(fileTree("../SFCrafting/build/libs") { include("SFCrafting-*.jar") })
+    compileOnly(fileTree("../SFDrops/build/libs") { include("SFDrops-*.jar") })
     implementation("org.xerial:sqlite-jdbc:3.45.3.0")
 }
 

@@ -6,7 +6,9 @@ import dev.skilltree.database.DatabaseManager;
 import dev.skilltree.listeners.CombatListener;
 import dev.skilltree.listeners.GatheringListener;
 import dev.skilltree.listeners.GUIListener;
+import dev.skilltree.listeners.MiningListener;
 import dev.skilltree.listeners.SmithingListener;
+import dev.skilltree.listeners.WoodcuttingListener;
 import dev.skilltree.managers.SkillManager;
 import dev.skilltree.managers.SkillPointManager;
 import dev.skilltree.managers.TreeManager;
@@ -52,15 +54,24 @@ public class SkillTreePlugin extends JavaPlugin {
         getCommand("skills").setExecutor(new SkillCommand(this));
         getCommand("skillsadmin").setExecutor(new SkillAdminCommand(this));
 
-        // Registrar listeners
-        getServer().getPluginManager().registerEvents(new CombatListener(this), this);
-        getServer().getPluginManager().registerEvents(new GatheringListener(this), this);
+        // Listener de GUI (siempre activo)
         getServer().getPluginManager().registerEvents(new GUIListener(this), this);
 
-        // Registrar listener de smithing si SFCrafting está presente
+        // Listeners de combate y recolección vanilla — deshabilitados temporalmente
+        // getServer().getPluginManager().registerEvents(new CombatListener(this), this);
+        // getServer().getPluginManager().registerEvents(new GatheringListener(this), this);
+
+        // Smithing XP — condicional a SFCrafting
         if (getServer().getPluginManager().getPlugin("SFCrafting") != null) {
             getServer().getPluginManager().registerEvents(new SmithingListener(this), this);
             getLogger().info("SFCrafting detectado — XP de Herrería habilitada.");
+        }
+
+        // Mining + Woodcutting XP — condicional a SFDrops
+        if (getServer().getPluginManager().getPlugin("SFDrops") != null) {
+            getServer().getPluginManager().registerEvents(new MiningListener(this), this);
+            getServer().getPluginManager().registerEvents(new WoodcuttingListener(this), this);
+            getLogger().info("SFDrops detectado — XP de Minería y Tala habilitadas.");
         }
 
         getLogger().info("SkillTreePlugin habilitado correctamente!");

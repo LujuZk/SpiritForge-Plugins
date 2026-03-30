@@ -29,9 +29,8 @@ public class SkillAdminCommand implements CommandExecutor {
             return true;
         }
 
-        String action = args[0].toLowerCase();
+        String action = args.length > 0 ? args[0].toLowerCase() : "";
 
-        // Debug no requiere target
         if (action.equals("debug")) {
             if (!(sender instanceof Player p)) {
                 sender.sendMessage(Component.text("Solo jugadores pueden usar debug.", NamedTextColor.RED));

@@ -10,6 +10,7 @@ public enum SkillType {
     FARMING("farming", "🌾 Agricultura", false),
     FISHING("fishing", "🎣 Pesca", false),
     SMITHING("smithing", "\uD83D\uDD28 Herrería", false),
+    WOODCUTTING("woodcutting", "\uD83E\uDEB5 Tala", false),
 
     // Habilidades de armas
     WEAPON_SWORD("sword", "⚔ Espada", true),

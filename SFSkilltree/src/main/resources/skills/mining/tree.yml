@@ -1,0 +1,106 @@
+id: mining
+display-name: Minar
+skill-type: mining
+nodes:
+  node_0_2_2:
+    name: "2"
+    description: ""
+    cost: 2
+    requires:
+      - node_0_0_1
+    requires-all: false
+    exclusive-with: []
+    effect-type: none
+    effect-value: 0
+  node_0_4_3:
+    name: "3"
+    description: ""
+    cost: 3
+    requires:
+      - node_0_2_2
+    requires-all: false
+    exclusive-with: []
+    effect-type: none
+    effect-value: 0
+  node_0_0_1:
+    name: "1"
+    description: ""
+    cost: 1
+    requires: []
+    requires-all: false
+    exclusive-with: []
+    effect-type: none
+    effect-value: 0
+  node_2_5_4:
+    name: "4"
+    description: ""
+    cost: 4
+    requires:
+      - node_0_4_3
+    requires-all: false
+    exclusive-with: []
+    effect-type: none
+    effect-value: 0
+grid:
+  - page: 0
+    cells:
+      - col: 0
+        row: 1
+        type: connector
+        connector-id: connector_v
+      - col: 0
+        row: 2
+        type: node
+        node-id: node_0_2_2
+      - col: 0
+        row: 3
+        type: connector
+        connector-id: connector_v
+      - col: 0
+        row: 4
+        type: node
+        node-id: node_0_4_3
+      - col: 1
+        row: 5
+        type: connector
+        connector-id: elbow_left_down
+      - col: 0
+        row: 0
+        type: node
+        node-id: node_0_0_1
+      - col: 2
+        row: 5
+        type: node
+        node-id: node_2_5_4
+paths:
+  - from: node_0_0_1
+    to: node_0_2_2
+    cells:
+      - 0,1
+  - from: node_0_0_1
+    to: node_0_2_2
+    cells:
+      - 0,1
+  - from: node_0_2_2
+    to: node_0_4_3
+    cells:
+      - 0,3
+  - from: node_0_2_2
+    to: node_0_4_3
+    cells:
+      - 0,3
+  - from: node_0_4_3
+    to: node_2_5_4
+    cells:
+      - 1,5
+  - from: node_0_4_3
+    to: node_2_5_4
+    cells:
+      - 1,5
+edges:
+  - from: node_0_0_1
+    to: node_0_2_2
+  - from: node_0_2_2
+    to: node_0_4_3
+  - from: node_0_4_3
+    to: node_2_5_4
