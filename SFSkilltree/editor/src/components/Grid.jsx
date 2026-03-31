@@ -11,8 +11,9 @@ const STATUS_STYLE = {
 };
 
 function DroppableCell({ col, row, page, content, isSelected, isExclusive, shiftStatus, pathIndex,
+    isShiftDown,
     treeState,
-    onClick, onPointerDown, onContextMenu, onMouseEnter }) {
+    onClick, onContextMenu, onMouseEnter }) {
     const id = `cell-${page},${col},${row}`;
     const { isOver, setNodeRef } = useDroppable({ id });
     const ss = STATUS_STYLE[shiftStatus] || null;
@@ -36,7 +37,6 @@ function DroppableCell({ col, row, page, content, isSelected, isExclusive, shift
             ref={setNodeRef}
             style={style}
             onClick={onClick}
-            onPointerDown={onPointerDown} // Using bubble phase but with higher z-index / blocking
             onContextMenu={onContextMenu}
             onMouseEnter={onMouseEnter}
         >
@@ -53,7 +53,7 @@ function DroppableCell({ col, row, page, content, isSelected, isExclusive, shift
             )}
 
             {/* When Shift is down, we show an invisible overlay to capture clicks before children (nodes/connectors) get them */}
-            {shiftStatus && (
+            {(shiftStatus || isShiftDown) && (
                 <div style={{
                     position: 'absolute', top: 0, left: 0, right: 0, bottom: 0,
                     zIndex: 20, cursor: 'pointer', backgroundColor: 'transparent'
@@ -101,7 +101,7 @@ function Grid({ treeState }) {
                 const parts = selectedCellFormat.split(',');
                 if (parts.length === 3) {
                     const [p, c, r] = parts.map(Number);
-                    if (p === currentPage) removeCell(p, c, r);
+                    if (p === currentPage) removeCell(c, r);
                 }
             }
         };
@@ -109,7 +109,7 @@ function Grid({ treeState }) {
             if (e.key === 'Shift') {
                 setIsShiftDown(false);
                 setHoverCell(null);
-                // We DON'T auto-clear here anymore, let user finalize manually or it auto-finalizes on 2nd node
+                clearShiftPath();
             }
         };
         window.addEventListener('keydown', onKeyDown);
@@ -194,7 +194,8 @@ function Grid({ treeState }) {
                     shiftStatus={shiftStatus}
                     pathIndex={pathIdx >= 0 ? pathIdx : undefined}
                     treeState={treeState}
-                    onPointerDown={(e) => handleCellAction(e, c, r, content)}
+                    isShiftDown={isShiftDown}
+                    onClick={(e) => handleCellAction(e, c, r, content)}
                     onContextMenu={(e) => { e.preventDefault(); setSelectedCellFormat(key); }}
                     onMouseEnter={() => handleMouseEnter(c, r)}
                 />

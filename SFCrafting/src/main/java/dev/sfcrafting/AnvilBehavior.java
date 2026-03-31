@@ -45,9 +45,14 @@ public final class AnvilBehavior implements StationBehavior {
         ItemStack extra = inventory.getItem(SLOT_EXTRA);
         manager.ensureRarity(mold);
         manager.ensureRarity(ingot);
-        ForgeRecipe recipe = manager.findAnvilRecipe(mold, ingot, extra);
+        ForgeRecipe recipe = manager.findAnvilRecipe(mold, ingot, extra, player);
         if (recipe == null) {
-            player.sendMessage(ChatColor.RED + "No hay receta valida.");
+            ForgeRecipe locked = manager.findAnvilRecipeIgnoringLock(mold, ingot, extra);
+            if (locked != null) {
+                player.sendMessage(ChatColor.RED + "Receta bloqueada. Consulta /recetas.");
+            } else {
+                player.sendMessage(ChatColor.RED + "No hay receta valida.");
+            }
             return;
         }
         ItemStack resultPreview = manager.buildRecipeOutput(recipe);

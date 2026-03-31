@@ -27,6 +27,9 @@ public class DatabaseManager {
 
             String url = "jdbc:sqlite:" + file.getAbsolutePath();
             connection = DriverManager.getConnection(url);
+            try (Statement pragma = connection.createStatement()) {
+                pragma.execute("PRAGMA journal_mode=WAL;");
+            }
             createTables();
             plugin.getLogger().info("Base de datos SQLite conectada.");
         } catch (SQLException e) {
