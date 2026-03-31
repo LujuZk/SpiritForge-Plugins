@@ -28,6 +28,22 @@ public final class ForgeIngredient {
         return new ForgeIngredient(Type.ORAXEN, null, oraxenId);
     }
 
+    public Type type() {
+        return type;
+    }
+
+    public Material material() {
+        return material;
+    }
+
+    public String oraxenId() {
+        return oraxenId;
+    }
+
+    public String displayId() {
+        return type == Type.ORAXEN ? oraxenId : (material != null ? material.name().toLowerCase() : "unknown");
+    }
+
     public boolean matches(ItemStack item, OraxenItemResolver resolver) {
         if (item == null || item.getType().isAir()) {
             return false;

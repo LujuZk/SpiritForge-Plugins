@@ -106,6 +106,7 @@ public final class ForgeManager {
     private final Map<String, Integer> hammerDurabilityLoss;
     private final Map<ForgeState.StationType, StationBehavior> behaviors = new HashMap<>();
     private final Random rarityRandom = new Random();
+    private RecipeBookManager recipeBookManager;
 
     private final NamespacedKey pendingKey;
     private final NamespacedKey outputKey;
@@ -941,6 +942,23 @@ Map<Integer, Double> buildRarityDistribution(
     }
 
     ForgeRecipe findSmelterRecipe(ItemStack a, ItemStack b) {
+        return findSmelterRecipe(a, b, null);
+    }
+
+    ForgeRecipe findSmelterRecipe(ItemStack a, ItemStack b, Player player) {
+        for (ForgeRecipe recipe : recipes) {
+            if (recipe.matchesSmelter(a, b, oraxenResolver)) {
+                if (player != null && recipeBookManager != null
+                        && !recipeBookManager.isRecipeUnlocked(player, recipe)) {
+                    return null;
+                }
+                return recipe;
+            }
+        }
+        return null;
+    }
+
+    ForgeRecipe findSmelterRecipeIgnoringLock(ItemStack a, ItemStack b) {
         for (ForgeRecipe recipe : recipes) {
             if (recipe.matchesSmelter(a, b, oraxenResolver)) {
                 return recipe;
@@ -950,12 +968,41 @@ Map<Integer, Double> buildRarityDistribution(
     }
 
     ForgeRecipe findAnvilRecipe(ItemStack mold, ItemStack ingot, ItemStack extra) {
+        return findAnvilRecipe(mold, ingot, extra, null);
+    }
+
+    ForgeRecipe findAnvilRecipe(ItemStack mold, ItemStack ingot, ItemStack extra, Player player) {
+        for (ForgeRecipe recipe : recipes) {
+            if (recipe.matchesAnvil(mold, ingot, extra, oraxenResolver)) {
+                if (player != null && recipeBookManager != null
+                        && !recipeBookManager.isRecipeUnlocked(player, recipe)) {
+                    return null;
+                }
+                return recipe;
+            }
+        }
+        return null;
+    }
+
+    ForgeRecipe findAnvilRecipeIgnoringLock(ItemStack mold, ItemStack ingot, ItemStack extra) {
         for (ForgeRecipe recipe : recipes) {
             if (recipe.matchesAnvil(mold, ingot, extra, oraxenResolver)) {
                 return recipe;
             }
         }
         return null;
+    }
+
+    public List<ForgeRecipe> getRecipes() {
+        return List.copyOf(recipes);
+    }
+
+    public OraxenItemResolver oraxenResolver() {
+        return oraxenResolver;
+    }
+
+    void setRecipeBookManager(RecipeBookManager manager) {
+        this.recipeBookManager = manager;
     }
 
     ItemStack buildRecipeOutput(ForgeRecipe recipe) {
@@ -1331,6 +1378,7 @@ Map<Integer, Double> buildRarityDistribution(
             if (ingredientA == null || result == null) {
                 continue;
             }
+            RecipeUnlockRequirement unlockReq = parseUnlockRequirement(section, key);
             recipes.add(new ForgeRecipe(
                 key,
                 ingredientA,
@@ -1340,9 +1388,28 @@ Map<Integer, Double> buildRarityDistribution(
                 ingredientC,
                 input3Amount,
                 result,
-                time
+                time,
+                unlockReq
             ));
         }
+    }
+
+    private RecipeUnlockRequirement parseUnlockRequirement(ConfigurationSection section, String key) {
+        var unlock = section.getConfigurationSection(key + ".unlock");
+        if (unlock == null) {
+            return null;
+        }
+        String skill = unlock.getString("skill");
+        int level = unlock.getInt("level", 0);
+        List<String> discoveries = unlock.getStringList("discovery");
+        if ((skill == null || skill.isBlank()) && level <= 0 && discoveries.isEmpty()) {
+            return null;
+        }
+        return new RecipeUnlockRequirement(
+            skill == null || skill.isBlank() ? null : skill.trim().toLowerCase(Locale.ROOT),
+            level,
+            discoveries.stream().map(s -> s.trim().toLowerCase(Locale.ROOT)).toList()
+        );
     }
 
     private ForgeIngredient parseIngredient(String raw) {

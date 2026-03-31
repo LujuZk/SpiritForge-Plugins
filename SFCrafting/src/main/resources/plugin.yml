@@ -2,7 +2,7 @@ name: SFCrafting
 version: 1.0.0
 main: dev.sfcrafting.SFCraftingPlugin
 api-version: '1.21'
-softdepend: [Oraxen]
+softdepend: [Oraxen, SkillTreePlugin]
 authors: [LujuZk]
 description: SpiritForge crafting and forging plugin
 
@@ -12,8 +12,16 @@ commands:
     usage: /sfcrafting give <oraxen_id|material:id> [cantidad] [rareza]
     permission: sfcrafting.admin
     aliases: [cforge]
+  recetas:
+    description: Abre el recetario de forja
+    usage: /recetas
+    permission: sfcrafting.recetario
+    aliases: [recetario, recipes]
 
 permissions:
   sfcrafting.admin:
     description: Access to SFCrafting admin commands
     default: op
+  sfcrafting.recetario:
+    description: Acceso al recetario
+    default: true

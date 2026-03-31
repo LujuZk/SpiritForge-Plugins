@@ -10,6 +10,8 @@ public final class SFCraftingPlugin extends JavaPlugin {
 
     private ForgeManager forgeManager;
     private AuraManager auraManager;
+    private RecipeBookDatabaseManager recipeBookDb;
+    private RecipeBookManager recipeBookManager;
 
     @Override
     public void onEnable() {
@@ -27,6 +29,32 @@ public final class SFCraftingPlugin extends JavaPlugin {
             pluginCommand.setTabCompleter(command);
         }
 
+        if (getConfig().getBoolean("forge.recetario.enabled", true)) {
+            recipeBookDb = new RecipeBookDatabaseManager(this);
+            recipeBookDb.initialize();
+            SkillBridge skillBridge = new SkillBridge(this);
+            recipeBookManager = new RecipeBookManager(this, forgeManager, recipeBookDb, skillBridge);
+            forgeManager.setRecipeBookManager(recipeBookManager);
+
+            DiscoveryListener discoveryListener = new DiscoveryListener(this, recipeBookManager, forgeManager.oraxenResolver());
+            getServer().getPluginManager().registerEvents(discoveryListener, this);
+            getServer().getPluginManager().registerEvents(new RecipeBookListener(recipeBookManager), this);
+            getServer().getPluginManager().registerEvents(new RecipeBookItemListener(this, recipeBookManager, forgeManager.oraxenResolver()), this);
+
+            var recetasCmd = getCommand("recetas");
+            if (recetasCmd != null) {
+                RecipeBookCommand recipeCmd = new RecipeBookCommand(recipeBookManager);
+                recetasCmd.setExecutor(recipeCmd);
+                recetasCmd.setTabCompleter(recipeCmd);
+            }
+
+            for (var player : getServer().getOnlinePlayers()) {
+                recipeBookManager.loadPlayer(player.getUniqueId());
+            }
+
+            getLogger().info("Recetario habilitado.");
+        }
+
         getServer().getPluginManager().registerEvents(new ForgeListener(forgeManager), this);
         getServer().getPluginManager().registerEvents(new MoldRecipeListener(this, forgeManager), this);
         getServer().getPluginManager().registerEvents(new AuraListener(auraManager), this);
@@ -40,6 +68,12 @@ public final class SFCraftingPlugin extends JavaPlugin {
 
     @Override
     public void onDisable() {
+        if (recipeBookManager != null) {
+            recipeBookManager.saveAll();
+        }
+        if (recipeBookDb != null) {
+            recipeBookDb.close();
+        }
         if (auraManager != null) {
             auraManager.shutdown();
         }

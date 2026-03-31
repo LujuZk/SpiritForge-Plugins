@@ -13,6 +13,7 @@ public final class ForgeRecipe {
     private final int inputCAmount;
     private final ForgeOutput output;
     private final int cookTimeTicks;
+    private final RecipeUnlockRequirement unlockRequirement;
 
     public ForgeRecipe(
         String id,
@@ -23,7 +24,8 @@ public final class ForgeRecipe {
         ForgeIngredient inputC,
         int inputCAmount,
         ForgeOutput output,
-        int cookTimeTicks
+        int cookTimeTicks,
+        RecipeUnlockRequirement unlockRequirement
     ) {
         this.id = id;
         this.inputA = inputA;
@@ -34,6 +36,7 @@ public final class ForgeRecipe {
         this.inputCAmount = Math.max(1, inputCAmount);
         this.output = output;
         this.cookTimeTicks = cookTimeTicks;
+        this.unlockRequirement = unlockRequirement;
     }
 
     public String id() {
@@ -70,6 +73,10 @@ public final class ForgeRecipe {
 
     public int inputCAmount() {
         return inputCAmount;
+    }
+
+    public RecipeUnlockRequirement unlockRequirement() {
+        return unlockRequirement;
     }
 
     public ItemStack buildOutput(OraxenItemResolver resolver) {

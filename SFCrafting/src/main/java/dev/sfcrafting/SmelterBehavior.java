@@ -38,9 +38,14 @@ public final class SmelterBehavior implements StationBehavior {
         ItemStack b = inventory.getItem(SLOT_INPUT_B);
         manager.ensureRarity(a);
         manager.ensureRarity(b);
-        ForgeRecipe recipe = manager.findSmelterRecipe(a, b);
+        ForgeRecipe recipe = manager.findSmelterRecipe(a, b, player);
         if (recipe == null) {
-            player.sendMessage(ChatColor.RED + "No hay receta valida.");
+            ForgeRecipe locked = manager.findSmelterRecipeIgnoringLock(a, b);
+            if (locked != null) {
+                player.sendMessage(ChatColor.RED + "Receta bloqueada. Consulta /recetas.");
+            } else {
+                player.sendMessage(ChatColor.RED + "No hay receta valida.");
+            }
             return;
         }
         int rarity = manager.resolveRarityFromItems(a, b);

@@ -150,82 +150,132 @@ forge:
       cool-time-seconds: 180
       start-temp: 1000
       end-temp: 40
+  recetario:
+    enabled: true
+    open-item-id: "recetario_book"
+    locked-message: "&cReceta bloqueada. Consulta /recetas."
+    discovery-message: "&a\u00a1Has descubierto: &e%material%&a!"
   recipes:
     reheat_tin:
-      input-1: "ORAXEN:raw_tin_ore"
+      input-1: "ORAXEN:tin_ingot"
       input-1-amount: 1
       output: "ORAXEN:tin_ingot_hot"
       time-ticks: 80
+      unlock:
+        discovery:
+          - tin_ingot
     reheat_silver:
       input-1: "ORAXEN:silver_ingot"
       input-1-amount: 1
       output: "ORAXEN:silver_ingot_hot"
       time-ticks: 90
+      unlock:
+        discovery:
+          - silver_ingot
     reheat_bronze:
       input-1: "ORAXEN:bronze_ingot"
       input-1-amount: 1
       output: "ORAXEN:bronze_ingot_hot"
       time-ticks: 90
+      unlock:
+        discovery:
+          - bronze_ingot
     reheat_iron:
       input-1: "MATERIAL:IRON_INGOT"
       input-1-amount: 1
       output: "ORAXEN:iron_ingot_hot"
       time-ticks: 90
+      unlock:
+        discovery:
+          - iron_ingot
     reheat_steel:
       input-1: "ORAXEN:steel_ingot"
       input-1-amount: 1
       output: "ORAXEN:steel_ingot_hot"
       time-ticks: 110
+      unlock:
+        discovery:
+          - steel_ingot
     reheat_mithil:
       input-1: "ORAXEN:mithil_ingot"
       input-1-amount: 1
       output: "ORAXEN:mithil_ingot_hot"
       time-ticks: 130
+      unlock:
+        discovery:
+          - mithil_ingot
     reheat_orichalcum:
       input-1: "ORAXEN:orichalcum_ingot"
       input-1-amount: 1
       output: "ORAXEN:orichalcum_ingot_hot"
       time-ticks: 100
+      unlock:
+        discovery:
+          - orichalcum_ingot
     reheat_platinum:
       input-1: "ORAXEN:platinum_ingot"
       input-1-amount: 1
       output: "ORAXEN:platinum_ingot_hot"
       time-ticks: 140
+      unlock:
+        discovery:
+          - platinum_ingot
     tin:
       input-1: "ORAXEN:raw_tin_ore"
       input-1-amount: 1
       output: "ORAXEN:tin_ingot_hot"
       time-ticks: 160
+      unlock:
+        discovery:
+          - raw_tin_ore
     copper:
       input-1: "ORAXEN:raw_copper_ore"
       input-1-amount: 5
       output: "ORAXEN:copper_ingot_hot"
       time-ticks: 160
+      unlock:
+        discovery:
+          - raw_copper_ore
     gold:
       input-1: "MATERIAL:raw_gold"
       input-1-amount: 1
       output: "ORAXEN:gold_ingot_hot"
       time-ticks: 240
+      unlock:
+        discovery:
+          - raw_gold
     silver:
       input-1: "ORAXEN:raw_silver_ore"
       input-1-amount: 1
       output: "ORAXEN:silver_ingot_hot"
       time-ticks: 180
+      unlock:
+        discovery:
+          - raw_silver_ore
     orichalcum:
       input-1: "ORAXEN:raw_orichalcum_ore"
       input-1-amount: 1
       output: "ORAXEN:orichalcum_ingot_hot"
       time-ticks: 220
+      unlock:
+        discovery:
+          - raw_orichalcum_ore
     mithil:
       input-1: "ORAXEN:raw_mithil_ore"
       input-1-amount: 1
       output: "ORAXEN:mithil_ingot_hot"
       time-ticks: 240
+      unlock:
+        discovery:
+          - raw_mithil_ore
     platinum:
       input-1: "ORAXEN:raw_platinum_ore"
       input-1-amount: 1
       output: "ORAXEN:platinum_ingot_hot"
       time-ticks: 240
+      unlock:
+        discovery:
+          - raw_platinum_ore
     steel:
       input-1: "MATERIAL:RAW_IRON"
       input-1-amount: 1
@@ -233,6 +283,9 @@ forge:
       input-2-amount: 1
       output: "ORAXEN:steel_ingot_hot"
       time-ticks: 240
+      unlock:
+        discovery:
+          - raw_iron
     bronze:
       input-1: "ORAXEN:raw_tin_ore"
       input-1-amount: 1
@@ -240,6 +293,9 @@ forge:
       input-2-amount: 1
       output: "ORAXEN:bronze_ingot_hot"
       time-ticks: 200
+      unlock:
+        skill: "smithing"
+        level: 10
     dark_steel:
       input-1: "ORAXEN:steel_ingot"
       input-1-amount: 1
@@ -247,6 +303,9 @@ forge:
       input-2-amount: 1
       output: "ORAXEN:dark_steel_ingot_hot"
       time-ticks: 240
+      unlock:
+        discovery:
+          - steel_ingot
     anvil_bronze_sword:
       input-1: "ORAXEN:mold_sword_bronze"
       input-1-amount: 1
@@ -254,6 +313,9 @@ forge:
       input-2-amount: 1
       output: "ORAXEN:bronze_sword"
       time-ticks: 200
+      unlock:
+        discovery:
+          - bronze_ingot_hot
     anvil_steel_sword:
       input-1: "ORAXEN:mold_sword_steel"
       input-1-amount: 1
@@ -261,6 +323,9 @@ forge:
       input-2-amount: 1
       output: "ORAXEN:steel_sword"
       time-ticks: 200
+      unlock:
+        discovery:
+          - steel_ingot_hot
     anvil_silver_sword:
       input-1: "ORAXEN:mold_sword_silver"
       input-1-amount: 1
@@ -268,6 +333,9 @@ forge:
       input-2-amount: 1
       output: "ORAXEN:silver_sword"
       time-ticks: 200
+      unlock:
+        discovery:
+          - silver_ingot_hot
     anvil_mithil_sword:
       input-1: "ORAXEN:mold_sword_mithil"
       input-1-amount: 1
@@ -275,6 +343,9 @@ forge:
       input-2-amount: 1
       output: "ORAXEN:mithil_sword"
       time-ticks: 200
+      unlock:
+        discovery:
+          - mithil_ingot_hot
     anvil_orichalcum_sword:
       input-1: "ORAXEN:mold_sword_orichalcum"
       input-1-amount: 1
@@ -282,6 +353,9 @@ forge:
       input-2-amount: 1
       output: "ORAXEN:orichalcum_sword"
       time-ticks: 200
+      unlock:
+        discovery:
+          - orichalcum_ingot_hot
     anvil_platinum_sword:
       input-1: "ORAXEN:mold_sword_platinum"
       input-1-amount: 1
@@ -289,11 +363,17 @@ forge:
       input-2-amount: 1
       output: "ORAXEN:platinum_sword"
       time-ticks: 200
+      unlock:
+        discovery:
+          - platinum_ingot_hot
     reheat_copper:
       input-1: "MATERIAL:COPPER_INGOT"
       input-1-amount: 1
       output: "ORAXEN:copper_ingot_hot"
       time-ticks: 140
+      unlock:
+        discovery:
+          - copper_ingot
     anvil_copper_sword:
       input-1: "ORAXEN:mold_sword_copper"
       input-1-amount: 1
@@ -301,6 +381,9 @@ forge:
       input-2-amount: 1
       output: "ORAXEN:copper_sword"
       time-ticks: 220
+      unlock:
+        discovery:
+          - copper_ingot_hot
     anvil_copper_axe:
       input-1: "ORAXEN:mold_axe_copper"
       input-1-amount: 1
@@ -308,6 +391,9 @@ forge:
       input-2-amount: 1
       output: "ORAXEN:copper_axe"
       time-ticks: 220
+      unlock:
+        discovery:
+          - copper_ingot_hot
     anvil_copper_pickaxe:
       input-1: "ORAXEN:mold_pickaxe_copper"
       input-1-amount: 1
@@ -315,6 +401,9 @@ forge:
       input-2-amount: 1
       output: "ORAXEN:copper_pickaxe"
       time-ticks: 220
+      unlock:
+        discovery:
+          - copper_ingot_hot
     anvil_copper_hammer:
       input-1: "ORAXEN:mold_hammer_copper"
       input-1-amount: 1
@@ -322,6 +411,9 @@ forge:
       input-2-amount: 1
       output: "ORAXEN:copper_hammer"
       time-ticks: 220
+      unlock:
+        discovery:
+          - copper_ingot_hot
     anvil_bronze_axe:
       input-1: "ORAXEN:mold_axe_bronze"
       input-1-amount: 1
@@ -329,6 +421,9 @@ forge:
       input-2-amount: 1
       output: "ORAXEN:bronze_axe"
       time-ticks: 220
+      unlock:
+        discovery:
+          - bronze_ingot_hot
     anvil_bronze_pickaxe:
       input-1: "ORAXEN:mold_pickaxe_bronze"
       input-1-amount: 1
@@ -336,6 +431,9 @@ forge:
       input-2-amount: 1
       output: "ORAXEN:bronze_pickaxe"
       time-ticks: 220
+      unlock:
+        discovery:
+          - bronze_ingot_hot
     anvil_bronze_hammer:
       input-1: "ORAXEN:mold_hammer_bronze"
       input-1-amount: 1
@@ -343,6 +441,9 @@ forge:
       input-2-amount: 1
       output: "ORAXEN:bronze_hammer"
       time-ticks: 220
+      unlock:
+        discovery:
+          - bronze_ingot_hot
     anvil_iron_sword:
       input-1: "ORAXEN:mold_sword_iron"
       input-1-amount: 1
@@ -350,6 +451,9 @@ forge:
       input-2-amount: 1
       output: "ORAXEN:iron_sword"
       time-ticks: 220
+      unlock:
+        discovery:
+          - iron_ingot_hot
     anvil_iron_axe:
       input-1: "ORAXEN:mold_axe_iron"
       input-1-amount: 1
@@ -357,6 +461,9 @@ forge:
       input-2-amount: 1
       output: "ORAXEN:iron_axe"
       time-ticks: 220
+      unlock:
+        discovery:
+          - iron_ingot_hot
     anvil_iron_pickaxe:
       input-1: "ORAXEN:mold_pickaxe_iron"
       input-1-amount: 1
@@ -364,6 +471,9 @@ forge:
       input-2-amount: 1
       output: "ORAXEN:iron_pickaxe"
       time-ticks: 220
+      unlock:
+        discovery:
+          - iron_ingot_hot
     anvil_iron_hammer:
       input-1: "ORAXEN:mold_hammer_iron"
       input-1-amount: 1
@@ -371,6 +481,9 @@ forge:
       input-2-amount: 1
       output: "ORAXEN:iron_hammer"
       time-ticks: 220
+      unlock:
+        discovery:
+          - iron_ingot_hot
     anvil_steel_axe:
       input-1: "ORAXEN:mold_axe_steel"
       input-1-amount: 1
@@ -378,6 +491,9 @@ forge:
       input-2-amount: 1
       output: "ORAXEN:steel_axe"
       time-ticks: 220
+      unlock:
+        discovery:
+          - steel_ingot_hot
     anvil_steel_pickaxe:
       input-1: "ORAXEN:mold_pickaxe_steel"
       input-1-amount: 1
@@ -385,6 +501,9 @@ forge:
       input-2-amount: 1
       output: "ORAXEN:steel_pickaxe"
       time-ticks: 220
+      unlock:
+        discovery:
+          - steel_ingot_hot
     anvil_steel_hammer:
       input-1: "ORAXEN:mold_hammer_steel"
       input-1-amount: 1
@@ -392,6 +511,9 @@ forge:
       input-2-amount: 1
       output: "ORAXEN:steel_hammer"
       time-ticks: 220
+      unlock:
+        discovery:
+          - steel_ingot_hot
     anvil_silver_axe:
       input-1: "ORAXEN:mold_axe_silver"
       input-1-amount: 1
@@ -399,6 +521,9 @@ forge:
       input-2-amount: 1
       output: "ORAXEN:silver_axe"
       time-ticks: 220
+      unlock:
+        discovery:
+          - silver_ingot_hot
     anvil_silver_pickaxe:
       input-1: "ORAXEN:mold_pickaxe_silver"
       input-1-amount: 1
@@ -406,6 +531,9 @@ forge:
       input-2-amount: 1
       output: "ORAXEN:silver_pickaxe"
       time-ticks: 220
+      unlock:
+        discovery:
+          - silver_ingot_hot
     anvil_silver_hammer:
       input-1: "ORAXEN:mold_hammer_silver"
       input-1-amount: 1
@@ -413,11 +541,17 @@ forge:
       input-2-amount: 1
       output: "ORAXEN:silver_hammer"
       time-ticks: 220
+      unlock:
+        discovery:
+          - silver_ingot_hot
     reheat_gold:
       input-1: "MATERIAL:GOLD_INGOT"
       input-1-amount: 1
       output: "ORAXEN:gold_ingot_hot"
       time-ticks: 140
+      unlock:
+        discovery:
+          - gold_ingot
     anvil_gold_sword:
       input-1: "ORAXEN:mold_sword_gold"
       input-1-amount: 1
@@ -425,6 +559,9 @@ forge:
       input-2-amount: 1
       output: "ORAXEN:gold_sword"
       time-ticks: 220
+      unlock:
+        discovery:
+          - gold_ingot_hot
     anvil_gold_axe:
       input-1: "ORAXEN:mold_axe_gold"
       input-1-amount: 1
@@ -432,6 +569,9 @@ forge:
       input-2-amount: 1
       output: "ORAXEN:gold_axe"
       time-ticks: 220
+      unlock:
+        discovery:
+          - gold_ingot_hot
     anvil_gold_pickaxe:
       input-1: "ORAXEN:mold_pickaxe_gold"
       input-1-amount: 1
@@ -439,6 +579,9 @@ forge:
       input-2-amount: 1
       output: "ORAXEN:gold_pickaxe"
       time-ticks: 220
+      unlock:
+        discovery:
+          - gold_ingot_hot
     anvil_gold_hammer:
       input-1: "ORAXEN:mold_hammer_gold"
       input-1-amount: 1
@@ -446,6 +589,9 @@ forge:
       input-2-amount: 1
       output: "ORAXEN:gold_hammer"
       time-ticks: 220
+      unlock:
+        discovery:
+          - gold_ingot_hot
     anvil_platinum_axe:
       input-1: "ORAXEN:mold_axe_platinum"
       input-1-amount: 1
@@ -453,6 +599,9 @@ forge:
       input-2-amount: 1
       output: "ORAXEN:platinum_axe"
       time-ticks: 220
+      unlock:
+        discovery:
+          - platinum_ingot_hot
     anvil_platinum_pickaxe:
       input-1: "ORAXEN:mold_pickaxe_platinum"
       input-1-amount: 1
@@ -460,6 +609,9 @@ forge:
       input-2-amount: 1
       output: "ORAXEN:platinum_pickaxe"
       time-ticks: 220
+      unlock:
+        discovery:
+          - platinum_ingot_hot
     anvil_platinum_hammer:
       input-1: "ORAXEN:mold_hammer_platinum"
       input-1-amount: 1
@@ -467,11 +619,17 @@ forge:
       input-2-amount: 1
       output: "ORAXEN:platinum_hammer"
       time-ticks: 220
+      unlock:
+        discovery:
+          - platinum_ingot_hot
     reheat_diamond:
       input-1: "MATERIAL:DIAMOND"
       input-1-amount: 1
       output: "ORAXEN:diamond_hot"
       time-ticks: 140
+      unlock:
+        discovery:
+          - diamond
     anvil_diamond_sword:
       input-1: "ORAXEN:mold_sword_diamond"
       input-1-amount: 1
@@ -479,6 +637,9 @@ forge:
       input-2-amount: 1
       output: "ORAXEN:diamond_sword"
       time-ticks: 220
+      unlock:
+        discovery:
+          - diamond_hot
     anvil_diamond_axe:
       input-1: "ORAXEN:mold_axe_diamond"
       input-1-amount: 1
@@ -486,6 +647,9 @@ forge:
       input-2-amount: 1
       output: "ORAXEN:diamond_axe"
       time-ticks: 220
+      unlock:
+        discovery:
+          - diamond_hot
     anvil_diamond_pickaxe:
       input-1: "ORAXEN:mold_pickaxe_diamond"
       input-1-amount: 1
@@ -493,6 +657,9 @@ forge:
       input-2-amount: 1
       output: "ORAXEN:diamond_pickaxe"
       time-ticks: 220
+      unlock:
+        discovery:
+          - diamond_hot
     anvil_diamond_hammer:
       input-1: "ORAXEN:mold_hammer_diamond"
       input-1-amount: 1
@@ -500,11 +667,17 @@ forge:
       input-2-amount: 1
       output: "ORAXEN:diamond_hammer"
       time-ticks: 220
+      unlock:
+        discovery:
+          - diamond_hot
     reheat_obsidian:
       input-1: "ORAXEN:obsidian_shard"
       input-1-amount: 1
       output: "ORAXEN:obsidian_hot"
       time-ticks: 140
+      unlock:
+        discovery:
+          - obsidian_shard
     anvil_obsidian_sword:
       input-1: "ORAXEN:mold_sword_obsidian"
       input-1-amount: 1
@@ -512,6 +685,9 @@ forge:
       input-2-amount: 1
       output: "ORAXEN:obsidian_sword"
       time-ticks: 220
+      unlock:
+        discovery:
+          - obsidian_hot
     anvil_obsidian_axe:
       input-1: "ORAXEN:mold_axe_obsidian"
       input-1-amount: 1
@@ -519,6 +695,9 @@ forge:
       input-2-amount: 1
       output: "ORAXEN:obsidian_axe"
       time-ticks: 220
+      unlock:
+        discovery:
+          - obsidian_hot
     anvil_obsidian_pickaxe:
       input-1: "ORAXEN:mold_pickaxe_obsidian"
       input-1-amount: 1
@@ -526,6 +705,9 @@ forge:
       input-2-amount: 1
       output: "ORAXEN:obsidian_pickaxe"
       time-ticks: 220
+      unlock:
+        discovery:
+          - obsidian_hot
     anvil_obsidian_hammer:
       input-1: "ORAXEN:mold_hammer_obsidian"
       input-1-amount: 1
@@ -533,6 +715,9 @@ forge:
       input-2-amount: 1
       output: "ORAXEN:obsidian_hammer"
       time-ticks: 220
+      unlock:
+        discovery:
+          - obsidian_hot
     anvil_dark_steel_sword:
       input-1: "ORAXEN:mold_sword_dark_steel"
       input-1-amount: 1
@@ -540,6 +725,9 @@ forge:
       input-2-amount: 1
       output: "ORAXEN:dark_steel_sword"
       time-ticks: 220
+      unlock:
+        discovery:
+          - dark_steel_ingot_hot
     anvil_dark_steel_axe:
       input-1: "ORAXEN:mold_axe_dark_steel"
       input-1-amount: 1
@@ -547,6 +735,9 @@ forge:
       input-2-amount: 1
       output: "ORAXEN:dark_steel_axe"
       time-ticks: 220
+      unlock:
+        discovery:
+          - dark_steel_ingot_hot
     anvil_dark_steel_pickaxe:
       input-1: "ORAXEN:mold_pickaxe_dark_steel"
       input-1-amount: 1
@@ -554,6 +745,9 @@ forge:
       input-2-amount: 1
       output: "ORAXEN:dark_steel_pickaxe"
       time-ticks: 220
+      unlock:
+        discovery:
+          - dark_steel_ingot_hot
     anvil_dark_steel_hammer:
       input-1: "ORAXEN:mold_hammer_dark_steel"
       input-1-amount: 1
@@ -561,16 +755,25 @@ forge:
       input-2-amount: 1
       output: "ORAXEN:dark_steel_hammer"
       time-ticks: 220
+      unlock:
+        discovery:
+          - dark_steel_ingot_hot
     reheat_netherite_ingot:
       input-1: "MATERIAL:NETHERITE_INGOT"
       input-1-amount: 1
       output: "ORAXEN:netherite_ingot_hot"
       time-ticks: 140
+      unlock:
+        discovery:
+          - netherite_ingot
     reheat_netherite_scrap:
       input-1: "MATERIAL:NETHERITE_SCRAP"
       input-1-amount: 1
       output: "ORAXEN:netherite_ingot_hot"
       time-ticks: 160
+      unlock:
+        discovery:
+          - netherite_scrap
     anvil_netherite_sword:
       input-1: "ORAXEN:mold_sword_netherite"
       input-1-amount: 1
@@ -578,6 +781,9 @@ forge:
       input-2-amount: 1
       output: "ORAXEN:netherite_sword"
       time-ticks: 220
+      unlock:
+        discovery:
+          - netherite_ingot_hot
     anvil_netherite_axe:
       input-1: "ORAXEN:mold_axe_netherite"
       input-1-amount: 1
@@ -585,6 +791,9 @@ forge:
       input-2-amount: 1
       output: "ORAXEN:netherite_axe"
       time-ticks: 220
+      unlock:
+        discovery:
+          - netherite_ingot_hot
     anvil_netherite_pickaxe:
       input-1: "ORAXEN:mold_pickaxe_netherite"
       input-1-amount: 1
@@ -592,6 +801,9 @@ forge:
       input-2-amount: 1
       output: "ORAXEN:netherite_pickaxe"
       time-ticks: 220
+      unlock:
+        discovery:
+          - netherite_ingot_hot
     anvil_netherite_hammer:
       input-1: "ORAXEN:mold_hammer_netherite"
       input-1-amount: 1
@@ -599,6 +811,9 @@ forge:
       input-2-amount: 1
       output: "ORAXEN:netherite_hammer"
       time-ticks: 220
+      unlock:
+        discovery:
+          - netherite_ingot_hot
     anvil_mithil_axe:
       input-1: "ORAXEN:mold_axe_mithil"
       input-1-amount: 1
@@ -606,6 +821,9 @@ forge:
       input-2-amount: 1
       output: "ORAXEN:mithil_axe"
       time-ticks: 220
+      unlock:
+        discovery:
+          - mithil_ingot_hot
     anvil_mithil_pickaxe:
       input-1: "ORAXEN:mold_pickaxe_mithil"
       input-1-amount: 1
@@ -613,6 +831,9 @@ forge:
       input-2-amount: 1
       output: "ORAXEN:mithil_pickaxe"
       time-ticks: 220
+      unlock:
+        discovery:
+          - mithil_ingot_hot
     anvil_mithil_hammer:
       input-1: "ORAXEN:mold_hammer_mithil"
       input-1-amount: 1
@@ -620,6 +841,9 @@ forge:
       input-2-amount: 1
       output: "ORAXEN:mithil_hammer"
       time-ticks: 220
+      unlock:
+        discovery:
+          - mithil_ingot_hot
     anvil_orichalcum_axe:
       input-1: "ORAXEN:mold_axe_orichalcum"
       input-1-amount: 1
@@ -627,6 +851,9 @@ forge:
       input-2-amount: 1
       output: "ORAXEN:orichalcum_axe"
       time-ticks: 220
+      unlock:
+        discovery:
+          - orichalcum_ingot_hot
     anvil_orichalcum_pickaxe:
       input-1: "ORAXEN:mold_pickaxe_orichalcum"
       input-1-amount: 1
@@ -634,6 +861,9 @@ forge:
       input-2-amount: 1
       output: "ORAXEN:orichalcum_pickaxe"
       time-ticks: 220
+      unlock:
+        discovery:
+          - orichalcum_ingot_hot
     anvil_orichalcum_hammer:
       input-1: "ORAXEN:mold_hammer_orichalcum"
       input-1-amount: 1
@@ -641,16 +871,25 @@ forge:
       input-2-amount: 1
       output: "ORAXEN:orichalcum_hammer"
       time-ticks: 220
+      unlock:
+        discovery:
+          - orichalcum_ingot_hot
     reheat_adamantite:
       input-1: "ORAXEN:adamantite_ingot"
       input-1-amount: 1
       output: "ORAXEN:adamantite_ingot_hot"
       time-ticks: 140
+      unlock:
+        discovery:
+          - adamantite_ingot
     adamantite:
       input-1: "ORAXEN:raw_adamantite_ore"
       input-1-amount: 1
       output: "ORAXEN:adamantite_ingot_hot"
       time-ticks: 260
+      unlock:
+        discovery:
+          - raw_adamantite_ore
     anvil_adamantite_sword:
       input-1: "ORAXEN:mold_sword_adamantite"
       input-1-amount: 1
@@ -658,6 +897,9 @@ forge:
       input-2-amount: 1
       output: "ORAXEN:adamantite_sword"
       time-ticks: 220
+      unlock:
+        discovery:
+          - adamantite_ingot_hot
     anvil_adamantite_axe:
       input-1: "ORAXEN:mold_axe_adamantite"
       input-1-amount: 1
@@ -665,6 +907,9 @@ forge:
       input-2-amount: 1
       output: "ORAXEN:adamantite_axe"
       time-ticks: 220
+      unlock:
+        discovery:
+          - adamantite_ingot_hot
     anvil_adamantite_pickaxe:
       input-1: "ORAXEN:mold_pickaxe_adamantite"
       input-1-amount: 1
@@ -672,6 +917,9 @@ forge:
       input-2-amount: 1
       output: "ORAXEN:adamantite_pickaxe"
       time-ticks: 220
+      unlock:
+        discovery:
+          - adamantite_ingot_hot
     anvil_adamantite_hammer:
       input-1: "ORAXEN:mold_hammer_adamantite"
       input-1-amount: 1
@@ -679,16 +927,25 @@ forge:
       input-2-amount: 1
       output: "ORAXEN:adamantite_hammer"
       time-ticks: 220
+      unlock:
+        discovery:
+          - adamantite_ingot_hot
     reheat_demonite:
       input-1: "ORAXEN:demonite_ingot"
       input-1-amount: 1
       output: "ORAXEN:demonite_ingot_hot"
       time-ticks: 140
+      unlock:
+        discovery:
+          - demonite_ingot
     demonite:
       input-1: "ORAXEN:raw_demonite_ore"
       input-1-amount: 1
       output: "ORAXEN:demonite_ingot_hot"
       time-ticks: 260
+      unlock:
+        discovery:
+          - raw_demonite_ore
     anvil_demonite_sword:
       input-1: "ORAXEN:mold_sword_demonite"
       input-1-amount: 1
@@ -696,6 +953,9 @@ forge:
       input-2-amount: 1
       output: "ORAXEN:demonite_sword"
       time-ticks: 220
+      unlock:
+        discovery:
+          - demonite_ingot_hot
     anvil_demonite_axe:
       input-1: "ORAXEN:mold_axe_demonite"
       input-1-amount: 1
@@ -703,6 +963,9 @@ forge:
       input-2-amount: 1
       output: "ORAXEN:demonite_axe"
       time-ticks: 220
+      unlock:
+        discovery:
+          - demonite_ingot_hot
     anvil_demonite_pickaxe:
       input-1: "ORAXEN:mold_pickaxe_demonite"
       input-1-amount: 1
@@ -710,6 +973,9 @@ forge:
       input-2-amount: 1
       output: "ORAXEN:demonite_pickaxe"
       time-ticks: 220
+      unlock:
+        discovery:
+          - demonite_ingot_hot
     anvil_demonite_hammer:
       input-1: "ORAXEN:mold_hammer_demonite"
       input-1-amount: 1
@@ -717,16 +983,25 @@ forge:
       input-2-amount: 1
       output: "ORAXEN:demonite_hammer"
       time-ticks: 220
+      unlock:
+        discovery:
+          - demonite_ingot_hot
     reheat_dragonite:
       input-1: "ORAXEN:dragonite_ingot"
       input-1-amount: 1
       output: "ORAXEN:dragonite_ingot_hot"
       time-ticks: 140
+      unlock:
+        discovery:
+          - dragonite_ingot
     dragonite:
       input-1: "ORAXEN:raw_dragonite_ore"
       input-1-amount: 1
       output: "ORAXEN:dragonite_ingot_hot"
       time-ticks: 260
+      unlock:
+        discovery:
+          - raw_dragonite_ore
     anvil_dragonite_sword:
       input-1: "ORAXEN:mold_sword_dragonite"
       input-1-amount: 1
@@ -734,6 +1009,9 @@ forge:
       input-2-amount: 1
       output: "ORAXEN:dragonite_sword"
       time-ticks: 220
+      unlock:
+        discovery:
+          - dragonite_ingot_hot
     anvil_dragonite_axe:
       input-1: "ORAXEN:mold_axe_dragonite"
       input-1-amount: 1
@@ -741,6 +1019,9 @@ forge:
       input-2-amount: 1
       output: "ORAXEN:dragonite_axe"
       time-ticks: 220
+      unlock:
+        discovery:
+          - dragonite_ingot_hot
     anvil_dragonite_pickaxe:
       input-1: "ORAXEN:mold_pickaxe_dragonite"
       input-1-amount: 1
@@ -748,6 +1029,9 @@ forge:
       input-2-amount: 1
       output: "ORAXEN:dragonite_pickaxe"
       time-ticks: 220
+      unlock:
+        discovery:
+          - dragonite_ingot_hot
     anvil_dragonite_hammer:
       input-1: "ORAXEN:mold_hammer_dragonite"
       input-1-amount: 1
@@ -755,16 +1039,25 @@ forge:
       input-2-amount: 1
       output: "ORAXEN:dragonite_hammer"
       time-ticks: 220
+      unlock:
+        discovery:
+          - dragonite_ingot_hot
     reheat_aetherium:
       input-1: "ORAXEN:aetherium_ingot"
       input-1-amount: 1
       output: "ORAXEN:aetherium_ingot_hot"
       time-ticks: 140
+      unlock:
+        discovery:
+          - aetherium_ingot
     aetherium:
       input-1: "ORAXEN:raw_aetherium_ore"
       input-1-amount: 1
       output: "ORAXEN:aetherium_ingot_hot"
       time-ticks: 260
+      unlock:
+        discovery:
+          - raw_aetherium_ore
     anvil_aetherium_sword:
       input-1: "ORAXEN:mold_sword_aetherium"
       input-1-amount: 1
@@ -772,6 +1065,9 @@ forge:
       input-2-amount: 1
       output: "ORAXEN:aetherium_sword"
       time-ticks: 220
+      unlock:
+        discovery:
+          - aetherium_ingot_hot
     anvil_aetherium_axe:
       input-1: "ORAXEN:mold_axe_aetherium"
       input-1-amount: 1
@@ -779,6 +1075,9 @@ forge:
       input-2-amount: 1
       output: "ORAXEN:aetherium_axe"
       time-ticks: 220
+      unlock:
+        discovery:
+          - aetherium_ingot_hot
     anvil_aetherium_pickaxe:
       input-1: "ORAXEN:mold_pickaxe_aetherium"
       input-1-amount: 1
@@ -786,6 +1085,9 @@ forge:
       input-2-amount: 1
       output: "ORAXEN:aetherium_pickaxe"
       time-ticks: 220
+      unlock:
+        discovery:
+          - aetherium_ingot_hot
     anvil_aetherium_hammer:
       input-1: "ORAXEN:mold_hammer_aetherium"
       input-1-amount: 1
@@ -793,16 +1095,25 @@ forge:
       input-2-amount: 1
       output: "ORAXEN:aetherium_hammer"
       time-ticks: 220
+      unlock:
+        discovery:
+          - aetherium_ingot_hot
     reheat_astralium:
       input-1: "ORAXEN:astralium_ingot"
       input-1-amount: 1
       output: "ORAXEN:astralium_ingot_hot"
       time-ticks: 140
+      unlock:
+        discovery:
+          - astralium_ingot
     astralium:
       input-1: "ORAXEN:raw_astralium_ore"
       input-1-amount: 1
       output: "ORAXEN:astralium_ingot_hot"
       time-ticks: 260
+      unlock:
+        discovery:
+          - raw_astralium_ore
     anvil_astralium_sword:
       input-1: "ORAXEN:mold_sword_astralium"
       input-1-amount: 1
@@ -810,6 +1121,9 @@ forge:
       input-2-amount: 1
       output: "ORAXEN:astralium_sword"
       time-ticks: 220
+      unlock:
+        discovery:
+          - astralium_ingot_hot
     anvil_astralium_axe:
       input-1: "ORAXEN:mold_axe_astralium"
       input-1-amount: 1
@@ -817,6 +1131,9 @@ forge:
       input-2-amount: 1
       output: "ORAXEN:astralium_axe"
       time-ticks: 220
+      unlock:
+        discovery:
+          - astralium_ingot_hot
     anvil_astralium_pickaxe:
       input-1: "ORAXEN:mold_pickaxe_astralium"
       input-1-amount: 1
@@ -824,6 +1141,9 @@ forge:
       input-2-amount: 1
       output: "ORAXEN:astralium_pickaxe"
       time-ticks: 220
+      unlock:
+        discovery:
+          - astralium_ingot_hot
     anvil_astralium_hammer:
       input-1: "ORAXEN:mold_hammer_astralium"
       input-1-amount: 1
@@ -831,16 +1151,25 @@ forge:
       input-2-amount: 1
       output: "ORAXEN:astralium_hammer"
       time-ticks: 220
+      unlock:
+        discovery:
+          - astralium_ingot_hot
     reheat_eternium:
       input-1: "ORAXEN:eternium_ingot"
       input-1-amount: 1
       output: "ORAXEN:eternium_ingot_hot"
       time-ticks: 140
+      unlock:
+        discovery:
+          - eternium_ingot
     eternium:
       input-1: "ORAXEN:raw_eternium_ore"
       input-1-amount: 1
       output: "ORAXEN:eternium_ingot_hot"
       time-ticks: 260
+      unlock:
+        discovery:
+          - raw_eternium_ore
     anvil_eternium_sword:
       input-1: "ORAXEN:mold_sword_eternium"
       input-1-amount: 1
@@ -848,6 +1177,9 @@ forge:
       input-2-amount: 1
       output: "ORAXEN:eternium_sword"
       time-ticks: 220
+      unlock:
+        discovery:
+          - eternium_ingot_hot
     anvil_eternium_axe:
       input-1: "ORAXEN:mold_axe_eternium"
       input-1-amount: 1
@@ -855,6 +1187,9 @@ forge:
       input-2-amount: 1
       output: "ORAXEN:eternium_axe"
       time-ticks: 220
+      unlock:
+        discovery:
+          - eternium_ingot_hot
     anvil_eternium_pickaxe:
       input-1: "ORAXEN:mold_pickaxe_eternium"
       input-1-amount: 1
@@ -862,6 +1197,9 @@ forge:
       input-2-amount: 1
       output: "ORAXEN:eternium_pickaxe"
       time-ticks: 220
+      unlock:
+        discovery:
+          - eternium_ingot_hot
     anvil_eternium_hammer:
       input-1: "ORAXEN:mold_hammer_eternium"
       input-1-amount: 1
@@ -869,16 +1207,25 @@ forge:
       input-2-amount: 1
       output: "ORAXEN:eternium_hammer"
       time-ticks: 220
+      unlock:
+        discovery:
+          - eternium_ingot_hot
     reheat_deus_matter:
       input-1: "ORAXEN:deus_matter_ingot"
       input-1-amount: 1
       output: "ORAXEN:deus_matter_ingot_hot"
       time-ticks: 140
+      unlock:
+        discovery:
+          - deus_matter_ingot
     deus_matter:
       input-1: "ORAXEN:raw_deus_matter_ore"
       input-1-amount: 1
       output: "ORAXEN:deus_matter_ingot_hot"
       time-ticks: 260
+      unlock:
+        discovery:
+          - raw_deus_matter_ore
     anvil_deus_matter_sword:
       input-1: "ORAXEN:mold_sword_deus_matter"
       input-1-amount: 1
@@ -886,6 +1233,9 @@ forge:
       input-2-amount: 1
       output: "ORAXEN:deus_matter_sword"
       time-ticks: 220
+      unlock:
+        discovery:
+          - deus_matter_ingot_hot
     anvil_deus_matter_axe:
       input-1: "ORAXEN:mold_axe_deus_matter"
       input-1-amount: 1
@@ -893,6 +1243,9 @@ forge:
       input-2-amount: 1
       output: "ORAXEN:deus_matter_axe"
       time-ticks: 220
+      unlock:
+        discovery:
+          - deus_matter_ingot_hot
     anvil_deus_matter_pickaxe:
       input-1: "ORAXEN:mold_pickaxe_deus_matter"
       input-1-amount: 1
@@ -900,6 +1253,9 @@ forge:
       input-2-amount: 1
       output: "ORAXEN:deus_matter_pickaxe"
       time-ticks: 220
+      unlock:
+        discovery:
+          - deus_matter_ingot_hot
     anvil_deus_matter_hammer:
       input-1: "ORAXEN:mold_hammer_deus_matter"
       input-1-amount: 1
@@ -907,6 +1263,9 @@ forge:
       input-2-amount: 1
       output: "ORAXEN:deus_matter_hammer"
       time-ticks: 220
+      unlock:
+        discovery:
+          - deus_matter_ingot_hot
     aura:
   y: 3.0
   scale: 2
