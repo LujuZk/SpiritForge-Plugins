@@ -1266,9 +1266,58 @@ forge:
       unlock:
         discovery:
           - deus_matter_ingot_hot
-    aura:
-  y: 3.0
-  scale: 2
+  bow-stats:
+    woods:
+      oak:
+        damage: 0.25
+        speed: 0
+        velocity-multiplier: 0.00
+        arrow-gravity: 0
+        durability: 40
+      birch:
+        damage: -0.15
+        speed: 0
+        velocity-multiplier: 0
+        arrow-gravity: 0
+        durability: -10
+    metals:
+      iron:
+        damage: 1.10
+        speed: 0
+        velocity-multiplier: 0
+        arrow-gravity: 0
+        durability: 80
+      copper:
+        damage: -0.20
+        speed: 0
+        velocity-multiplier: 0
+        arrow-gravity: 0
+        durability: -30
+    types:
+      hunter_bow:
+        defaults:
+          damage: 6.0
+          speed: 1.0
+          velocity-multiplier: 1.00
+          arrow-gravity: 0.030
+          durability: 300
+      short_bow:
+        defaults:
+          damage: 5
+          speed: 2
+          velocity-multiplier: 1.10
+          arrow-gravity: 0.060
+          durability: 400
+      long_bow:
+        defaults:
+          damage: 9
+          speed: 0.80
+          velocity-multiplier: 1.20
+          arrow-gravity: 0.010
+          durability: 250
+  aura:
+    y: 3.0
+    scale: 2
 
 
 

@@ -7,8 +7,6 @@ import dev.sfdrops.SFDropsPlugin;
 import dev.sfdrops.model.Rarity;
 import dev.sfdrops.service.MiningRarityGaussian;
 import dev.sfdrops.service.RarityRoller;
-import dev.skilltree.SkillTreePlugin;
-import dev.skilltree.models.SkillType;
 import io.th0rgal.oraxen.api.OraxenBlocks;
 import io.th0rgal.oraxen.api.OraxenItems;
 import io.th0rgal.oraxen.items.ItemBuilder;
@@ -262,11 +260,9 @@ public final class OreDropListener implements Listener {
     }
 
     private double readMining(Player player) {
+        if (!SFCoreAPI.isAvailable()) return 0;
         try {
-            SkillTreePlugin skill = SkillTreePlugin.getInstance();
-            if (skill == null) return 0;
-            var data = skill.getSkillManager().getData(player);
-            return data.getLevel(SkillType.MINING);
+            return SFCoreAPI.get().getTotal(player, StatType.MINING_SPEED);
         } catch (Exception ignored) {
             return 0;
         }

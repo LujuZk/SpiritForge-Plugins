@@ -1,0 +1,17 @@
+bow:
+  base-draw-ticks: 60
+  max-draw-track-ms: 15000
+  default-arrow-gravity: 0.05
+  gravity-task-period-ticks: 1
+  heavy-arrow:
+    enabled: true
+    oraxen-id: heavy_arrow
+    hitbox-radius: 1.2
+  longbow-zoom:
+    enabled: true
+    slowness-amplifier: 4
+  charge-bar:
+    enabled: true
+    update-period-ticks: 2
+    color-loading: YELLOW
+    color-ready: GREEN

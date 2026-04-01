@@ -1,6 +1,7 @@
 package dev.sfcrafting;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -117,6 +118,19 @@ public final class ForgeManager {
     private final NamespacedKey forgedByKey;
     private final NamespacedKey temperKey;
     private final NamespacedKey rarityKey;
+    private final Map<String, BowStatConfig> bowStatsByType = new HashMap<>();
+    private final NamespacedKey bowTypeDataKey = new NamespacedKey("customforge", "bow_type");
+    private final NamespacedKey woodDataKey = new NamespacedKey("customforge", "wood");
+    private final NamespacedKey metalDataKey = new NamespacedKey("customforge", "metal");
+    private final NamespacedKey bowDamageDataKey = new NamespacedKey("customforge", "bow_damage");
+    private final NamespacedKey bowSpeedDataKey = new NamespacedKey("customforge", "bow_speed");
+    private final NamespacedKey bowVelocityDataKey = new NamespacedKey("customforge", "bow_velocity_multiplier");
+    private final NamespacedKey bowGravityDataKey = new NamespacedKey("customforge", "arrow_gravity");
+    private final NamespacedKey bowDropLabelDataKey = new NamespacedKey("customforge", "arrow_drop");
+    private final NamespacedKey bowDurabilityDataKey = new NamespacedKey("customforge", "bow_durability");
+    private final NamespacedKey bowWoodRarityDataKey = new NamespacedKey("customforge", "wood_rarity");
+    private final NamespacedKey bowMetalRarityDataKey = new NamespacedKey("customforge", "metal_rarity");
+    private static final double DEFAULT_ARROW_GRAVITY = 0.05D;
 
     public ForgeManager(Plugin plugin) {
         this.plugin = plugin;
@@ -174,6 +188,7 @@ public final class ForgeManager {
         this.rarityKey = new NamespacedKey(plugin, "forge_rarity");
 
         loadRecipes();
+        loadBowStatsConfig();
     }
 
     public boolean isForgeEntity(Entity entity) {
@@ -489,6 +504,39 @@ public final class ForgeManager {
     String readOraxenId(ItemStack item) {
         return oraxenResolver.readOraxenId(item);
     }
+
+    ItemStack buildConfiguredBow(String bowType, String wood, int woodRarity, String metal, int metalRarity, int amount, Integer finalRarityOverride) {
+        String normalizedType = normalize(bowType);
+        String normalizedWood = normalize(wood);
+        String normalizedMetal = normalize(metal);
+        if (normalizedType.isBlank() || normalizedWood.isBlank() || normalizedMetal.isBlank()) {
+            return null;
+        }
+        String itemId = normalizedType + "_" + normalizedWood + "_" + normalizedMetal;
+        ItemStack bow = oraxenResolver.buildOraxenItem(itemId, Math.max(1, amount));
+        if (bow == null || bow.getType().isAir()) {
+            return null;
+        }
+        ItemMeta meta = bow.getItemMeta();
+        if (meta == null) {
+            return null;
+        }
+        int clampedWoodRarity = clampRarity(woodRarity);
+        int clampedMetalRarity = clampRarity(metalRarity);
+        int finalRarity = finalRarityOverride == null
+            ? clampRarity(Math.max(clampedWoodRarity, clampedMetalRarity))
+            : clampRarity(finalRarityOverride);
+        PersistentDataContainer pdc = meta.getPersistentDataContainer();
+        pdc.set(woodDataKey, PersistentDataType.STRING, normalizedWood);
+        pdc.set(metalDataKey, PersistentDataType.STRING, normalizedMetal);
+        pdc.set(bowWoodRarityDataKey, PersistentDataType.INTEGER, clampedWoodRarity);
+        pdc.set(bowMetalRarityDataKey, PersistentDataType.INTEGER, clampedMetalRarity);
+        applyConfiguredBowStats(bow, meta, clampedWoodRarity, clampedMetalRarity, finalRarity);
+        bow.setItemMeta(meta);
+        applyRarity(bow, finalRarity);
+        return bow;
+    }
+
     int readRarityLevel(ItemStack item) {
         if (item == null || item.getType().isAir() || !item.hasItemMeta()) {
             return 0;
@@ -574,8 +622,155 @@ public final class ForgeManager {
         if (!replaced) {
             lore.add(rarityLine(value));
         }
+        if (item.getType() == Material.BOW) {
+            syncBowLore(item, meta, lore, value);
+        }
         meta.setLore(lore);
         item.setItemMeta(meta);
+    }
+
+    private void syncBowLore(ItemStack item, ItemMeta meta, List<String> lore, int rarityValue) {
+        upsertLoreLine(lore, "Rareza:", rarityLine(rarityValue));
+        upsertLoreLine(lore, "Materiales:", ChatColor.GRAY + "Materiales: " + resolveBowMaterials(item, meta));
+        upsertLoreLine(lore, "Poder de ataque:", ChatColor.GRAY + "Poder de ataque: " + formatStat(resolveAttackDamage(meta)));
+        upsertLoreLine(lore, "Velocidad:", ChatColor.GRAY + "Velocidad: " + formatStat(resolveAttackSpeed(meta)));
+        upsertLoreLine(lore, "Caida de la flecha:", ChatColor.GRAY + "Caida de la flecha: " + resolveArrowDrop(meta));
+        upsertLoreLine(lore, "Durabilidad:", ChatColor.GRAY + "Durabilidad: " + resolveDurability(item, meta));
+    }
+
+    private void upsertLoreLine(List<String> lore, String token, String replacement) {
+        for (int i = 0; i < lore.size(); i++) {
+            String plain = ChatColor.stripColor(lore.get(i));
+            if (plain != null && plain.toLowerCase(Locale.ROOT).contains(token.toLowerCase(Locale.ROOT))) {
+                lore.set(i, replacement);
+                return;
+            }
+        }
+        lore.add(replacement);
+    }
+
+    private String resolveBowMaterials(ItemStack item, ItemMeta meta) {
+        PersistentDataContainer pdc = meta.getPersistentDataContainer();
+        String wood = pdc.get(woodDataKey, PersistentDataType.STRING);
+        String metal = pdc.get(metalDataKey, PersistentDataType.STRING);
+        if (wood == null || metal == null) {
+            String id = oraxenResolver.readOraxenId(item);
+            if (id != null) {
+                String normalized = id.toLowerCase(Locale.ROOT);
+                if (normalized.startsWith("hunter_bow_")) {
+                    String[] parts = normalized.split("_");
+                    if (parts.length >= 4) {
+                        wood = parts[2];
+                        metal = parts[3];
+                    }
+                } else if (normalized.equals("combat_bow")) {
+                    wood = "oak";
+                    metal = "iron";
+                }
+            }
+        }
+        if (wood == null || wood.isBlank()) {
+            wood = "desconocido";
+        }
+        if (metal == null || metal.isBlank()) {
+            metal = "desconocido";
+        }
+        return capitalizeToken(wood) + " + " + capitalizeToken(metal);
+    }
+
+    private String resolveArrowDrop(ItemMeta meta) {
+        PersistentDataContainer pdc = meta.getPersistentDataContainer();
+        String explicitDrop = pdc.get(bowDropLabelDataKey, PersistentDataType.STRING);
+        if (explicitDrop != null && !explicitDrop.isBlank()) {
+            return explicitDrop;
+        }
+        Double gravity = pdc.get(bowGravityDataKey, PersistentDataType.DOUBLE);
+        if (gravity != null) {
+            return deriveArrowDropLabel(gravity);
+        }
+        return "Normal";
+    }
+
+    private String resolveDurability(ItemStack item, ItemMeta meta) {
+        int max = resolveMaxDurability(item, meta);
+        if (max <= 0) {
+            return "-";
+        }
+        if (meta instanceof Damageable damageable) {
+            int remaining = Math.max(0, max - damageable.getDamage());
+            return remaining + "/" + max;
+        }
+        return String.valueOf(max);
+    }
+
+    private int resolveMaxDurability(ItemStack item, ItemMeta meta) {
+        if (meta instanceof Damageable damageable) {
+            try {
+                if (damageable.hasMaxDamage()) {
+                    return Math.max(0, damageable.getMaxDamage());
+                }
+            } catch (NoSuchMethodError ignored) {
+                // Older API fallback below.
+            }
+        }
+        return Math.max(0, item.getType().getMaxDurability());
+    }
+
+    private double resolveAttackDamage(ItemMeta meta) {
+        Double configured = meta.getPersistentDataContainer().get(bowDamageDataKey, PersistentDataType.DOUBLE);
+        if (configured != null) {
+            return configured;
+        }
+        return sumAttribute(meta, Attribute.GENERIC_ATTACK_DAMAGE);
+    }
+
+    private double resolveAttackSpeed(ItemMeta meta) {
+        Double configured = meta.getPersistentDataContainer().get(bowSpeedDataKey, PersistentDataType.DOUBLE);
+        if (configured != null) {
+            return configured;
+        }
+        double value = sumAttribute(meta, Attribute.GENERIC_ATTACK_SPEED);
+        return value == 0.0D ? 1.0D : value;
+    }
+
+    private double sumAttribute(ItemMeta meta, Attribute attribute) {
+        Collection<AttributeModifier> modifiers = meta.getAttributeModifiers(attribute);
+        if (modifiers == null || modifiers.isEmpty()) {
+            return 0.0D;
+        }
+        double total = 0.0D;
+        for (AttributeModifier modifier : modifiers) {
+            total += modifier.getAmount();
+        }
+        return total;
+    }
+
+    private String formatStat(double value) {
+        if (Math.abs(value - Math.rint(value)) < 0.0001D) {
+            return String.valueOf((int) Math.rint(value));
+        }
+        return String.format(Locale.US, "%.2f", value);
+    }
+
+    private String capitalizeToken(String value) {
+        if (value == null || value.isBlank()) {
+            return "";
+        }
+        String[] parts = value.toLowerCase(Locale.ROOT).split("[_\\s]+");
+        StringBuilder out = new StringBuilder();
+        for (String part : parts) {
+            if (part.isBlank()) {
+                continue;
+            }
+            if (out.length() > 0) {
+                out.append(' ');
+            }
+            out.append(Character.toUpperCase(part.charAt(0)));
+            if (part.length() > 1) {
+                out.append(part.substring(1));
+            }
+        }
+        return out.toString();
     }
 
         private int clampRarity(int value) {
@@ -1265,6 +1460,8 @@ Map<Integer, Double> buildRarityDistribution(
         pdc.set(qualityKey, PersistentDataType.INTEGER, computeFinalQuality(state, TemperType.NONE));
         pdc.set(tempKey, PersistentDataType.INTEGER, state.tempValue());
         pdc.set(tempTierKey, PersistentDataType.STRING, state.tempTier());
+        pdc.set(bowMetalRarityDataKey, PersistentDataType.INTEGER, clampRarity(state.materialRarity()));
+        pdc.set(bowWoodRarityDataKey, PersistentDataType.INTEGER, clampRarity(state.extraMaterialRarity()));
         if (player != null) {
             pdc.set(forgedByKey, PersistentDataType.STRING, player.getName());
         }
@@ -1286,6 +1483,8 @@ Map<Integer, Double> buildRarityDistribution(
         String tempTier = pdc.get(tempTierKey, PersistentDataType.STRING);
         String forgedBy = pdc.get(forgedByKey, PersistentDataType.STRING);
         Integer rarityValue = pdc.get(rarityKey, PersistentDataType.INTEGER);
+        Integer metalRarity = pdc.get(bowMetalRarityDataKey, PersistentDataType.INTEGER);
+        Integer woodRarity = pdc.get(bowWoodRarityDataKey, PersistentDataType.INTEGER);
         int rarityLevel = rarityValue == null ? 0 : clampRarity(rarityValue);
         if (outputRef == null) {
             return null;
@@ -1311,6 +1510,13 @@ Map<Integer, Double> buildRarityDistribution(
         if (forgedBy != null) {
             finalPdc.set(forgedByKey, PersistentDataType.STRING, forgedBy);
         }
+        applyConfiguredBowStats(
+            built,
+            builtMeta,
+            woodRarity == null ? -1 : clampRarity(woodRarity),
+            metalRarity == null ? -1 : clampRarity(metalRarity),
+            rarityLevel
+        );
         if (temperType == TemperType.OIL) {
             AttributeModifier bonus = new AttributeModifier(UUID.randomUUID(), "forge_oil_bonus", 1.0, AttributeModifier.Operation.ADD_NUMBER);
             builtMeta.addAttributeModifier(Attribute.GENERIC_ATTACK_DAMAGE, bonus);
@@ -1348,6 +1554,256 @@ Map<Integer, Double> buildRarityDistribution(
         quality += state.hitBonus();
         quality += temperType.bonus();
         return quality;
+    }
+
+    private void loadBowStatsConfig() {
+        bowStatsByType.clear();
+        ConfigurationSection root = plugin.getConfig().getConfigurationSection("forge.bow-stats");
+        if (root == null) {
+            return;
+        }
+        Map<String, BowStatTemplate> globalWoods = readBowTemplateMap(root.getConfigurationSection("woods"));
+        Map<String, BowStatTemplate> globalMetals = readBowTemplateMap(root.getConfigurationSection("metals"));
+        ConfigurationSection globalSection = root.getConfigurationSection("global");
+        if (globalSection != null) {
+            if (globalWoods.isEmpty()) {
+                globalWoods = readBowTemplateMap(globalSection.getConfigurationSection("woods"));
+            }
+            if (globalMetals.isEmpty()) {
+                globalMetals = readBowTemplateMap(globalSection.getConfigurationSection("metals"));
+            }
+        }
+
+        ConfigurationSection typesSection = root.getConfigurationSection("types");
+        if (typesSection != null) {
+            for (String rawType : typesSection.getKeys(false)) {
+                ConfigurationSection typeSection = typesSection.getConfigurationSection(rawType);
+                addBowTypeConfig(rawType, typeSection, globalWoods, globalMetals);
+            }
+            return;
+        }
+
+        for (String rawType : root.getKeys(false)) {
+            String key = normalize(rawType);
+            if (key.equals("woods") || key.equals("metals") || key.equals("types") || key.equals("global")) {
+                continue;
+            }
+            ConfigurationSection typeSection = root.getConfigurationSection(rawType);
+            addBowTypeConfig(rawType, typeSection, globalWoods, globalMetals);
+        }
+    }
+
+    private void addBowTypeConfig(String rawType, ConfigurationSection typeSection, Map<String, BowStatTemplate> globalWoods, Map<String, BowStatTemplate> globalMetals) {
+        if (typeSection == null) {
+            return;
+        }
+        String bowType = normalize(rawType);
+        if (bowType.isBlank()) {
+            return;
+        }
+        BowStatTemplate defaults = readBowStatTemplate(typeSection.getConfigurationSection("defaults"), true);
+        if (defaults == null) {
+            return;
+        }
+        Map<String, BowStatTemplate> woods = new HashMap<>(globalWoods);
+        Map<String, BowStatTemplate> metals = new HashMap<>(globalMetals);
+        woods.putAll(readBowTemplateMap(typeSection.getConfigurationSection("woods")));
+        metals.putAll(readBowTemplateMap(typeSection.getConfigurationSection("metals")));
+        bowStatsByType.put(bowType, new BowStatConfig(defaults, woods, metals));
+    }
+
+    private Map<String, BowStatTemplate> readBowTemplateMap(ConfigurationSection section) {
+        Map<String, BowStatTemplate> map = new HashMap<>();
+        if (section == null) {
+            return map;
+        }
+        for (String rawKey : section.getKeys(false)) {
+            BowStatTemplate template = readBowStatTemplate(section.getConfigurationSection(rawKey), false);
+            if (template != null) {
+                map.put(normalize(rawKey), template);
+            }
+        }
+        return map;
+    }
+
+    private BowStatTemplate readBowStatTemplate(ConfigurationSection section, boolean defaults) {
+        if (section == null) {
+            return defaults ? BowStatTemplate.baseDefaults() : BowStatTemplate.empty();
+        }
+        return new BowStatTemplate(
+            section.getDouble("damage", defaults ? 1.0D : 0.0D),
+            section.getDouble("speed", defaults ? 1.0D : 0.0D),
+            section.getDouble("velocity-multiplier", defaults ? 1.0D : 0.0D),
+            section.getDouble("arrow-gravity", defaults ? DEFAULT_ARROW_GRAVITY : 0.0D),
+            section.getInt("durability", defaults ? 384 : 0),
+            section.getString("arrow-drop", defaults ? "" : null)
+        );
+    }
+
+    private void applyConfiguredBowStats(ItemStack item, ItemMeta meta, int woodRarity, int metalRarity, int fallbackRarity) {
+        if (item == null || meta == null || item.getType() != Material.BOW) {
+            return;
+        }
+        ResolvedBowStats resolved = resolveBowStats(item, woodRarity, metalRarity, fallbackRarity);
+        if (resolved == null) {
+            return;
+        }
+        PersistentDataContainer pdc = meta.getPersistentDataContainer();
+        pdc.set(bowTypeDataKey, PersistentDataType.STRING, resolved.bowType());
+        pdc.set(woodDataKey, PersistentDataType.STRING, resolved.wood());
+        pdc.set(metalDataKey, PersistentDataType.STRING, resolved.metal());
+        pdc.set(bowWoodRarityDataKey, PersistentDataType.INTEGER, resolved.woodRarity());
+        pdc.set(bowMetalRarityDataKey, PersistentDataType.INTEGER, resolved.metalRarity());
+        pdc.set(bowDamageDataKey, PersistentDataType.DOUBLE, resolved.damage());
+        pdc.set(bowSpeedDataKey, PersistentDataType.DOUBLE, resolved.speed());
+        pdc.set(bowVelocityDataKey, PersistentDataType.DOUBLE, resolved.velocityMultiplier());
+        pdc.set(bowGravityDataKey, PersistentDataType.DOUBLE, resolved.arrowGravity());
+        pdc.set(bowDropLabelDataKey, PersistentDataType.STRING, resolved.arrowDropLabel());
+        pdc.set(bowDurabilityDataKey, PersistentDataType.INTEGER, resolved.durability());
+        if (meta instanceof Damageable damageable) {
+            try {
+                int max = Math.max(1, resolved.durability());
+                damageable.setMaxDamage(max);
+                if (damageable.getDamage() > max) {
+                    damageable.setDamage(max);
+                }
+            } catch (NoSuchMethodError ignored) {
+                // API without max-damage customization.
+            }
+        }
+    }
+
+    private ResolvedBowStats resolveBowStats(ItemStack bow, int woodRarity, int metalRarity, int fallbackRarity) {
+        String id = normalize(oraxenResolver.readOraxenId(bow));
+        if (id.isBlank()) {
+            return null;
+        }
+        String matchedType = "";
+        for (String candidate : bowStatsByType.keySet()) {
+            if (id.equals(candidate) || id.startsWith(candidate + "_")) {
+                if (candidate.length() > matchedType.length()) {
+                    matchedType = candidate;
+                }
+            }
+        }
+        if (matchedType.isBlank()) {
+            return null;
+        }
+        BowStatConfig config = bowStatsByType.get(matchedType);
+        if (config == null) {
+            return null;
+        }
+
+        String suffix = id.equals(matchedType) ? "" : id.substring(matchedType.length() + 1);
+        String wood = "";
+        String metal = "";
+        if (!suffix.isBlank()) {
+            String[] parts = suffix.split("_");
+            if (parts.length >= 2) {
+                wood = normalize(parts[0]);
+                metal = normalize(parts[1]);
+            }
+        }
+        if (wood.isBlank() || metal.isBlank()) {
+            String[] legacy = id.split("_");
+            if (legacy.length >= 4 && matchedType.equals("hunter_bow")) {
+                wood = normalize(legacy[2]);
+                metal = normalize(legacy[3]);
+            }
+        }
+        if (wood.isBlank()) {
+            wood = "default";
+        }
+        if (metal.isBlank()) {
+            metal = "default";
+        }
+
+        int resolvedWoodRarity = clampRarity(woodRarity >= 0 ? woodRarity : fallbackRarity);
+        int resolvedMetalRarity = clampRarity(metalRarity >= 0 ? metalRarity : fallbackRarity);
+        double woodMultiplier = rarityMultiplier(resolvedWoodRarity);
+        double metalMultiplier = rarityMultiplier(resolvedMetalRarity);
+        BowStatTemplate defaults = config.defaults();
+        BowStatTemplate woodStats = config.woods().getOrDefault(wood, BowStatTemplate.empty());
+        BowStatTemplate metalStats = config.metals().getOrDefault(metal, BowStatTemplate.empty());
+
+        double damage = Math.max(
+            0.1D,
+            defaults.damage()
+                + (woodStats.damage() * woodMultiplier)
+                + (metalStats.damage() * metalMultiplier)
+        );
+        double speed = Math.max(
+            0.1D,
+            defaults.speed()
+                + woodStats.speed()
+                + metalStats.speed()
+        );
+        double velocity = Math.max(
+            0.1D,
+            defaults.velocityMultiplier()
+                + woodStats.velocityMultiplier()
+                + metalStats.velocityMultiplier()
+        );
+        double gravity = Math.max(
+            0.0D,
+            defaults.arrowGravity()
+                + woodStats.arrowGravity()
+                + metalStats.arrowGravity()
+        );
+        int durability = Math.max(
+            1,
+            (int) Math.round(
+                defaults.durability()
+                    + (woodStats.durability() * woodMultiplier)
+                    + (metalStats.durability() * metalMultiplier)
+            )
+        );
+
+        String drop = metalStats.arrowDrop();
+        if (drop == null || drop.isBlank()) {
+            drop = woodStats.arrowDrop();
+        }
+        if (drop == null || drop.isBlank()) {
+            drop = defaults.arrowDrop();
+        }
+        if (drop == null || drop.isBlank()) {
+            drop = deriveArrowDropLabel(gravity);
+        }
+
+        return new ResolvedBowStats(
+            matchedType,
+            wood,
+            metal,
+            resolvedWoodRarity,
+            resolvedMetalRarity,
+            damage,
+            speed,
+            velocity,
+            gravity,
+            durability,
+            drop
+        );
+    }
+
+    private String deriveArrowDropLabel(double gravity) {
+        if (gravity < DEFAULT_ARROW_GRAVITY - 0.01D) {
+            return "Baja";
+        }
+        if (gravity > DEFAULT_ARROW_GRAVITY + 0.01D) {
+            return "Alta";
+        }
+        return "Normal";
+    }
+
+    private double rarityMultiplier(int rarity) {
+        return switch (clampRarity(rarity)) {
+            case 0 -> 1.0D;
+            case 1 -> 1.2D;
+            case 2 -> 1.5D;
+            case 3 -> 2.0D;
+            case 4 -> 3.0D;
+            default -> 1.0D;
+        };
     }
 
     TemperatureTier resolveTemperatureTier(int temp) {
@@ -1504,6 +1960,43 @@ Map<Integer, Double> buildRarityDistribution(
         }
         return out.toString();
     }
+
+    private record BowStatConfig(
+        BowStatTemplate defaults,
+        Map<String, BowStatTemplate> woods,
+        Map<String, BowStatTemplate> metals
+    ) {}
+
+    private record BowStatTemplate(
+        double damage,
+        double speed,
+        double velocityMultiplier,
+        double arrowGravity,
+        int durability,
+        String arrowDrop
+    ) {
+        static BowStatTemplate baseDefaults() {
+            return new BowStatTemplate(1.0D, 1.0D, 1.0D, DEFAULT_ARROW_GRAVITY, 384, "");
+        }
+
+        static BowStatTemplate empty() {
+            return new BowStatTemplate(0.0D, 0.0D, 0.0D, 0.0D, 0, "");
+        }
+    }
+
+    private record ResolvedBowStats(
+        String bowType,
+        String wood,
+        String metal,
+        int woodRarity,
+        int metalRarity,
+        double damage,
+        double speed,
+        double velocityMultiplier,
+        double arrowGravity,
+        int durability,
+        String arrowDropLabel
+    ) {}
 }
 
 

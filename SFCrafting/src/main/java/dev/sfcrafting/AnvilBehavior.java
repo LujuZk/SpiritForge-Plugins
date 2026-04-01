@@ -45,7 +45,8 @@ public final class AnvilBehavior implements StationBehavior {
         ItemStack extra = inventory.getItem(SLOT_EXTRA);
         manager.ensureRarity(mold);
         manager.ensureRarity(ingot);
-        ForgeRecipe recipe = manager.findAnvilRecipe(mold, ingot, extra, player);
+        manager.ensureRarity(extra);
+        ForgeRecipe recipe = manager.findAnvilRecipe(mold, ingot, extra);
         if (recipe == null) {
             ForgeRecipe locked = manager.findAnvilRecipeIgnoringLock(mold, ingot, extra);
             if (locked != null) {
@@ -80,6 +81,7 @@ public final class AnvilBehavior implements StationBehavior {
 
         int moldRarity = manager.readRarityLevel(mold);
         int materialRarity = manager.readRarityLevel(ingot);
+        int extraMaterialRarity = manager.readRarityLevel(extra);
 
         String materialId = manager.readOraxenId(ingot);
         if (materialId == null || materialId.isBlank()) {
@@ -97,6 +99,7 @@ public final class AnvilBehavior implements StationBehavior {
         state.setTempBonus(tempBonus);
         state.setMoldRarity(moldRarity);
         state.setMaterialRarity(materialRarity);
+        state.setExtraMaterialRarity(extraMaterialRarity);
         state.setRarityLevel(manager.resolveRarityFromItems(mold, ingot));
 
         state.setActiveRecipe(recipe);

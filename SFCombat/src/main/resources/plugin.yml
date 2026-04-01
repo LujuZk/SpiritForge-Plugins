@@ -1,0 +1,7 @@
+name: SFCombat
+version: 1.0.0
+main: dev.sfcombat.SFCombatPlugin
+api-version: '1.21'
+softdepend: [SFCrafting, Oraxen]
+authors: [LujuZk]
+description: SpiritForge combat mechanics plugin

@@ -9,7 +9,7 @@ description: SpiritForge crafting and forging plugin
 commands:
   sfcrafting:
     description: SFCrafting admin commands
-    usage: /sfcrafting give <oraxen_id|material:id> [cantidad] [rareza]
+    usage: /sfcrafting give <oraxen_id|material:id> [cantidad] [rareza] | /sfcrafting givebow <tipo> <madera> <rareza_madera> <metal> <rareza_metal> [cantidad] [rareza_final]
     permission: sfcrafting.admin
     aliases: [cforge]
   recetas:

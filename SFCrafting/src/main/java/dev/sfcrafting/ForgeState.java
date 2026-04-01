@@ -4,8 +4,6 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.scheduler.BukkitTask;
 import java.util.UUID;
 
-import java.util.UUID;
-
 public final class ForgeState {
     public enum StationType {
         SMELTER,
@@ -28,6 +26,7 @@ public final class ForgeState {
     private int rarityLevel = 0;
     private int moldRarity = 0;
     private int materialRarity = 0;
+    private int extraMaterialRarity = 0;
     private String materialId = "";
     private int hits;
     private int failures;
@@ -170,6 +169,14 @@ public final class ForgeState {
         this.materialRarity = materialRarity;
     }
 
+    public int extraMaterialRarity() {
+        return extraMaterialRarity;
+    }
+
+    public void setExtraMaterialRarity(int extraMaterialRarity) {
+        this.extraMaterialRarity = extraMaterialRarity;
+    }
+
     public String materialId() {
         return materialId;
     }
@@ -210,8 +217,13 @@ public final class ForgeState {
         this.temperType = temperType == null ? "" : temperType;
     }
 
-    public UUID lastPlayerUuid() { return lastPlayerUuid; }
-    public void setLastPlayerUuid(UUID uuid) { this.lastPlayerUuid = uuid; }
+    public UUID lastPlayerUuid() {
+        return lastPlayerUuid;
+    }
+
+    public void setLastPlayerUuid(UUID uuid) {
+        this.lastPlayerUuid = uuid;
+    }
 
     public int barIndex() {
         return barIndex;
@@ -245,12 +257,5 @@ public final class ForgeState {
         this.barTickCounter = barTickCounter;
     }
 
-    public UUID lastPlayerUuid() {
-        return lastPlayerUuid;
-    }
-
-    public void setLastPlayerUuid(UUID lastPlayerUuid) {
-        this.lastPlayerUuid = lastPlayerUuid;
-    }
 }
 

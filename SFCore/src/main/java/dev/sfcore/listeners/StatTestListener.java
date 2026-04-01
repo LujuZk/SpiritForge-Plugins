@@ -8,6 +8,7 @@ import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.attribute.AttributeInstance;
 import org.bukkit.entity.Player;
+import org.bukkit.entity.Projectile;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -31,7 +32,8 @@ public class StatTestListener implements Listener {
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onPlayerDealDamage(EntityDamageByEntityEvent event) {
-        if (!(event.getDamager() instanceof Player player)) return;
+        Player player = resolveAttacker(event);
+        if (player == null) return;
         UUID uuid = player.getUniqueId();
 
         // DAMAGE_BONUS
@@ -246,6 +248,17 @@ public class StatTestListener implements Listener {
         return Component.text("[TEST] ", NamedTextColor.GRAY)
                 .append(Component.text(statName, NamedTextColor.GOLD))
                 .append(Component.text(String.format(" → Value: %.2f", value), NamedTextColor.YELLOW));
+    }
+
+    private Player resolveAttacker(EntityDamageByEntityEvent event) {
+        if (event.getDamager() instanceof Player player) {
+            return player;
+        }
+        if (event.getDamager() instanceof Projectile projectile
+                && projectile.getShooter() instanceof Player player) {
+            return player;
+        }
+        return null;
     }
 
     private String toRoman(int n) {

@@ -3,7 +3,7 @@ plugins {
     id("com.gradleup.shadow") version "9.0.0"
 }
 
-group = "dev.sfdrops"
+group = "dev.sfcombat"
 version = "1.0.0"
 
 java {
@@ -17,8 +17,6 @@ repositories {
 
 dependencies {
     compileOnly("io.papermc.paper:paper-api:1.21.1-R0.1-SNAPSHOT")
-    compileOnly(files("../../plugins/Oraxen-Plugin-1.21.11.jar"))
-    compileOnly(fileTree("../SFCore/build/libs") { include("SFCore-*.jar") })
 }
 
 tasks {

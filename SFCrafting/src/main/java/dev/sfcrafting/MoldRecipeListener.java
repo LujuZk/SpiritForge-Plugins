@@ -78,7 +78,10 @@ public final class MoldRecipeListener implements Listener {
 
     @EventHandler
     public void onCraft(CraftItemEvent event) {
-        ItemStack result = buildResultIfMatch(event.getInventory());
+        if (!(event.getInventory() instanceof CraftingInventory inventory)) {
+            return;
+        }
+        ItemStack result = buildResultIfMatch(inventory);
         if (result != null) {
             event.getInventory().setResult(result);
             event.setCurrentItem(result);
