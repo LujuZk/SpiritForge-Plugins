@@ -1,5 +1,8 @@
 package dev.sfcore.api;
 
+import dev.sfcore.database.SFDatabase;
+import dev.sfcore.database.SFDatabaseFactory;
+import dev.sfcore.database.SqlDialect;
 import dev.sfcore.managers.StatManager;
 import org.bukkit.entity.Player;
 
@@ -11,9 +14,11 @@ public final class SFCoreAPI {
 
     private static SFCoreAPI instance;
     private final StatManager manager;
+    private final SFDatabaseFactory databaseFactory;
 
-    private SFCoreAPI(StatManager manager) {
+    private SFCoreAPI(StatManager manager, SFDatabaseFactory databaseFactory) {
         this.manager = manager;
+        this.databaseFactory = databaseFactory;
     }
 
     public static SFCoreAPI get() {
@@ -21,12 +26,30 @@ public final class SFCoreAPI {
         return instance;
     }
 
-    public static void init(StatManager manager) {
-        instance = new SFCoreAPI(manager);
+    public static void init(StatManager manager, SFDatabaseFactory databaseFactory) {
+        instance = new SFCoreAPI(manager, databaseFactory);
     }
 
     public static void shutdown() {
         instance = null;
+    }
+
+    // ─── Database API ────────────────────────────────────────────────
+
+    /**
+     * Devuelve el handle de base de datos del plugin consumidor.
+     * El motor (SQLite/MySQL) y las rutas/prefijos de tabla los resuelve SFCore
+     * a partir de su config.yml global. El consumidor solo debe usar
+     * {@code db.getConnection()} en try-with-resources y {@code db.getTableName("...")}
+     * para resolver nombres de tabla lógicos.
+     */
+    public SFDatabase getDatabase(String namespace) {
+        return databaseFactory.get(namespace);
+    }
+
+    /** Dialecto SQL activo (upserts, tipos, etc.) — compartido entre namespaces. */
+    public SqlDialect getDialect() {
+        return databaseFactory.dialect();
     }
 
     public void addBonus(Player player, String source, StatType stat, double value) {

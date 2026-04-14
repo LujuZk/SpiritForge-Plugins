@@ -4,6 +4,7 @@ main: dev.sfcompass.SFCompassPlugin
 api-version: '1.21'
 description: Sistema de brújula con niveles para acceso a islas
 author: LujuZk
+depend: [SFCore]
 
 commands:
   compass:
