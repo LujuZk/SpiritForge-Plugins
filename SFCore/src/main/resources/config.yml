@@ -1,0 +1,26 @@
+# ─── SFCore — configuración global ────────────────────────────────────────
+# Este config es consumido por SFCore y por todos los plugins de la suite
+# que dependan de SFCore para acceso a base de datos (SFCompass, SFCrafting,
+# SFSkilltree, SFCharacter, etc.). Cambiar el motor aquí lo cambia para toda
+# la suite.
+
+database:
+  # sqlite | mysql
+  type: sqlite
+
+  # Solo se usa cuando type: mysql
+  mysql:
+    host: localhost
+    port: 3306
+    database: spiritforge
+    username: sfuser
+    password: changeme
+    pool-size: 10
+    # Prefijo aplicado a los nombres de tabla por namespace.
+    # Las tablas se crean como <namespace>_<tabla>, ej: sfcompass_compass_levels
+    # Así todos los plugins caben en una sola DB sin colisiones.
+
+  # Solo se usa cuando type: sqlite
+  sqlite:
+    # Directorio relativo a plugins/SFCore/ donde se crean los .db por namespace
+    directory: db
