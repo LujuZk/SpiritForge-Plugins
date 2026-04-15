@@ -45,6 +45,12 @@ public class StatDatabase {
             stmt.execute("""
                 CREATE INDEX IF NOT EXISTS idx_player ON stat_bonuses(player_uuid)
                 """);
+            stmt.execute("""
+                CREATE TABLE IF NOT EXISTS player_resources (
+                    player_uuid TEXT PRIMARY KEY,
+                    mana_current REAL NOT NULL DEFAULT 0
+                )
+                """);
         }
     }
 
@@ -108,6 +114,42 @@ public class StatDatabase {
             ps.executeUpdate();
         } catch (SQLException e) {
             log.warning("[SFCore] Error deleting all bonuses for " + uuid + ": " + e.getMessage());
+        }
+    }
+
+    public Double loadMana(UUID uuid) {
+        try (PreparedStatement ps = connection.prepareStatement(
+                "SELECT mana_current FROM player_resources WHERE player_uuid = ?")) {
+            ps.setString(1, uuid.toString());
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getDouble("mana_current");
+                }
+            }
+        } catch (SQLException e) {
+            log.warning("[SFCore] Error loading mana for " + uuid + ": " + e.getMessage());
+        }
+        return null;
+    }
+
+    public void upsertMana(UUID uuid, double manaCurrent) {
+        try (PreparedStatement ps = connection.prepareStatement(
+                "INSERT OR REPLACE INTO player_resources (player_uuid, mana_current) VALUES (?, ?)")) {
+            ps.setString(1, uuid.toString());
+            ps.setDouble(2, manaCurrent);
+            ps.executeUpdate();
+        } catch (SQLException e) {
+            log.warning("[SFCore] Error saving mana for " + uuid + ": " + e.getMessage());
+        }
+    }
+
+    public void deleteResources(UUID uuid) {
+        try (PreparedStatement ps = connection.prepareStatement(
+                "DELETE FROM player_resources WHERE player_uuid = ?")) {
+            ps.setString(1, uuid.toString());
+            ps.executeUpdate();
+        } catch (SQLException e) {
+            log.warning("[SFCore] Error deleting resources for " + uuid + ": " + e.getMessage());
         }
     }
 
