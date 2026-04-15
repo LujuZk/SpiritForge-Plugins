@@ -94,6 +94,7 @@ public class SkillPointManager {
         SFCoreAPI.get().clearSource(player, "sfskills:" + skill.getKey() + ":");
 
         data.resetNodes(skill);
+        plugin.getDatabaseManager().resetNodes(player.getUniqueId(), skill);
     }
 
     public enum UnlockResult {

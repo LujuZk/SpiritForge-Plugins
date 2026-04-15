@@ -1,8 +1,9 @@
 package dev.sfcrafting;
 
-import java.io.File;
+import dev.sfcore.database.SFDatabase;
+import dev.sfcore.database.SqlDialect;
+
 import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -16,38 +17,40 @@ import org.bukkit.plugin.Plugin;
 public final class RecipeBookDatabaseManager {
 
     private final Plugin plugin;
-    private Connection connection;
+    private final SFDatabase sfDatabase;
+    private final String table;
 
-    public RecipeBookDatabaseManager(Plugin plugin) {
+    private final String sqlSelect;
+    private final String sqlInsertIgnore;
+
+    public RecipeBookDatabaseManager(Plugin plugin, SFDatabase sfDatabase) {
         this.plugin = plugin;
-    }
+        this.sfDatabase = sfDatabase;
+        SqlDialect dialect = sfDatabase.dialect();
+        this.table = sfDatabase.getTableName("player_discoveries");
 
-    public void initialize() {
-        try {
-            File dbFile = new File(plugin.getDataFolder(), "crafting.db");
-            connection = DriverManager.getConnection("jdbc:sqlite:" + dbFile.getAbsolutePath());
-            try (Statement stmt = connection.createStatement()) {
-                stmt.execute("PRAGMA journal_mode=WAL");
-                stmt.execute("""
-                    CREATE TABLE IF NOT EXISTS player_discoveries (
-                        uuid        TEXT NOT NULL,
-                        material_id TEXT NOT NULL,
-                        PRIMARY KEY (uuid, material_id)
-                    )
-                """);
-            }
+        this.sqlSelect = "SELECT material_id FROM " + table + " WHERE uuid = ?";
+        this.sqlInsertIgnore = dialect.insertIgnore(table, new String[]{"uuid", "material_id"});
+
+        String create = "CREATE TABLE IF NOT EXISTS " + table + " ("
+                + "uuid "        + dialect.uuidType()   + " NOT NULL, "
+                + "material_id " + dialect.varchar(128) + " NOT NULL, "
+                + "PRIMARY KEY (uuid, material_id)"
+                + ")";
+
+        try (Connection conn = sfDatabase.getConnection();
+             Statement stmt = conn.createStatement()) {
+            stmt.execute(create);
+            plugin.getLogger().info("Recetario DB lista (" + dialect.id() + ", tabla '" + table + "')");
         } catch (SQLException e) {
-            plugin.getLogger().log(Level.SEVERE, "No se pudo inicializar la base de datos del recetario", e);
+            throw new RuntimeException("Failed to initialize SFCrafting recipe-book database", e);
         }
     }
 
     public Set<String> loadDiscoveries(UUID uuid) {
         Set<String> discoveries = new HashSet<>();
-        if (connection == null) {
-            return discoveries;
-        }
-        try (PreparedStatement ps = connection.prepareStatement(
-                "SELECT material_id FROM player_discoveries WHERE uuid = ?")) {
+        try (Connection conn = sfDatabase.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sqlSelect)) {
             ps.setString(1, uuid.toString());
             try (ResultSet rs = ps.executeQuery()) {
                 while (rs.next()) {
@@ -61,12 +64,9 @@ public final class RecipeBookDatabaseManager {
     }
 
     public void saveDiscovery(UUID uuid, String materialId) {
-        if (connection == null) {
-            return;
-        }
         plugin.getServer().getScheduler().runTaskAsynchronously(plugin, () -> {
-            try (PreparedStatement ps = connection.prepareStatement(
-                    "INSERT OR IGNORE INTO player_discoveries (uuid, material_id) VALUES (?, ?)")) {
+            try (Connection conn = sfDatabase.getConnection();
+                 PreparedStatement ps = conn.prepareStatement(sqlInsertIgnore)) {
                 ps.setString(1, uuid.toString());
                 ps.setString(2, materialId);
                 ps.executeUpdate();
@@ -77,11 +77,11 @@ public final class RecipeBookDatabaseManager {
     }
 
     public void saveDiscoveriesBatch(UUID uuid, Set<String> materialIds) {
-        if (connection == null || materialIds.isEmpty()) {
+        if (materialIds.isEmpty()) {
             return;
         }
-        try (PreparedStatement ps = connection.prepareStatement(
-                "INSERT OR IGNORE INTO player_discoveries (uuid, material_id) VALUES (?, ?)")) {
+        try (Connection conn = sfDatabase.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sqlInsertIgnore)) {
             for (String materialId : materialIds) {
                 ps.setString(1, uuid.toString());
                 ps.setString(2, materialId);
@@ -90,16 +90,6 @@ public final class RecipeBookDatabaseManager {
             ps.executeBatch();
         } catch (SQLException e) {
             plugin.getLogger().log(Level.WARNING, "Error al guardar discoveries batch para " + uuid, e);
-        }
-    }
-
-    public void close() {
-        if (connection != null) {
-            try {
-                connection.close();
-            } catch (SQLException e) {
-                plugin.getLogger().log(Level.WARNING, "Error al cerrar conexion de recetario", e);
-            }
         }
     }
 }

@@ -1,5 +1,6 @@
 package dev.skilltree;
 
+import dev.sfcore.api.SFCoreAPI;
 import dev.skilltree.commands.SkillCommand;
 import dev.skilltree.commands.SkillAdminCommand;
 import dev.skilltree.database.DatabaseManager;
@@ -37,9 +38,14 @@ public class SkillTreePlugin extends JavaPlugin {
         saveResource("icons.yml", false);
         saveSkillTreeResources();
 
-        // Inicializar base de datos
-        databaseManager = new DatabaseManager(this);
-        databaseManager.initialize();
+        // Inicializar base de datos (via SFCore)
+        var sfCorePlugin = getServer().getPluginManager().getPlugin("SFCore");
+        if (sfCorePlugin == null || !sfCorePlugin.isEnabled()) {
+            getLogger().severe("SFCore no está habilitado — SFSkilltree no puede iniciarse.");
+            getServer().getPluginManager().disablePlugin(this);
+            return;
+        }
+        databaseManager = new DatabaseManager(this, SFCoreAPI.get().getDatabase("skilltree"));
 
         // Inicializar managers
         skillManager      = new SkillManager(this);
@@ -81,7 +87,6 @@ public class SkillTreePlugin extends JavaPlugin {
     public void onDisable() {
         if (inventoryManager != null) inventoryManager.restoreAll();
         if (skillManager != null)     skillManager.saveAll();
-        if (databaseManager != null)  databaseManager.close();
         getLogger().info("SkillTreePlugin deshabilitado.");
     }
 
