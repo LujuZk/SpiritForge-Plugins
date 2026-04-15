@@ -35,7 +35,6 @@ public class SFCorePlugin extends JavaPlugin {
         getCommand("sfcore").setExecutor(coreCommand);
         getCommand("sfcore").setTabCompleter(coreCommand);
 
-        // Listeners
         var pm = getServer().getPluginManager();
         pm.registerEvents(new PlayerConnectionListener(statManager, testMonitor, manaManager), this);
         pm.registerEvents(new CombatStatListener(this, getConfig()), this);
