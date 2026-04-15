@@ -1319,6 +1319,209 @@ forge:
     y: 3.0
     scale: 2
 
+spellcraft:
+  enabled: true
+  cast-skill-map:
+    attack_aoe: "SF_Dynamic_AttackAOE"
+    attack_projectile: "SF_Dynamic_Projectile"
+    buff: "SF_Dynamic_Buff"
+  projectile-visual:
+    # ITEM:
+    #   Usa el proyectil interno de SFCrafting (Snowball) con modelo de item de Oraxen.
+    #   El modelo se define por plantilla en "projectile-model-item".
+    #
+    # BETTERMODEL:
+    #   No usa item en vuelo. En su lugar castea una skill de MythicMobs para el proyectil visual.
+    #   Requiere que esa skill esté armada con BetterModel (ej. projectile bulletType=MOB + mobType con modelo).
+    #   Skill usada:
+    #   1) "mythic-skill" de la plantilla (si está definido)
+    #   2) fallback "cast-skill-map.attack_projectile"
+    mode: BETTERMODEL # ITEM | BETTERMODEL
+  debug:
+    # Muestra en chat/log qué skill se eligió y si cayó en fallback (cast-skill-map).
+    fallback: false
+  output:
+    material: ENCHANTED_BOOK
+    name-format: "&d{spell_name} &8- &7{class_name}"
+    lore:
+      - "&8Tipo: &7{spell_type}"
+      - "&8Clase: &7{class_name}"
+      - "&8Puntos usados: &f{points_used}&7/&f{points_total}"
+      - "&8----------------"
+      - "{stats_lines}"
+  class-bonus-points:
+    mago: 2
+    clerigo: 1
+    paladin: 1
+    guerrero: 0
+    picaro: 0
+  skill-aliases:
+    melee:
+      - sword
+      - axe
+    ranged:
+      - bow
+    magic:
+      - smithing
+    meditation:
+      - fishing
+  skill-bonus-points:
+    magic:
+      every-levels: 10
+      points: 1
+    meditation:
+      every-levels: 10
+      points: 1
+  crystals:
+    basic:
+      item: "ORAXEN:mana_crystal_basic"
+      points: 8
+    refined:
+      item: "ORAXEN:mana_crystal_refined"
+      points: 12
+    ancient:
+      item: "ORAXEN:mana_crystal_ancient"
+      points: 16
+  books:
+    attack:
+      item: "ORAXEN:spellbook_attack"
+      bonus-points: 2
+      allowed-types:
+        - attack_aoe
+        - attack_projectile
+    buff:
+      item: "ORAXEN:spellbook_buff"
+      bonus-points: 2
+      allowed-types:
+        - buff
+  templates:
+    fire_burst:
+      display-name: "Rafaga Ignea"
+      type: attack_aoe
+      allowed-classes:
+        - mago
+      required-skills:
+        magic: 10
+      stats:
+        damage:
+          display-name: "Danio"
+          base: 10.0
+          per-point: 2.0
+          min-points: 0
+          max-points: 10
+        area:
+          display-name: "Radio"
+          base: 2.0
+          per-point: 0.4
+          min-points: 0
+          max-points: 8
+        cast_speed:
+          display-name: "Velocidad de casteo"
+          base: 1.0
+          per-point: 0.08
+          min-points: 0
+          max-points: 8
+        cooldown:
+          display-name: "Cooldown"
+          base: 8.0
+          per-point: -0.5
+          min-points: 0
+          max-points: 8
+        mana_cost:
+          display-name: "Costo de mana"
+          base: 20.0
+          per-point: -1.0
+          min-points: 0
+          max-points: 8
+    holy_guard:
+      display-name: "Guardia Sagrada"
+      type: buff
+      allowed-classes:
+        - clerigo
+        - paladin
+      required-skills:
+        meditation: 8
+      stats:
+        power:
+          display-name: "Potencia"
+          base: 1.0
+          per-point: 0.1
+          min-points: 0
+          max-points: 10
+        duration:
+          display-name: "Duracion"
+          base: 8.0
+          per-point: 1.5
+          min-points: 0
+          max-points: 10
+        cast_speed:
+          display-name: "Velocidad de casteo"
+          base: 1.0
+          per-point: 0.08
+          min-points: 0
+          max-points: 8
+        cooldown:
+          display-name: "Cooldown"
+          base: 14.0
+          per-point: -0.6
+          min-points: 0
+          max-points: 8
+        mana_cost:
+          display-name: "Costo de mana"
+          base: 16.0
+          per-point: -1.0
+          min-points: 0
+          max-points: 8
+    arcane_bolt:
+      display-name: "Proyectil Arcano"
+      type: attack_projectile
+      mythic-skill: "SF2_ArcaneBolt"
+      # Si spellcraft.projectile-visual.mode = BETTERMODEL, esta skill Mythic se usa para el disparo.
+      # Debe ser una skill de proyectil preparada con BetterModel.
+      #mythic-skill: "SF2_ArcaneBolt_BetterModel"
+      projectile-model-item: "mana_crystal_refined" # ID de Oraxen para mostrar como modelo del proyectil
+      allowed-classes:
+        - mago
+      required-skills:
+        magic: 12
+      stats:
+        damage:
+          display-name: "Danio"
+          base: 9.0
+          per-point: 1.8
+          min-points: 0
+          max-points: 10
+        projectile_speed:
+          display-name: "Velocidad de proyectil"
+          base: 34.0
+          per-point: 2.0
+          min-points: 0
+          max-points: 10
+        projectile_range:
+          display-name: "Alcance"
+          base: 18.0
+          per-point: 1.5
+          min-points: 0
+          max-points: 10
+        cast_speed:
+          display-name: "Velocidad de casteo"
+          base: 1.0
+          per-point: 0.08
+          min-points: 0
+          max-points: 8
+        cooldown:
+          display-name: "Cooldown"
+          base: 7.0
+          per-point: -0.5
+          min-points: 0
+          max-points: 8
+        mana_cost:
+          display-name: "Costo de mana"
+          base: 18.0
+          per-point: -1.0
+          min-points: 0
+          max-points: 8
+
 
 
 

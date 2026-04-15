@@ -12,6 +12,10 @@ public final class SFCraftingPlugin extends JavaPlugin {
     private AuraManager auraManager;
     private RecipeBookDatabaseManager recipeBookDb;
     private RecipeBookManager recipeBookManager;
+    private SkillBridge skillBridge;
+    private CharacterBridge characterBridge;
+    private SpellCraftingManager spellCraftingManager;
+    private SpellCastManager spellCastManager;
 
     @Override
     public void onEnable() {
@@ -19,10 +23,14 @@ public final class SFCraftingPlugin extends JavaPlugin {
         sanitizeConfigFile();
         reloadConfig();
         forgeManager = new ForgeManager(this);
+        skillBridge = new SkillBridge(this);
+        characterBridge = new CharacterBridge(this);
+        spellCraftingManager = new SpellCraftingManager(this, forgeManager.oraxenResolver(), skillBridge, characterBridge);
+        spellCastManager = new SpellCastManager(this);
         auraManager = new AuraManager(this);
         auraManager.start();
 
-        ForgeCommand command = new ForgeCommand(this, forgeManager, auraManager);
+        ForgeCommand command = new ForgeCommand(this, forgeManager, auraManager, spellCraftingManager, spellCastManager);
         var pluginCommand = getCommand("sfcrafting");
         if (pluginCommand != null) {
             pluginCommand.setExecutor(command);
@@ -32,7 +40,6 @@ public final class SFCraftingPlugin extends JavaPlugin {
         if (getConfig().getBoolean("forge.recetario.enabled", true)) {
             recipeBookDb = new RecipeBookDatabaseManager(this);
             recipeBookDb.initialize();
-            SkillBridge skillBridge = new SkillBridge(this);
             recipeBookManager = new RecipeBookManager(this, forgeManager, recipeBookDb, skillBridge);
             forgeManager.setRecipeBookManager(recipeBookManager);
 
@@ -58,6 +65,12 @@ public final class SFCraftingPlugin extends JavaPlugin {
         getServer().getPluginManager().registerEvents(new ForgeListener(forgeManager), this);
         getServer().getPluginManager().registerEvents(new MoldRecipeListener(this, forgeManager), this);
         getServer().getPluginManager().registerEvents(new AuraListener(auraManager), this);
+        if (spellCastManager != null && spellCastManager.isReady()) {
+            getServer().getPluginManager().registerEvents(spellCastManager, this);
+            getLogger().info("Spell casting Mythic bridge habilitado.");
+        } else {
+            getLogger().warning("Spell casting Mythic bridge no disponible (MythicMobs ausente o API no accesible).");
+        }
         startCoolingTask();
         startWaterQuenchTask();
         if (getConfig().getBoolean("forge.enable-pack-fixer", false)) {

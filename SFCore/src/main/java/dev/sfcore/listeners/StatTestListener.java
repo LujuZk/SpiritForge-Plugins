@@ -5,6 +5,7 @@ import dev.sfcore.managers.StatManager;
 import dev.sfcore.managers.TestMonitorManager;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
+import org.bukkit.NamespacedKey;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.attribute.AttributeInstance;
 import org.bukkit.entity.Player;
@@ -15,10 +16,16 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
+import org.bukkit.persistence.PersistentDataType;
 
 import java.util.UUID;
 
 public class StatTestListener implements Listener {
+
+    private static final NamespacedKey SFCORE_STAFF_PROJECTILE_KEY = NamespacedKey.fromString("sfcore:magic_staff_projectile");
+    private static final NamespacedKey SFCORE_STAFF_DAMAGE_KEY = NamespacedKey.fromString("sfcore:magic_staff_damage");
+    private static final NamespacedKey SFCRAFTING_SPELL_PROJECTILE_KEY = NamespacedKey.fromString("sfcrafting:sf_spell_projectile");
+    private static final NamespacedKey SFCRAFTING_SPELL_DAMAGE_KEY = NamespacedKey.fromString("sfcrafting:sf_spell_projectile_damage");
 
     private final StatManager statManager;
     private final TestMonitorManager testMonitor;
@@ -45,6 +52,16 @@ public class StatTestListener implements Listener {
                     .append(Component.text("DAMAGE_BONUS", NamedTextColor.GOLD))
                     .append(Component.text(String.format(" → Base: %.1f | Final: %.1f | Bonus: +%.0f%%",
                             baseDmg, finalDmg, bonus * 100), NamedTextColor.YELLOW)));
+        }
+
+        if (testMonitor.isActive(uuid, StatType.MAGIC_DAMAGE)) {
+            ProjectileDamageDebug debug = resolveProjectileDamageDebug(event);
+            if (debug != null) {
+                player.sendMessage(Component.text("[TEST] ", NamedTextColor.GRAY)
+                        .append(Component.text("MAGIC_DAMAGE", NamedTextColor.GOLD))
+                        .append(Component.text(String.format(" → Source: %s | Expected: %.2f | Final: %.2f",
+                                debug.source, debug.expectedDamage, event.getFinalDamage()), NamedTextColor.YELLOW)));
+            }
         }
 
         // LIFESTEAL
@@ -260,6 +277,31 @@ public class StatTestListener implements Listener {
         }
         return null;
     }
+
+    private ProjectileDamageDebug resolveProjectileDamageDebug(EntityDamageByEntityEvent event) {
+        if (!(event.getDamager() instanceof Projectile projectile)) {
+            return null;
+        }
+        if (!(projectile.getShooter() instanceof Player)) {
+            return null;
+        }
+
+        if (SFCORE_STAFF_PROJECTILE_KEY != null
+                && projectile.getPersistentDataContainer().has(SFCORE_STAFF_PROJECTILE_KEY, PersistentDataType.BYTE)) {
+            double expected = projectile.getPersistentDataContainer().getOrDefault(SFCORE_STAFF_DAMAGE_KEY, PersistentDataType.DOUBLE, event.getFinalDamage());
+            return new ProjectileDamageDebug("staff_shot", expected);
+        }
+
+        if (SFCRAFTING_SPELL_PROJECTILE_KEY != null
+                && projectile.getPersistentDataContainer().has(SFCRAFTING_SPELL_PROJECTILE_KEY, PersistentDataType.BYTE)) {
+            double expected = projectile.getPersistentDataContainer().getOrDefault(SFCRAFTING_SPELL_DAMAGE_KEY, PersistentDataType.DOUBLE, event.getFinalDamage());
+            return new ProjectileDamageDebug("spell_projectile", expected);
+        }
+
+        return null;
+    }
+
+    private record ProjectileDamageDebug(String source, double expectedDamage) {}
 
     private String toRoman(int n) {
         String[] thousands = {"", "M", "MM", "MMM"};

@@ -38,7 +38,10 @@ public enum StatType {
     STR("str", null, ApplyMode.LISTENER),
     VIT("vit", null, ApplyMode.LISTENER),
     INT("int", null, ApplyMode.LISTENER),
-    AGI("agi", null, ApplyMode.LISTENER);
+    AGI("agi", null, ApplyMode.LISTENER),
+    MAGIC_DAMAGE("magic_damage", null, ApplyMode.LISTENER),
+    MANA_MAX("mana_max", null, ApplyMode.LISTENER),
+    MANA_REGEN("mana_regen", null, ApplyMode.LISTENER);
 
     public enum ApplyMode { ADD_NUMBER, ADD_SCALAR, LISTENER }
 
