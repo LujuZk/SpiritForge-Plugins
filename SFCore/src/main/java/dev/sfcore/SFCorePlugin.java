@@ -2,6 +2,7 @@ package dev.sfcore;
 
 import dev.sfcore.api.SFCoreAPI;
 import dev.sfcore.commands.SFCoreCommand;
+import dev.sfcore.database.AsyncDatabaseExecutor;
 import dev.sfcore.database.SFDatabase;
 import dev.sfcore.database.SFDatabaseFactory;
 import dev.sfcore.database.StatDatabase;
@@ -16,6 +17,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 public class SFCorePlugin extends JavaPlugin {
 
     private SFDatabaseFactory databaseFactory;
+    private AsyncDatabaseExecutor asyncExecutor;
     private StatManager statManager;
 
     @Override
@@ -37,11 +39,14 @@ public class SFCorePlugin extends JavaPlugin {
             return;
         }
 
+        int asyncThreads = dbConfig.getInt("async-threads", 2);
+        asyncExecutor = new AsyncDatabaseExecutor(this, asyncThreads);
+
         SFDatabase coreDb = databaseFactory.get("sfcore");
         StatDatabase db = new StatDatabase(coreDb);
 
         statManager = new StatManager(db);
-        SFCoreAPI.init(statManager, databaseFactory);
+        SFCoreAPI.init(statManager, databaseFactory, asyncExecutor);
 
         var testMonitor = new TestMonitorManager();
 
@@ -109,6 +114,7 @@ public class SFCorePlugin extends JavaPlugin {
     public void onDisable() {
         if (statManager != null) statManager.saveAll();
         SFCoreAPI.shutdown();
+        if (asyncExecutor != null) asyncExecutor.shutdown();
         if (databaseFactory != null) databaseFactory.closeAll();
         getLogger().info("SFCore disabled.");
     }

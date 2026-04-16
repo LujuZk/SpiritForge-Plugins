@@ -20,9 +20,7 @@ public class PlayerConnectionListener implements Listener {
 
     @EventHandler(priority = EventPriority.MONITOR)
     public void onJoin(PlayerJoinEvent event) {
-        var player = event.getPlayer();
-        statManager.loadPlayer(player.getUniqueId());
-        statManager.reapplyAll(player);
+        statManager.loadPlayer(event.getPlayer());
     }
 
     @EventHandler(priority = EventPriority.MONITOR)

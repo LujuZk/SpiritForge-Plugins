@@ -6,6 +6,8 @@ import dev.sfcharacter.models.CharacterClass;
 import dev.sfcharacter.models.CharacterData;
 import dev.sfcharacter.models.LocationData;
 import dev.sfcharacter.util.InventorySerializer;
+import dev.sfcore.api.SFCoreAPI;
+import dev.sfcore.database.AsyncDatabaseExecutor;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World;
@@ -16,6 +18,7 @@ import org.bukkit.inventory.ItemStack;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
+import java.util.concurrent.CompletableFuture;
 
 public class CharacterManager {
 
@@ -38,10 +41,22 @@ public class CharacterManager {
 
     // ─── Player Lifecycle ───────────────────────────────────────────────────
 
-    public void loadPlayer(UUID uuid) {
-        List<CharacterData> characters = db.loadCharacters(uuid);
-        characterCache.put(uuid, new ArrayList<>(characters));
-        activeSlotCache.put(uuid, db.loadActiveSlot(uuid));
+    public void loadPlayer(UUID uuid, Runnable onComplete) {
+        characterCache.put(uuid, new ArrayList<>());
+        activeSlotCache.put(uuid, -1);
+        AsyncDatabaseExecutor async = SFCoreAPI.get().getAsyncExecutor();
+        async.thenOnMain(async.supplyAsync(() -> {
+            List<CharacterData> characters = db.loadCharacters(uuid);
+            int activeSlot = db.loadActiveSlot(uuid);
+            return new Object[]{characters, activeSlot};
+        }), result -> {
+            @SuppressWarnings("unchecked")
+            List<CharacterData> characters = (List<CharacterData>) result[0];
+            int activeSlot = (int) result[1];
+            characterCache.put(uuid, new ArrayList<>(characters));
+            activeSlotCache.put(uuid, activeSlot);
+            if (onComplete != null) onComplete.run();
+        });
     }
 
     public void unloadPlayer(UUID uuid) {
@@ -92,7 +107,7 @@ public class CharacterManager {
 
     public void setActiveSlot(UUID uuid, int slot) {
         activeSlotCache.put(uuid, slot);
-        db.saveActiveSlot(uuid, slot);
+        SFCoreAPI.get().getAsyncExecutor().runAsync(() -> db.saveActiveSlot(uuid, slot));
     }
 
     public CharacterData createCharacter(UUID uuid, int slot, CharacterClass clazz) {
@@ -103,7 +118,7 @@ public class CharacterManager {
         String createdAt = LocalDateTime.now().format(DATE_FORMAT);
 
         CharacterData data = new CharacterData(uuid, slot, clazz, displayName, createdAt);
-        db.saveCharacter(data);
+        SFCoreAPI.get().getAsyncExecutor().runAsync(() -> db.saveCharacter(data));
 
         List<CharacterData> list = characterCache.computeIfAbsent(uuid, k -> new ArrayList<>());
         list.removeIf(c -> c.slot() == slot);
@@ -118,70 +133,96 @@ public class CharacterManager {
 
     /**
      * Saves current player inventory and location for the active character.
+     * @param sync true para guardar sincrono (onDisable), false para async (quit/switch)
      */
-    public void saveCharacterState(Player player) {
+    public void saveCharacterState(Player player, boolean sync) {
         int slot = activeSlotCache.getOrDefault(player.getUniqueId(), -1);
         if (slot < 0) return;
 
         UUID uuid = player.getUniqueId();
 
-        // Serialize inventory
+        // Serializar en main thread (accede Bukkit API)
         byte[] inventoryData = InventorySerializer.serializeItemArray(player.getInventory().getContents());
         byte[] armorData = InventorySerializer.serializeItemArray(player.getInventory().getArmorContents());
         byte[] offhandData = InventorySerializer.serializeItem(player.getInventory().getItemInOffHand());
 
-        db.saveInventory(uuid, slot, inventoryData, armorData, offhandData);
-
-        // Save location
         Location loc = player.getLocation();
-        db.saveLocation(uuid, slot, loc.getWorld().getName(),
-                loc.getX(), loc.getY(), loc.getZ(),
-                loc.getYaw(), loc.getPitch());
+        String world = loc.getWorld().getName();
+        double x = loc.getX(), y = loc.getY(), z = loc.getZ();
+        float yaw = loc.getYaw(), pitch = loc.getPitch();
+
+        Runnable dbWrite = () -> {
+            db.saveInventory(uuid, slot, inventoryData, armorData, offhandData);
+            db.saveLocation(uuid, slot, world, x, y, z, yaw, pitch);
+        };
+
+        if (sync) {
+            dbWrite.run();
+        } else {
+            SFCoreAPI.get().getAsyncExecutor().runAsync(dbWrite);
+        }
+    }
+
+    /** Shortcut async (default para quit y switch). */
+    public void saveCharacterState(Player player) {
+        saveCharacterState(player, false);
     }
 
     /**
      * Restores inventory and teleports to saved location for the active character.
-     * If no saved location, teleports to world spawn.
+     * Reads from DB async, then applies on main thread via callback.
      */
     public void loadCharacterState(Player player) {
         int slot = activeSlotCache.getOrDefault(player.getUniqueId(), -1);
         if (slot < 0) return;
 
         UUID uuid = player.getUniqueId();
-
-        // Restore inventory
         player.getInventory().clear();
-        byte[][] invData = db.loadInventory(uuid, slot);
-        if (invData != null) {
-            ItemStack[] contents = InventorySerializer.deserializeItemArray(invData[0]);
-            ItemStack[] armor = InventorySerializer.deserializeItemArray(invData[1]);
-            ItemStack offhand = InventorySerializer.deserializeItem(invData[2]);
 
-            if (contents != null) player.getInventory().setContents(contents);
-            if (armor != null) player.getInventory().setArmorContents(armor);
-            if (offhand != null) player.getInventory().setItemInOffHand(offhand);
-        }
+        AsyncDatabaseExecutor async = SFCoreAPI.get().getAsyncExecutor();
+        CompletableFuture<Object[]> future = async.supplyAsync(() -> {
+            byte[][] invData = db.loadInventory(uuid, slot);
+            LocationData locData = db.loadLocation(uuid, slot);
+            return new Object[]{invData, locData};
+        });
 
-        // Restore location
-        LocationData locData = db.loadLocation(uuid, slot);
-        Location targetLoc;
-        if (locData != null) {
-            World world = Bukkit.getWorld(locData.world());
-            if (world != null) {
-                targetLoc = new Location(world, locData.x(), locData.y(), locData.z(),
-                        locData.yaw(), locData.pitch());
+        async.thenOnMain(future, result -> {
+            if (!player.isOnline()) return;
+
+            byte[][] invData = (byte[][]) result[0];
+            LocationData locData = (LocationData) result[1];
+
+            // Restore inventory
+            if (invData != null) {
+                ItemStack[] contents = InventorySerializer.deserializeItemArray(invData[0]);
+                ItemStack[] armor = InventorySerializer.deserializeItemArray(invData[1]);
+                ItemStack offhand = InventorySerializer.deserializeItem(invData[2]);
+
+                if (contents != null) player.getInventory().setContents(contents);
+                if (armor != null) player.getInventory().setArmorContents(armor);
+                if (offhand != null) player.getInventory().setItemInOffHand(offhand);
+            }
+
+            // Restore location
+            Location targetLoc;
+            if (locData != null) {
+                World world = Bukkit.getWorld(locData.world());
+                if (world != null) {
+                    targetLoc = new Location(world, locData.x(), locData.y(), locData.z(),
+                            locData.yaw(), locData.pitch());
+                } else {
+                    plugin.getLogger().warning("World '" + locData.world() + "' not loaded, using spawn");
+                    targetLoc = Bukkit.getWorlds().getFirst().getSpawnLocation();
+                }
             } else {
-                plugin.getLogger().warning("World '" + locData.world() + "' not loaded, using spawn");
                 targetLoc = Bukkit.getWorlds().getFirst().getSpawnLocation();
             }
-        } else {
-            targetLoc = Bukkit.getWorlds().getFirst().getSpawnLocation();
-        }
 
-        player.teleport(targetLoc);
-        player.setAllowFlight(false);
-        player.setFlying(false);
-        inCharacterSelection.remove(uuid);
+            player.teleport(targetLoc);
+            player.setAllowFlight(false);
+            player.setFlying(false);
+            inCharacterSelection.remove(uuid);
+        });
     }
 
     /**

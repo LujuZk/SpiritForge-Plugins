@@ -20,14 +20,11 @@ public class PlayerConnectionListener implements Listener {
     public void onPlayerJoin(PlayerJoinEvent event) {
         Player player = event.getPlayer();
         CharacterManager manager = plugin.getCharacterManager();
-        manager.loadPlayer(player.getUniqueId());
-
-        // Always send to lobby and show character selection
-        plugin.getServer().getScheduler().runTaskLater(plugin, () -> {
+        manager.loadPlayer(player.getUniqueId(), () -> {
             if (!player.isOnline()) return;
             manager.clearAndSendToLobby(player);
             plugin.getSelectGUI().open(player);
-        }, 5L);
+        });
     }
 
     @EventHandler
