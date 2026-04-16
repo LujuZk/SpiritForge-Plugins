@@ -3,6 +3,7 @@ package dev.sfcompass.managers;
 import dev.sfcompass.SFCompassPlugin;
 import dev.sfcompass.database.CompassDatabase;
 import dev.sfcompass.models.Island;
+import dev.sfcore.util.CharacterSlotResolver;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
@@ -31,10 +32,11 @@ public class CompassManager {
     }
 
     public void loadPlayer(UUID uuid) {
-        int level = db.loadLevel(uuid);
+        int slot = CharacterSlotResolver.resolve(uuid);
+        int level = db.loadLevel(uuid, slot);
         if (level == -1) {
             level = defaultLevel;
-            db.saveLevel(uuid, level);
+            db.saveLevel(uuid, slot, level);
         }
         levelCache.put(uuid, level);
     }
@@ -48,8 +50,9 @@ public class CompassManager {
     }
 
     public void setLevel(UUID uuid, int level) {
+        int slot = CharacterSlotResolver.resolve(uuid);
         levelCache.put(uuid, level);
-        db.saveLevel(uuid, level);
+        db.saveLevel(uuid, slot, level);
     }
 
     public ItemStack createCompassItem() {

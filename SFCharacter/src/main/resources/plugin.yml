@@ -4,6 +4,7 @@ main: dev.sfcharacter.SFCharacterPlugin
 api-version: '1.21'
 description: Sistema de creación y selección de personajes
 author: LujuZk
+depend: [SFCore]
 
 commands:
   character:

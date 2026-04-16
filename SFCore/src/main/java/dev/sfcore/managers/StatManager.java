@@ -3,6 +3,7 @@ package dev.sfcore.managers;
 import dev.sfcore.api.StatBonus;
 import dev.sfcore.api.StatType;
 import dev.sfcore.database.StatDatabase;
+import dev.sfcore.util.CharacterSlotResolver;
 import org.bukkit.attribute.AttributeInstance;
 import org.bukkit.attribute.AttributeModifier;
 import org.bukkit.entity.Player;
@@ -26,7 +27,8 @@ public class StatManager {
     }
 
     public void loadPlayer(UUID uuid) {
-        cache.put(uuid, new ArrayList<>(db.loadBonuses(uuid)));
+        int slot = CharacterSlotResolver.resolve(uuid);
+        cache.put(uuid, new ArrayList<>(db.loadBonuses(uuid, slot)));
     }
 
     public void saveAndUnload(UUID uuid) {
@@ -38,39 +40,55 @@ public class StatManager {
         // Nothing to flush — every mutation already hits the DB immediately.
     }
 
+    /**
+     * Recarga los bonuses del slot activo actual del jugador. Se llama al cambiar de
+     * personaje (CharacterSelectEvent) — el slot nuevo se resuelve vía
+     * {@link CharacterSlotResolver}, que ya refleja el estado post-switch.
+     */
+    public void reloadForActiveSlot(Player player) {
+        UUID uuid = player.getUniqueId();
+        int slot = CharacterSlotResolver.resolve(uuid);
+        cache.put(uuid, new ArrayList<>(db.loadBonuses(uuid, slot)));
+        reapplyAll(player);
+    }
+
     public void addBonus(Player player, String source, StatType stat, double value) {
         UUID uuid = player.getUniqueId();
+        int slot = CharacterSlotResolver.resolve(uuid);
         List<StatBonus> bonuses = cache.computeIfAbsent(uuid, u -> new ArrayList<>());
         bonuses.removeIf(b -> b.source().equals(source) && b.type() == stat);
         StatBonus bonus = new StatBonus(source, stat, value);
         bonuses.add(bonus);
-        db.upsertBonus(uuid, bonus);
+        db.upsertBonus(uuid, slot, bonus);
         reapplyAll(player);
     }
 
     public void removeBonus(Player player, String source) {
         UUID uuid = player.getUniqueId();
+        int slot = CharacterSlotResolver.resolve(uuid);
         List<StatBonus> bonuses = cache.get(uuid);
         if (bonuses != null) bonuses.removeIf(b -> b.source().equals(source));
-        db.deleteBonus(uuid, source);
+        db.deleteBonus(uuid, slot, source);
         reapplyAll(player);
     }
 
     public void clearSource(Player player, String sourcePrefix) {
         UUID uuid = player.getUniqueId();
+        int slot = CharacterSlotResolver.resolve(uuid);
         List<StatBonus> bonuses = cache.get(uuid);
         if (bonuses != null) bonuses.removeIf(b -> b.source().startsWith(sourcePrefix));
-        db.deleteBySourcePrefix(uuid, sourcePrefix);
+        db.deleteBySourcePrefix(uuid, slot, sourcePrefix);
         reapplyAll(player);
     }
 
     public void addBonusesBulk(Player player, java.util.List<StatBonus> newBonuses) {
         UUID uuid = player.getUniqueId();
+        int slot = CharacterSlotResolver.resolve(uuid);
         List<StatBonus> bonuses = cache.computeIfAbsent(uuid, u -> new ArrayList<>());
         for (StatBonus b : newBonuses) {
             bonuses.removeIf(existing -> existing.source().equals(b.source()) && existing.type() == b.type());
             bonuses.add(b);
-            db.upsertBonus(uuid, b);
+            db.upsertBonus(uuid, slot, b);
         }
         reapplyAll(player);
     }

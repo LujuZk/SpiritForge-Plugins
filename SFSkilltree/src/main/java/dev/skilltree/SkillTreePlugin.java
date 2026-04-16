@@ -1,5 +1,6 @@
 package dev.skilltree;
 
+import dev.sfcore.api.SFCoreAPI;
 import dev.skilltree.commands.SkillCommand;
 import dev.skilltree.commands.SkillAdminCommand;
 import dev.skilltree.database.DatabaseManager;
@@ -37,9 +38,14 @@ public class SkillTreePlugin extends JavaPlugin {
         saveResource("icons.yml", false);
         saveSkillTreeResources();
 
-        // Inicializar base de datos
-        databaseManager = new DatabaseManager(this);
-        databaseManager.initialize();
+        // Inicializar base de datos (via SFCore)
+        var sfCorePlugin = getServer().getPluginManager().getPlugin("SFCore");
+        if (sfCorePlugin == null || !sfCorePlugin.isEnabled()) {
+            getLogger().severe("SFCore no está habilitado — SFSkilltree no puede iniciarse.");
+            getServer().getPluginManager().disablePlugin(this);
+            return;
+        }
+        databaseManager = new DatabaseManager(this, SFCoreAPI.get().getDatabase("skilltree"));
 
         // Inicializar managers
         skillManager      = new SkillManager(this);
@@ -56,6 +62,16 @@ public class SkillTreePlugin extends JavaPlugin {
 
         // Listener de GUI (siempre activo)
         getServer().getPluginManager().registerEvents(new GUIListener(this), this);
+
+        // Per-character scoping condicional a SFCharacter
+        var sfCharacter = getServer().getPluginManager().getPlugin("SFCharacter");
+        if (sfCharacter != null && sfCharacter.isEnabled()) {
+            getServer().getPluginManager().registerEvents(
+                    new dev.skilltree.listeners.CharacterSelectSkillListener(this), this);
+            getLogger().info("SFCharacter detectado — per-character scoping de skills activado.");
+        } else {
+            getLogger().info("SFCharacter no detectado — skills en single-slot mode (slot 0).");
+        }
 
         // Listeners de combate y recolección vanilla — deshabilitados temporalmente
         // getServer().getPluginManager().registerEvents(new CombatListener(this), this);
@@ -81,7 +97,6 @@ public class SkillTreePlugin extends JavaPlugin {
     public void onDisable() {
         if (inventoryManager != null) inventoryManager.restoreAll();
         if (skillManager != null)     skillManager.saveAll();
-        if (databaseManager != null)  databaseManager.close();
         getLogger().info("SkillTreePlugin deshabilitado.");
     }
 

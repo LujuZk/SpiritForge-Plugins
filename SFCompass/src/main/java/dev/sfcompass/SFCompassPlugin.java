@@ -85,6 +85,15 @@ public class SFCompassPlugin extends JavaPlugin implements Listener {
 
         compassListener.setZoneVisualTask(zoneVisualTask);
 
+        var sfCharacter = pm.getPlugin("SFCharacter");
+        if (sfCharacter != null && sfCharacter.isEnabled()) {
+            pm.registerEvents(
+                    new dev.sfcompass.listeners.CharacterSelectCompassListener(compassManager), this);
+            getLogger().info("SFCharacter detectado — per-character scoping de compass activado.");
+        } else {
+            getLogger().info("SFCharacter no detectado — compass en single-slot mode (slot 0).");
+        }
+
         getLogger().info("SFCompass enabled — " + islandManager.getAllIslands().size() + " islands loaded.");
     }
 

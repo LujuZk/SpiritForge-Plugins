@@ -32,14 +32,18 @@ public class StatDatabase {
         this.dialect = sfDatabase.dialect();
         this.table = sfDatabase.getTableName("stat_bonuses");
 
-        this.sqlSelect = "SELECT source, stat_type, value FROM " + table + " WHERE player_uuid = ?";
+        this.sqlSelect = "SELECT source, stat_type, value FROM " + table
+                + " WHERE player_uuid = ? AND character_slot = ?";
         this.sqlUpsert = dialect.upsert(
                 table,
-                new String[]{"player_uuid", "source"},
+                new String[]{"player_uuid", "character_slot", "source"},
                 new String[]{"stat_type", "value"});
-        this.sqlDelete = "DELETE FROM " + table + " WHERE player_uuid = ? AND source = ?";
-        this.sqlDeleteByPrefix = "DELETE FROM " + table + " WHERE player_uuid = ? AND source LIKE ?";
-        this.sqlDeleteAll = "DELETE FROM " + table + " WHERE player_uuid = ?";
+        this.sqlDelete = "DELETE FROM " + table
+                + " WHERE player_uuid = ? AND character_slot = ? AND source = ?";
+        this.sqlDeleteByPrefix = "DELETE FROM " + table
+                + " WHERE player_uuid = ? AND character_slot = ? AND source LIKE ?";
+        this.sqlDeleteAll = "DELETE FROM " + table
+                + " WHERE player_uuid = ? AND character_slot = ?";
 
         try {
             initTables();
@@ -51,11 +55,12 @@ public class StatDatabase {
 
     private void initTables() throws SQLException {
         String create = "CREATE TABLE IF NOT EXISTS " + table + " ("
-                + "player_uuid " + dialect.uuidType() + " NOT NULL, "
-                + "source "      + dialect.varchar(255) + " NOT NULL, "
-                + "stat_type "   + dialect.varchar(64) + " NOT NULL, "
-                + "value "       + dialect.doubleType() + " NOT NULL, "
-                + "PRIMARY KEY (player_uuid, source)"
+                + "player_uuid "    + dialect.uuidType()   + " NOT NULL, "
+                + "character_slot " + dialect.intType()    + " NOT NULL, "
+                + "source "         + dialect.varchar(255) + " NOT NULL, "
+                + "stat_type "      + dialect.varchar(64)  + " NOT NULL, "
+                + "value "          + dialect.doubleType() + " NOT NULL, "
+                + "PRIMARY KEY (player_uuid, character_slot, source)"
                 + ")";
         String index = "CREATE INDEX IF NOT EXISTS idx_" + table + "_player ON " + table + "(player_uuid)";
 
@@ -70,11 +75,12 @@ public class StatDatabase {
         }
     }
 
-    public List<StatBonus> loadBonuses(UUID uuid) {
+    public List<StatBonus> loadBonuses(UUID uuid, int slot) {
         List<StatBonus> bonuses = new ArrayList<>();
         try (Connection conn = sfDatabase.getConnection();
              PreparedStatement ps = conn.prepareStatement(sqlSelect)) {
             ps.setString(1, uuid.toString());
+            ps.setInt(2, slot);
             try (ResultSet rs = ps.executeQuery()) {
                 while (rs.next()) {
                     String source = rs.getString("source");
@@ -84,53 +90,57 @@ public class StatDatabase {
                 }
             }
         } catch (SQLException e) {
-            log.warning("[SFCore] Error loading bonuses for " + uuid + ": " + e.getMessage());
+            log.warning("[SFCore] Error loading bonuses for " + uuid + " slot " + slot + ": " + e.getMessage());
         }
         return bonuses;
     }
 
-    public void upsertBonus(UUID uuid, StatBonus bonus) {
+    public void upsertBonus(UUID uuid, int slot, StatBonus bonus) {
         try (Connection conn = sfDatabase.getConnection();
              PreparedStatement ps = conn.prepareStatement(sqlUpsert)) {
             ps.setString(1, uuid.toString());
-            ps.setString(2, bonus.source());
-            ps.setString(3, bonus.type().getKey());
-            ps.setDouble(4, bonus.value());
+            ps.setInt(2, slot);
+            ps.setString(3, bonus.source());
+            ps.setString(4, bonus.type().getKey());
+            ps.setDouble(5, bonus.value());
             ps.executeUpdate();
         } catch (SQLException e) {
-            log.warning("[SFCore] Error upserting bonus for " + uuid + ": " + e.getMessage());
+            log.warning("[SFCore] Error upserting bonus for " + uuid + " slot " + slot + ": " + e.getMessage());
         }
     }
 
-    public void deleteBonus(UUID uuid, String source) {
+    public void deleteBonus(UUID uuid, int slot, String source) {
         try (Connection conn = sfDatabase.getConnection();
              PreparedStatement ps = conn.prepareStatement(sqlDelete)) {
             ps.setString(1, uuid.toString());
-            ps.setString(2, source);
+            ps.setInt(2, slot);
+            ps.setString(3, source);
             ps.executeUpdate();
         } catch (SQLException e) {
-            log.warning("[SFCore] Error deleting bonus for " + uuid + ": " + e.getMessage());
+            log.warning("[SFCore] Error deleting bonus for " + uuid + " slot " + slot + ": " + e.getMessage());
         }
     }
 
-    public void deleteBySourcePrefix(UUID uuid, String prefix) {
+    public void deleteBySourcePrefix(UUID uuid, int slot, String prefix) {
         try (Connection conn = sfDatabase.getConnection();
              PreparedStatement ps = conn.prepareStatement(sqlDeleteByPrefix)) {
             ps.setString(1, uuid.toString());
-            ps.setString(2, prefix + "%");
+            ps.setInt(2, slot);
+            ps.setString(3, prefix + "%");
             ps.executeUpdate();
         } catch (SQLException e) {
-            log.warning("[SFCore] Error deleting bonuses by prefix for " + uuid + ": " + e.getMessage());
+            log.warning("[SFCore] Error deleting bonuses by prefix for " + uuid + " slot " + slot + ": " + e.getMessage());
         }
     }
 
-    public void deleteAll(UUID uuid) {
+    public void deleteAll(UUID uuid, int slot) {
         try (Connection conn = sfDatabase.getConnection();
              PreparedStatement ps = conn.prepareStatement(sqlDeleteAll)) {
             ps.setString(1, uuid.toString());
+            ps.setInt(2, slot);
             ps.executeUpdate();
         } catch (SQLException e) {
-            log.warning("[SFCore] Error deleting all bonuses for " + uuid + ": " + e.getMessage());
+            log.warning("[SFCore] Error deleting all bonuses for " + uuid + " slot " + slot + ": " + e.getMessage());
         }
     }
 }

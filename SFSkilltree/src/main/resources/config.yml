@@ -1,5 +1,3 @@
-database:
-  file: skilltree.db
 xp-per-level: 100
 xp-multiplier: 1.5
 max-level: 50
