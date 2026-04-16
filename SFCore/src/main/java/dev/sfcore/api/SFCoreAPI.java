@@ -34,7 +34,7 @@ public final class SFCoreAPI {
     }
 
 
-    public static void init(StatManager manager, manaManager, SFDatabaseFactory databaseFactory,
+    public static void init(StatManager manager, ManaManager manaManager, SFDatabaseFactory databaseFactory,
                             AsyncDatabaseExecutor asyncExecutor) {
         instance = new SFCoreAPI(manager, manaManager, databaseFactory, asyncExecutor);
     }

@@ -63,10 +63,16 @@ public class StatDatabase {
                 + "PRIMARY KEY (player_uuid, character_slot, source)"
                 + ")";
         String index = "CREATE INDEX IF NOT EXISTS idx_" + table + "_player ON " + table + "(player_uuid)";
+        String resourcesTable = sfDatabase.getTableName("player_resources");
+        String createResources = "CREATE TABLE IF NOT EXISTS " + resourcesTable + " ("
+                + "player_uuid " + dialect.uuidType() + " NOT NULL PRIMARY KEY, "
+                + "mana_current " + dialect.doubleType() + " NOT NULL"
+                + ")";
 
         try (Connection conn = sfDatabase.getConnection();
              Statement stmt = conn.createStatement()) {
             stmt.execute(create);
+            stmt.execute(createResources);
             try {
                 stmt.execute(index);
             } catch (SQLException ignored) {
@@ -159,7 +165,8 @@ public class StatDatabase {
     }
 
     public Double loadMana(UUID uuid) {
-        try (PreparedStatement ps = connection.prepareStatement(
+        try (Connection conn = sfDatabase.getConnection();
+             PreparedStatement ps = conn.prepareStatement(
                 "SELECT mana_current FROM player_resources WHERE player_uuid = ?")) {
             ps.setString(1, uuid.toString());
             try (ResultSet rs = ps.executeQuery()) {
@@ -174,7 +181,8 @@ public class StatDatabase {
     }
 
     public void upsertMana(UUID uuid, double manaCurrent) {
-        try (PreparedStatement ps = connection.prepareStatement(
+        try (Connection conn = sfDatabase.getConnection();
+             PreparedStatement ps = conn.prepareStatement(
                 "INSERT OR REPLACE INTO player_resources (player_uuid, mana_current) VALUES (?, ?)")) {
             ps.setString(1, uuid.toString());
             ps.setDouble(2, manaCurrent);
@@ -185,7 +193,8 @@ public class StatDatabase {
     }
 
     public void deleteResources(UUID uuid) {
-        try (PreparedStatement ps = connection.prepareStatement(
+        try (Connection conn = sfDatabase.getConnection();
+             PreparedStatement ps = conn.prepareStatement(
                 "DELETE FROM player_resources WHERE player_uuid = ?")) {
             ps.setString(1, uuid.toString());
             ps.executeUpdate();
@@ -195,10 +204,6 @@ public class StatDatabase {
     }
 
     public void close() {
-        try {
-            if (connection != null && !connection.isClosed()) connection.close();
-        } catch (SQLException e) {
-            log.warning("[SFCore] Error deleting all bonuses for " + uuid + " slot " + slot + ": " + e.getMessage());
-        }
+        // No persistent connection to close; each operation uses its own connection.
     }
 }
