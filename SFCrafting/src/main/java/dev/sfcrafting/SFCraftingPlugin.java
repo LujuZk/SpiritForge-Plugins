@@ -59,6 +59,15 @@ public final class SFCraftingPlugin extends JavaPlugin {
                 recipeBookManager.loadPlayer(player.getUniqueId());
             }
 
+            var sfCharacter = getServer().getPluginManager().getPlugin("SFCharacter");
+            if (sfCharacter != null && sfCharacter.isEnabled()) {
+                getServer().getPluginManager().registerEvents(
+                        new CharacterSelectRecipeListener(recipeBookManager), this);
+                getLogger().info("SFCharacter detectado — per-character scoping del recetario activado.");
+            } else {
+                getLogger().info("SFCharacter no detectado — recetario en single-slot mode (slot 0).");
+            }
+
             getLogger().info("Recetario habilitado.");
         }
 

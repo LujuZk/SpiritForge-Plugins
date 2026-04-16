@@ -2,6 +2,7 @@ package dev.skilltree.managers;
 
 import dev.sfcore.api.SFCoreAPI;
 import dev.sfcore.api.StatType;
+import dev.sfcore.util.CharacterSlotResolver;
 import dev.skilltree.SkillTreePlugin;
 import dev.skilltree.models.NodeState;
 import dev.skilltree.models.PlayerSkillData;
@@ -94,7 +95,8 @@ public class SkillPointManager {
         SFCoreAPI.get().clearSource(player, "sfskills:" + skill.getKey() + ":");
 
         data.resetNodes(skill);
-        plugin.getDatabaseManager().resetNodes(player.getUniqueId(), skill);
+        plugin.getDatabaseManager().resetNodes(
+                player.getUniqueId(), CharacterSlotResolver.resolve(player.getUniqueId()), skill);
     }
 
     public enum UnlockResult {

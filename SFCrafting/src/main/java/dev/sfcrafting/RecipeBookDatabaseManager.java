@@ -29,13 +29,16 @@ public final class RecipeBookDatabaseManager {
         SqlDialect dialect = sfDatabase.dialect();
         this.table = sfDatabase.getTableName("player_discoveries");
 
-        this.sqlSelect = "SELECT material_id FROM " + table + " WHERE uuid = ?";
-        this.sqlInsertIgnore = dialect.insertIgnore(table, new String[]{"uuid", "material_id"});
+        this.sqlSelect = "SELECT material_id FROM " + table
+                + " WHERE uuid = ? AND character_slot = ?";
+        this.sqlInsertIgnore = dialect.insertIgnore(table,
+                new String[]{"uuid", "character_slot", "material_id"});
 
         String create = "CREATE TABLE IF NOT EXISTS " + table + " ("
-                + "uuid "        + dialect.uuidType()   + " NOT NULL, "
-                + "material_id " + dialect.varchar(128) + " NOT NULL, "
-                + "PRIMARY KEY (uuid, material_id)"
+                + "uuid "           + dialect.uuidType()   + " NOT NULL, "
+                + "character_slot " + dialect.intType()    + " NOT NULL, "
+                + "material_id "    + dialect.varchar(128) + " NOT NULL, "
+                + "PRIMARY KEY (uuid, character_slot, material_id)"
                 + ")";
 
         try (Connection conn = sfDatabase.getConnection();
@@ -47,36 +50,38 @@ public final class RecipeBookDatabaseManager {
         }
     }
 
-    public Set<String> loadDiscoveries(UUID uuid) {
+    public Set<String> loadDiscoveries(UUID uuid, int slot) {
         Set<String> discoveries = new HashSet<>();
         try (Connection conn = sfDatabase.getConnection();
              PreparedStatement ps = conn.prepareStatement(sqlSelect)) {
             ps.setString(1, uuid.toString());
+            ps.setInt(2, slot);
             try (ResultSet rs = ps.executeQuery()) {
                 while (rs.next()) {
                     discoveries.add(rs.getString("material_id"));
                 }
             }
         } catch (SQLException e) {
-            plugin.getLogger().log(Level.WARNING, "Error al cargar discoveries para " + uuid, e);
+            plugin.getLogger().log(Level.WARNING, "Error al cargar discoveries para " + uuid + " (slot " + slot + ")", e);
         }
         return discoveries;
     }
 
-    public void saveDiscovery(UUID uuid, String materialId) {
+    public void saveDiscovery(UUID uuid, int slot, String materialId) {
         plugin.getServer().getScheduler().runTaskAsynchronously(plugin, () -> {
             try (Connection conn = sfDatabase.getConnection();
                  PreparedStatement ps = conn.prepareStatement(sqlInsertIgnore)) {
                 ps.setString(1, uuid.toString());
-                ps.setString(2, materialId);
+                ps.setInt(2, slot);
+                ps.setString(3, materialId);
                 ps.executeUpdate();
             } catch (SQLException e) {
-                plugin.getLogger().log(Level.WARNING, "Error al guardar discovery " + materialId + " para " + uuid, e);
+                plugin.getLogger().log(Level.WARNING, "Error al guardar discovery " + materialId + " para " + uuid + " (slot " + slot + ")", e);
             }
         });
     }
 
-    public void saveDiscoveriesBatch(UUID uuid, Set<String> materialIds) {
+    public void saveDiscoveriesBatch(UUID uuid, int slot, Set<String> materialIds) {
         if (materialIds.isEmpty()) {
             return;
         }
@@ -84,12 +89,13 @@ public final class RecipeBookDatabaseManager {
              PreparedStatement ps = conn.prepareStatement(sqlInsertIgnore)) {
             for (String materialId : materialIds) {
                 ps.setString(1, uuid.toString());
-                ps.setString(2, materialId);
+                ps.setInt(2, slot);
+                ps.setString(3, materialId);
                 ps.addBatch();
             }
             ps.executeBatch();
         } catch (SQLException e) {
-            plugin.getLogger().log(Level.WARNING, "Error al guardar discoveries batch para " + uuid, e);
+            plugin.getLogger().log(Level.WARNING, "Error al guardar discoveries batch para " + uuid + " (slot " + slot + ")", e);
         }
     }
 }

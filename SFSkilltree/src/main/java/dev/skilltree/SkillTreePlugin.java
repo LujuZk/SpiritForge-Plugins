@@ -63,6 +63,16 @@ public class SkillTreePlugin extends JavaPlugin {
         // Listener de GUI (siempre activo)
         getServer().getPluginManager().registerEvents(new GUIListener(this), this);
 
+        // Per-character scoping condicional a SFCharacter
+        var sfCharacter = getServer().getPluginManager().getPlugin("SFCharacter");
+        if (sfCharacter != null && sfCharacter.isEnabled()) {
+            getServer().getPluginManager().registerEvents(
+                    new dev.skilltree.listeners.CharacterSelectSkillListener(this), this);
+            getLogger().info("SFCharacter detectado — per-character scoping de skills activado.");
+        } else {
+            getLogger().info("SFCharacter no detectado — skills en single-slot mode (slot 0).");
+        }
+
         // Listeners de combate y recolección vanilla — deshabilitados temporalmente
         // getServer().getPluginManager().registerEvents(new CombatListener(this), this);
         // getServer().getPluginManager().registerEvents(new GatheringListener(this), this);

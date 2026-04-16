@@ -17,6 +17,7 @@ repositories {
 
 dependencies {
     compileOnly("io.papermc.paper:paper-api:1.21.1-R0.1-SNAPSHOT")
+    // SFCharacter NO es compileOnly — la integración se hace vía reflexión para evitar ciclo de compilación
     implementation("com.zaxxer:HikariCP:5.1.0")
     implementation("org.xerial:sqlite-jdbc:3.45.3.0")
     implementation("com.mysql:mysql-connector-j:8.3.0")

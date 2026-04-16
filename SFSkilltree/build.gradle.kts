@@ -22,6 +22,7 @@ dependencies {
     compileOnly(fileTree("../SFCore/build/libs") { include("SFCore-*.jar") })
     compileOnly(fileTree("../SFCrafting/build/libs") { include("SFCrafting-*.jar") })
     compileOnly(fileTree("../SFDrops/build/libs") { include("SFDrops-*.jar") })
+    compileOnly(fileTree("../SFCharacter/build/libs") { include("SFCharacter-*.jar") })
 }
 
 tasks {

@@ -56,7 +56,53 @@ public class SFCorePlugin extends JavaPlugin {
         pm.registerEvents(new CombatStatListener(), this);
         pm.registerEvents(new StatTestListener(statManager, testMonitor), this);
 
+        var sfCharacter = pm.getPlugin("SFCharacter");
+        if (sfCharacter != null && sfCharacter.isEnabled()) {
+            registerCharacterSelectListener();
+        } else if (sfCharacter != null) {
+            pm.registerEvents(new org.bukkit.event.Listener() {
+                @org.bukkit.event.EventHandler
+                public void onPluginEnable(org.bukkit.event.server.PluginEnableEvent ev) {
+                    if (ev.getPlugin().getName().equals("SFCharacter")) {
+                        dev.sfcore.util.CharacterSlotResolver.invalidate();
+                        registerCharacterSelectListener();
+                    }
+                }
+            }, this);
+            getLogger().info("SFCharacter presente — listener per-character se registrará tras su enable.");
+        } else {
+            getLogger().info("SFCharacter no detectado — stats operarán en single-slot mode (slot 0).");
+        }
+
         getLogger().info("SFCore enabled — stats API ready.");
+    }
+
+    @SuppressWarnings("unchecked")
+    private void registerCharacterSelectListener() {
+        try {
+            Class<? extends org.bukkit.event.Event> eventClass =
+                    (Class<? extends org.bukkit.event.Event>)
+                    Class.forName("dev.sfcharacter.api.CharacterSelectEvent");
+            java.lang.reflect.Method getPlayer = eventClass.getMethod("getPlayer");
+            getServer().getPluginManager().registerEvent(
+                    eventClass,
+                    new org.bukkit.event.Listener() {},
+                    org.bukkit.event.EventPriority.MONITOR,
+                    (listener, event) -> {
+                        try {
+                            org.bukkit.entity.Player player =
+                                    (org.bukkit.entity.Player) getPlayer.invoke(event);
+                            statManager.reloadForActiveSlot(player);
+                        } catch (Exception e) {
+                            getLogger().warning("Error en CharacterSelect reload: " + e.getMessage());
+                        }
+                    },
+                    this
+            );
+            getLogger().info("SFCharacter detectado — per-character scoping de stats activado.");
+        } catch (Exception e) {
+            getLogger().warning("No se pudo registrar listener de CharacterSelectEvent: " + e.getMessage());
+        }
     }
 
     @Override

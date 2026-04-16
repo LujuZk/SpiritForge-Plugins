@@ -18,6 +18,7 @@ repositories {
 dependencies {
     compileOnly("io.papermc.paper:paper-api:1.21.1-R0.1-SNAPSHOT")
     compileOnly(fileTree("../SFCore/build/libs") { include("SFCore-*.jar") })
+    compileOnly(fileTree("../SFCharacter/build/libs") { include("SFCharacter-*.jar") })
 }
 
 tasks {

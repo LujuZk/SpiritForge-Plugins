@@ -5,6 +5,7 @@ api-version: '1.21'
 description: Sistema de brújula con niveles para acceso a islas
 author: LujuZk
 depend: [SFCore]
+softdepend: [SFCharacter]
 
 commands:
   compass:
