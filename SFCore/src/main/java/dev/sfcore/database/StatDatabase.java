@@ -133,6 +133,31 @@ public class StatDatabase {
         }
     }
 
+    public void upsertBonusesBatch(UUID uuid, int slot, List<StatBonus> bonuses) {
+        try (Connection conn = sfDatabase.getConnection()) {
+            conn.setAutoCommit(false);
+            try (PreparedStatement ps = conn.prepareStatement(sqlUpsert)) {
+                for (StatBonus bonus : bonuses) {
+                    ps.setString(1, uuid.toString());
+                    ps.setInt(2, slot);
+                    ps.setString(3, bonus.source());
+                    ps.setString(4, bonus.type().getKey());
+                    ps.setDouble(5, bonus.value());
+                    ps.addBatch();
+                }
+                ps.executeBatch();
+                conn.commit();
+            } catch (SQLException e) {
+                conn.rollback();
+                throw e;
+            } finally {
+                conn.setAutoCommit(true);
+            }
+        } catch (SQLException e) {
+            log.warning("[SFCore] Error batch upserting bonuses for " + uuid + " slot " + slot + ": " + e.getMessage());
+        }
+    }
+
     public void deleteAll(UUID uuid, int slot) {
         try (Connection conn = sfDatabase.getConnection();
              PreparedStatement ps = conn.prepareStatement(sqlDeleteAll)) {

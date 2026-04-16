@@ -58,7 +58,7 @@ public class SFCharacterPlugin extends JavaPlugin {
             for (Player player : getServer().getOnlinePlayers()) {
                 if (characterManager.hasActiveCharacter(player.getUniqueId())
                         && !characterManager.isInCharacterSelection(player.getUniqueId())) {
-                    characterManager.saveCharacterState(player);
+                    characterManager.saveCharacterState(player, true); // sync en onDisable
                 }
             }
         }

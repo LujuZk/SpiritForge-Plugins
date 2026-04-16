@@ -1,5 +1,7 @@
 package dev.sfcrafting;
 
+import dev.sfcore.api.SFCoreAPI;
+import dev.sfcore.database.AsyncDatabaseExecutor;
 import dev.sfcore.util.CharacterSlotResolver;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -65,14 +67,20 @@ public final class RecipeBookManager {
     public void loadPlayer(UUID uuid) {
         int slot = CharacterSlotResolver.resolve(uuid);
         slotCache.put(uuid, slot);
-        discoveryCache.put(uuid, database.loadDiscoveries(uuid, slot));
+        discoveryCache.put(uuid, new HashSet<>()); // cache vacia temporal
+        AsyncDatabaseExecutor async = SFCoreAPI.get().getAsyncExecutor();
+        async.thenOnMain(async.supplyAsync(() -> database.loadDiscoveries(uuid, slot)), discoveries -> {
+            discoveryCache.put(uuid, discoveries);
+        });
     }
 
     public void saveAndUnload(UUID uuid) {
         Set<String> discoveries = discoveryCache.remove(uuid);
         Integer slot = slotCache.remove(uuid);
         if (discoveries != null && !discoveries.isEmpty() && slot != null) {
-            database.saveDiscoveriesBatch(uuid, slot, discoveries);
+            Set<String> snapshot = Set.copyOf(discoveries);
+            SFCoreAPI.get().getAsyncExecutor().runAsync(
+                    () -> database.saveDiscoveriesBatch(uuid, slot, snapshot));
         }
     }
 

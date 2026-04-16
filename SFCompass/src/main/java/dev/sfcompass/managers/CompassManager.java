@@ -3,6 +3,8 @@ package dev.sfcompass.managers;
 import dev.sfcompass.SFCompassPlugin;
 import dev.sfcompass.database.CompassDatabase;
 import dev.sfcompass.models.Island;
+import dev.sfcore.api.SFCoreAPI;
+import dev.sfcore.database.AsyncDatabaseExecutor;
 import dev.sfcore.util.CharacterSlotResolver;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -33,12 +35,16 @@ public class CompassManager {
 
     public void loadPlayer(UUID uuid) {
         int slot = CharacterSlotResolver.resolve(uuid);
-        int level = db.loadLevel(uuid, slot);
-        if (level == -1) {
-            level = defaultLevel;
-            db.saveLevel(uuid, slot, level);
-        }
-        levelCache.put(uuid, level);
+        levelCache.put(uuid, defaultLevel); // valor temporal hasta que el read async complete
+        AsyncDatabaseExecutor async = SFCoreAPI.get().getAsyncExecutor();
+        async.thenOnMain(async.supplyAsync(() -> db.loadLevel(uuid, slot)), level -> {
+            if (level == -1) {
+                levelCache.put(uuid, defaultLevel);
+                async.runAsync(() -> db.saveLevel(uuid, slot, defaultLevel));
+            } else {
+                levelCache.put(uuid, level);
+            }
+        });
     }
 
     public void unloadPlayer(UUID uuid) {
@@ -52,7 +58,7 @@ public class CompassManager {
     public void setLevel(UUID uuid, int level) {
         int slot = CharacterSlotResolver.resolve(uuid);
         levelCache.put(uuid, level);
-        db.saveLevel(uuid, slot, level);
+        SFCoreAPI.get().getAsyncExecutor().runAsync(() -> db.saveLevel(uuid, slot, level));
     }
 
     public ItemStack createCompassItem() {

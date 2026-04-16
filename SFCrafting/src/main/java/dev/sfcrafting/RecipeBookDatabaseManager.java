@@ -1,5 +1,6 @@
 package dev.sfcrafting;
 
+import dev.sfcore.api.SFCoreAPI;
 import dev.sfcore.database.SFDatabase;
 import dev.sfcore.database.SqlDialect;
 
@@ -68,7 +69,7 @@ public final class RecipeBookDatabaseManager {
     }
 
     public void saveDiscovery(UUID uuid, int slot, String materialId) {
-        plugin.getServer().getScheduler().runTaskAsynchronously(plugin, () -> {
+        SFCoreAPI.get().getAsyncExecutor().runAsync(() -> {
             try (Connection conn = sfDatabase.getConnection();
                  PreparedStatement ps = conn.prepareStatement(sqlInsertIgnore)) {
                 ps.setString(1, uuid.toString());

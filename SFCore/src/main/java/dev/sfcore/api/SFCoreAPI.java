@@ -1,5 +1,6 @@
 package dev.sfcore.api;
 
+import dev.sfcore.database.AsyncDatabaseExecutor;
 import dev.sfcore.database.SFDatabase;
 import dev.sfcore.database.SFDatabaseFactory;
 import dev.sfcore.database.SqlDialect;
@@ -15,10 +16,13 @@ public final class SFCoreAPI {
     private static SFCoreAPI instance;
     private final StatManager manager;
     private final SFDatabaseFactory databaseFactory;
+    private final AsyncDatabaseExecutor asyncExecutor;
 
-    private SFCoreAPI(StatManager manager, SFDatabaseFactory databaseFactory) {
+    private SFCoreAPI(StatManager manager, SFDatabaseFactory databaseFactory,
+                      AsyncDatabaseExecutor asyncExecutor) {
         this.manager = manager;
         this.databaseFactory = databaseFactory;
+        this.asyncExecutor = asyncExecutor;
     }
 
     public static SFCoreAPI get() {
@@ -26,8 +30,9 @@ public final class SFCoreAPI {
         return instance;
     }
 
-    public static void init(StatManager manager, SFDatabaseFactory databaseFactory) {
-        instance = new SFCoreAPI(manager, databaseFactory);
+    public static void init(StatManager manager, SFDatabaseFactory databaseFactory,
+                            AsyncDatabaseExecutor asyncExecutor) {
+        instance = new SFCoreAPI(manager, databaseFactory, asyncExecutor);
     }
 
     public static void shutdown() {
@@ -50,6 +55,11 @@ public final class SFCoreAPI {
     /** Dialecto SQL activo (upserts, tipos, etc.) — compartido entre namespaces. */
     public SqlDialect getDialect() {
         return databaseFactory.dialect();
+    }
+
+    /** Executor async compartido para operaciones de DB no bloqueantes. */
+    public AsyncDatabaseExecutor getAsyncExecutor() {
+        return asyncExecutor;
     }
 
     public void addBonus(Player player, String source, StatType stat, double value) {

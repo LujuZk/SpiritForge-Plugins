@@ -8,6 +8,9 @@ database:
   # sqlite | mysql
   type: sqlite
 
+  # Threads dedicados para operaciones async de DB (reads/writes no bloqueantes)
+  async-threads: 2
+
   # Solo se usa cuando type: mysql
   mysql:
     host: localhost
