@@ -5,12 +5,16 @@ import dev.sfcore.api.StatBonus;
 import dev.sfcore.api.StatType;
 import dev.sfcore.database.AsyncDatabaseExecutor;
 import dev.sfcore.database.StatDatabase;
+import org.bukkit.Bukkit;
 import dev.sfcore.util.CharacterSlotResolver;
 import org.bukkit.attribute.AttributeInstance;
 import org.bukkit.attribute.AttributeModifier;
 import org.bukkit.entity.Player;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
+import org.bukkit.scoreboard.Criteria;
+import org.bukkit.scoreboard.Objective;
+import org.bukkit.scoreboard.Scoreboard;
 
 import dev.sfcore.api.StatChangeEvent;
 
@@ -162,5 +166,25 @@ public class StatManager {
 
         // 4. Disparar StatChangeEvent
         player.getServer().getPluginManager().callEvent(new StatChangeEvent(player, getAllTotals(player)));
+
+        // 5. Export de stats usados por MythicMobs
+        double magicDamage = getTotal(player, StatType.MAGIC_DAMAGE);
+        setScore(player, "sf_magic_damage", (int) Math.round(magicDamage));
+        setScore(player, "sf_magic_damage_x15", Math.max(1, (int) Math.round(magicDamage * 1.5D)));
+    }
+
+    private void setScore(Player player, String objectiveName, int value) {
+        if (Bukkit.getScoreboardManager() == null) {
+            return;
+        }
+        Scoreboard scoreboard = Bukkit.getScoreboardManager().getMainScoreboard();
+        if (scoreboard == null) {
+            return;
+        }
+        Objective objective = scoreboard.getObjective(objectiveName);
+        if (objective == null) {
+            objective = scoreboard.registerNewObjective(objectiveName, Criteria.DUMMY, objectiveName);
+        }
+        objective.getScore(player.getName()).setScore(value);
     }
 }

@@ -5,6 +5,7 @@ import dev.sfcore.database.SFDatabase;
 import dev.sfcore.database.SFDatabaseFactory;
 import dev.sfcore.database.SqlDialect;
 import dev.sfcore.managers.StatManager;
+import dev.sfcore.managers.ManaManager;
 import org.bukkit.entity.Player;
 
 import java.util.List;
@@ -15,12 +16,14 @@ public final class SFCoreAPI {
 
     private static SFCoreAPI instance;
     private final StatManager manager;
+    private final ManaManager manaManager;
     private final SFDatabaseFactory databaseFactory;
     private final AsyncDatabaseExecutor asyncExecutor;
 
-    private SFCoreAPI(StatManager manager, SFDatabaseFactory databaseFactory,
+    private SFCoreAPI(StatManager manager, ManaManager manaManager, SFDatabaseFactory databaseFactory,
                       AsyncDatabaseExecutor asyncExecutor) {
         this.manager = manager;
+        this.manaManager = manaManager;
         this.databaseFactory = databaseFactory;
         this.asyncExecutor = asyncExecutor;
     }
@@ -30,9 +33,10 @@ public final class SFCoreAPI {
         return instance;
     }
 
-    public static void init(StatManager manager, SFDatabaseFactory databaseFactory,
+
+    public static void init(StatManager manager, manaManager, SFDatabaseFactory databaseFactory,
                             AsyncDatabaseExecutor asyncExecutor) {
-        instance = new SFCoreAPI(manager, databaseFactory, asyncExecutor);
+        instance = new SFCoreAPI(manager, manaManager, databaseFactory, asyncExecutor);
     }
 
     public static void shutdown() {
@@ -78,8 +82,40 @@ public final class SFCoreAPI {
         return manager.getTotal(player, stat);
     }
 
+    public double getMagicDamage(Player player) {
+        return manager.getTotal(player, StatType.MAGIC_DAMAGE);
+    }
+
     public Map<StatType, Double> getAllTotals(Player player) {
         return manager.getAllTotals(player);
+    }
+
+    public double getMana(Player player) {
+        return manaManager == null ? 0.0D : manaManager.getMana(player);
+    }
+
+    public double getMaxMana(Player player) {
+        return manaManager == null ? 0.0D : manaManager.getMaxMana(player);
+    }
+
+    public double getManaRegenPerSecond(Player player) {
+        return manaManager == null ? 0.0D : manaManager.getManaRegenPerSecond(player);
+    }
+
+    public void setMana(Player player, double value) {
+        if (manaManager != null) {
+            manaManager.setMana(player, value);
+        }
+    }
+
+    public void addMana(Player player, double value) {
+        if (manaManager != null) {
+            manaManager.addMana(player, value);
+        }
+    }
+
+    public boolean spendMana(Player player, double value) {
+        return manaManager == null || manaManager.spendMana(player, value);
     }
 
     // ─── Integration Helpers ─────────────────────────────────────────

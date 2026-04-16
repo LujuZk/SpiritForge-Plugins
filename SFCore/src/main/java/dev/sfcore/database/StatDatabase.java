@@ -158,12 +158,45 @@ public class StatDatabase {
         }
     }
 
-    public void deleteAll(UUID uuid, int slot) {
-        try (Connection conn = sfDatabase.getConnection();
-             PreparedStatement ps = conn.prepareStatement(sqlDeleteAll)) {
+    public Double loadMana(UUID uuid) {
+        try (PreparedStatement ps = connection.prepareStatement(
+                "SELECT mana_current FROM player_resources WHERE player_uuid = ?")) {
             ps.setString(1, uuid.toString());
-            ps.setInt(2, slot);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getDouble("mana_current");
+                }
+            }
+        } catch (SQLException e) {
+            log.warning("[SFCore] Error loading mana for " + uuid + ": " + e.getMessage());
+        }
+        return null;
+    }
+
+    public void upsertMana(UUID uuid, double manaCurrent) {
+        try (PreparedStatement ps = connection.prepareStatement(
+                "INSERT OR REPLACE INTO player_resources (player_uuid, mana_current) VALUES (?, ?)")) {
+            ps.setString(1, uuid.toString());
+            ps.setDouble(2, manaCurrent);
             ps.executeUpdate();
+        } catch (SQLException e) {
+            log.warning("[SFCore] Error saving mana for " + uuid + ": " + e.getMessage());
+        }
+    }
+
+    public void deleteResources(UUID uuid) {
+        try (PreparedStatement ps = connection.prepareStatement(
+                "DELETE FROM player_resources WHERE player_uuid = ?")) {
+            ps.setString(1, uuid.toString());
+            ps.executeUpdate();
+        } catch (SQLException e) {
+            log.warning("[SFCore] Error deleting resources for " + uuid + ": " + e.getMessage());
+        }
+    }
+
+    public void close() {
+        try {
+            if (connection != null && !connection.isClosed()) connection.close();
         } catch (SQLException e) {
             log.warning("[SFCore] Error deleting all bonuses for " + uuid + " slot " + slot + ": " + e.getMessage());
         }

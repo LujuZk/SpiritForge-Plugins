@@ -2,15 +2,17 @@ name: SFCrafting
 version: 1.0.0
 main: dev.sfcrafting.SFCraftingPlugin
 api-version: '1.21'
+
 depend: [SFCore]
-softdepend: [Oraxen, SkillTreePlugin, SFCharacter]
+softdepend: [Oraxen, SkillTreePlugin,MythicMobs, SFCharacter]
+
 authors: [LujuZk]
 description: SpiritForge crafting and forging plugin
 
 commands:
   sfcrafting:
     description: SFCrafting admin commands
-    usage: /sfcrafting give <oraxen_id|material:id> [cantidad] [rareza] | /sfcrafting givebow <tipo> <madera> <rareza_madera> <metal> <rareza_metal> [cantidad] [rareza_final]
+    usage: /sfcrafting give <oraxen_id|material:id> [cantidad] [rareza] | /sfcrafting givebow <tipo> <madera> <rareza_madera> <metal> <rareza_metal> [cantidad] [rareza_final] | /sfcrafting spellcraft <plantilla> <cristal> <libro> <stat=puntos,...>
     permission: sfcrafting.admin
     aliases: [cforge]
   recetas:

@@ -5,12 +5,12 @@ api-version: '1.21'
 authors: [LujuZk]
 description: SpiritForge central stats manager
 load: STARTUP
-softdepend: [SFCharacter]
+softdepend: [PlaceholderAPI],[SFCharacter]
 
 commands:
   sfcore:
     description: SFCore admin commands
-    usage: /sfcore <test|stats> [args...]
+    usage: /sfcore <test|stats|mana> [args...]
     permission: sfcore.admin
 
 permissions:

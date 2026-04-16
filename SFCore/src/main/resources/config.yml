@@ -27,3 +27,34 @@ database:
   sqlite:
     # Directorio relativo a plugins/SFCore/ donde se crean los .db por namespace
     directory: db
+
+
+mana:
+  enabled: true
+  base-max: 100.0
+  base-regen: 2.0
+  int-to-max: 5.0
+  int-to-regen: 0.10
+  start-full: true
+damage-popups:
+  enabled: true
+  show-players: false
+  duration-ticks: 20
+  y-offset: 0.45
+  rise-per-tick: 0.025
+magic-staves:
+  enabled: true
+  refresh-interval-ticks: 20
+  shoot:
+    projectile-particle-ticks: 6
+  # Cada clave debe ser el ID de Oraxen del bastón.
+  # El bonus se suma si el item está en mano principal o secundaria.
+  items:
+    magic_staff_stick:
+      magic-damage: 2.0
+      shoot-cooldown-ticks: 10
+      shoot-damage-multiplier: 0.8
+    magic_staff_novice:
+      magic-damage: 4.0
+      shoot-cooldown-ticks: 20
+      shoot-damage-multiplier: 1.2

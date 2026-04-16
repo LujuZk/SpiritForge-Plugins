@@ -7,10 +7,13 @@ import dev.sfcore.database.SFDatabase;
 import dev.sfcore.database.SFDatabaseFactory;
 import dev.sfcore.database.StatDatabase;
 import dev.sfcore.listeners.CombatStatListener;
+import dev.sfcore.listeners.MagicStaffListener;
 import dev.sfcore.listeners.PlayerConnectionListener;
 import dev.sfcore.listeners.StatTestListener;
+import dev.sfcore.managers.ManaManager;
 import dev.sfcore.managers.StatManager;
 import dev.sfcore.managers.TestMonitorManager;
+import dev.sfcore.placeholders.SFCorePlaceholderExpansion;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -19,6 +22,8 @@ public class SFCorePlugin extends JavaPlugin {
     private SFDatabaseFactory databaseFactory;
     private AsyncDatabaseExecutor asyncExecutor;
     private StatManager statManager;
+    private ManaManager manaManager;
+    private MagicStaffListener magicStaffListener;
 
     @Override
     public void onEnable() {
@@ -46,21 +51,35 @@ public class SFCorePlugin extends JavaPlugin {
         StatDatabase db = new StatDatabase(coreDb);
 
         statManager = new StatManager(db);
-        SFCoreAPI.init(statManager, databaseFactory, asyncExecutor);
+        manaManager = new ManaManager(this, db, statManager);
+        SFCoreAPI.init(statManager, manaManager, databaseFactory, asyncExecutor);
 
         var testMonitor = new TestMonitorManager();
+        magicStaffListener = new MagicStaffListener(this, statManager, getConfig().getConfigurationSection("magic-staves"));
 
-        // Comandos
-        var coreCommand = new SFCoreCommand(statManager, testMonitor);
+        var coreCommand = new SFCoreCommand(statManager, testMonitor, manaManager);
         getCommand("sfcore").setExecutor(coreCommand);
         getCommand("sfcore").setTabCompleter(coreCommand);
 
-        // Listeners
         var pm = getServer().getPluginManager();
-        pm.registerEvents(new PlayerConnectionListener(statManager, testMonitor), this);
-        pm.registerEvents(new CombatStatListener(), this);
+        pm.registerEvents(new PlayerConnectionListener(statManager, testMonitor, manaManager), this);
+        pm.registerEvents(new CombatStatListener(this, getConfig()), this);
         pm.registerEvents(new StatTestListener(statManager, testMonitor), this);
+        pm.registerEvents(magicStaffListener, this);
 
+        if (manaManager != null && manaManager.isEnabled()) {
+            getServer().getScheduler().runTaskTimer(this, manaManager::tickRegen, 20L, 20L);
+        }
+        if (magicStaffListener != null) {
+            long period = magicStaffListener.getRefreshIntervalTicks();
+            getServer().getScheduler().runTaskTimer(this, magicStaffListener::syncOnlinePlayers, period, period);
+        }
+        if (getServer().getPluginManager().getPlugin("PlaceholderAPI") != null) {
+            new SFCorePlaceholderExpansion(this).register();
+            getLogger().info("PlaceholderAPI expansion registered.");
+        } else {
+            getLogger().info("PlaceholderAPI not found, skipping SFCore placeholders.");
+        }
         var sfCharacter = pm.getPlugin("SFCharacter");
         if (sfCharacter != null && sfCharacter.isEnabled()) {
             registerCharacterSelectListener();
@@ -112,10 +131,25 @@ public class SFCorePlugin extends JavaPlugin {
 
     @Override
     public void onDisable() {
-        if (statManager != null) statManager.saveAll();
+        if (statManager != null) {
+            statManager.saveAll();
+        }
+        if (manaManager != null) {
+            for (var player : getServer().getOnlinePlayers()) {
+                manaManager.saveAndUnload(player.getUniqueId());
+            }
+        }
         SFCoreAPI.shutdown();
         if (asyncExecutor != null) asyncExecutor.shutdown();
         if (databaseFactory != null) databaseFactory.closeAll();
         getLogger().info("SFCore disabled.");
+    }
+
+    public StatManager getStatManager() {
+        return statManager;
+    }
+
+    public ManaManager getManaManager() {
+        return manaManager;
     }
 }

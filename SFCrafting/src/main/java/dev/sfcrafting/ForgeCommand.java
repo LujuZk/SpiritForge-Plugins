@@ -2,8 +2,11 @@ package dev.sfcrafting;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
+import java.util.UUID;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
@@ -24,6 +27,8 @@ public final class ForgeCommand implements CommandExecutor, TabCompleter {
     private final SFCraftingPlugin plugin;
     private final ForgeManager manager;
     private final AuraManager auraManager;
+    private final SpellCraftingManager spellCraftingManager;
+    private final SpellCastManager spellCastManager;
     private final OraxenItemResolver resolver;
     private final NamespacedKey bowTypeDataKey = new NamespacedKey("customforge", "bow_type");
     private final NamespacedKey woodDataKey = new NamespacedKey("customforge", "wood");
@@ -35,15 +40,21 @@ public final class ForgeCommand implements CommandExecutor, TabCompleter {
     private final NamespacedKey bowWoodRarityDataKey = new NamespacedKey("customforge", "wood_rarity");
     private final NamespacedKey bowMetalRarityDataKey = new NamespacedKey("customforge", "metal_rarity");
 
-    public ForgeCommand(SFCraftingPlugin plugin, ForgeManager manager, AuraManager auraManager) {
+    public ForgeCommand(SFCraftingPlugin plugin, ForgeManager manager, AuraManager auraManager, SpellCraftingManager spellCraftingManager, SpellCastManager spellCastManager) {
         this.plugin = plugin;
         this.manager = manager;
         this.auraManager = auraManager;
+        this.spellCraftingManager = spellCraftingManager;
+        this.spellCastManager = spellCastManager;
         this.resolver = new OraxenItemResolver(plugin);
     }
 
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
+        if (args.length >= 1 && args[0].equalsIgnoreCase("spellhit")) {
+            return handleSpellHit(sender, args);
+        }
+
         if (!sender.hasPermission("sfcrafting.admin")) {
             sender.sendMessage(ChatColor.RED + "No tienes permiso.");
             return true;
@@ -54,7 +65,39 @@ public final class ForgeCommand implements CommandExecutor, TabCompleter {
             if (auraManager != null) {
                 auraManager.reloadSettings();
             }
+            if (spellCraftingManager != null) {
+                spellCraftingManager.reload();
+            }
             sender.sendMessage(ChatColor.GREEN + "Config recargada. Aura actualizada.");
+            return true;
+        }
+        if (args.length >= 5 && args[0].equalsIgnoreCase("spellcraft")) {
+            if (!(sender instanceof Player player)) {
+                sender.sendMessage(ChatColor.RED + "Este comando solo puede usarlo un jugador.");
+                return true;
+            }
+            if (spellCraftingManager == null || !spellCraftingManager.isEnabled()) {
+                sender.sendMessage(ChatColor.RED + "El sistema de spellcraft esta deshabilitado.");
+                return true;
+            }
+            String templateKey = args[1];
+            String crystalKey = args[2];
+            String bookKey = args[3];
+            Map<String, Integer> allocations = parseAllocations(args[4]);
+            if (allocations.isEmpty()) {
+                sender.sendMessage(ChatColor.RED + "Debes asignar stats. Ejemplo: damage=5,area=3,cooldown=2,mana_cost=1");
+                return true;
+            }
+
+            SpellCraftingManager.CraftResult result = spellCraftingManager.craftSpell(player, templateKey, crystalKey, bookKey, allocations);
+            sender.sendMessage(result.message());
+            if (!result.success() || result.item() == null || result.item().getType().isAir()) {
+                return true;
+            }
+            var leftovers = player.getInventory().addItem(result.item());
+            for (var leftover : leftovers.values()) {
+                player.getWorld().dropItemNaturally(player.getLocation(), leftover);
+            }
             return true;
         }
         if (args.length >= 1 && args[0].equalsIgnoreCase("debugbow")) {
@@ -162,6 +205,7 @@ public final class ForgeCommand implements CommandExecutor, TabCompleter {
         if (args.length < 2 || !args[0].equalsIgnoreCase("give")) {
             sender.sendMessage(ChatColor.YELLOW + "Uso: /" + label + " give <oraxen_id|material:id> [cantidad] [rareza]");
             sender.sendMessage(ChatColor.YELLOW + "Uso: /" + label + " givebow <tipo> <madera> <rareza_madera> <metal> <rareza_metal> [cantidad] [rareza_final]");
+            sender.sendMessage(ChatColor.YELLOW + "Uso: /" + label + " spellcraft <plantilla> <cristal> <libro> <stat=puntos,...>");
             sender.sendMessage(ChatColor.YELLOW + "Uso: /" + label + " debugbow [jugador]");
             sender.sendMessage(ChatColor.YELLOW + "Uso: /" + label + " reload");
             return true;
@@ -210,9 +254,33 @@ public final class ForgeCommand implements CommandExecutor, TabCompleter {
         if (args.length == 1) {
             result.add("give");
             result.add("givebow");
+            result.add("spellcraft");
             result.add("debugbow");
             result.add("reload");
             return result;
+        }
+        if (args.length >= 2 && args[0].equalsIgnoreCase("spellcraft")) {
+            if (spellCraftingManager == null || !spellCraftingManager.isEnabled()) {
+                return result;
+            }
+            if (args.length == 2) {
+                result.addAll(spellCraftingManager.getTemplateKeys());
+                return result;
+            }
+            if (args.length == 3) {
+                result.addAll(spellCraftingManager.getCrystalKeys());
+                return result;
+            }
+            if (args.length == 4) {
+                result.addAll(spellCraftingManager.getBookKeys());
+                return result;
+            }
+            if (args.length == 5) {
+                for (String statKey : spellCraftingManager.getStatKeys(args[1])) {
+                    result.add(statKey + "=1");
+                }
+                return result;
+            }
         }
         if (args.length == 2 && args[0].equalsIgnoreCase("debugbow")) {
             for (Player online : plugin.getServer().getOnlinePlayers()) {
@@ -339,6 +407,59 @@ public final class ForgeCommand implements CommandExecutor, TabCompleter {
             return String.valueOf((int) Math.rint(value));
         }
         return String.format(Locale.US, "%.4f", value);
+    }
+
+    private boolean handleSpellHit(CommandSender sender, String[] args) {
+        if (spellCastManager == null) {
+            sender.sendMessage(ChatColor.RED + "Spell casting no disponible.");
+            return true;
+        }
+        if (args.length < 3) {
+            sender.sendMessage(ChatColor.RED + "Uso: /sfcrafting spellhit <caster_uuid> <target_uuid>");
+            return true;
+        }
+        try {
+            UUID casterId = UUID.fromString(args[1]);
+            UUID targetId = UUID.fromString(args[2]);
+            boolean ok = spellCastManager.applyQueuedSpellHit(casterId, targetId);
+            if (!ok) {
+                sender.sendMessage(ChatColor.RED + "No se pudo aplicar el impacto.");
+            }
+            return true;
+        } catch (IllegalArgumentException e) {
+            sender.sendMessage(ChatColor.RED + "UUID invalido.");
+            return true;
+        }
+    }
+
+    private Map<String, Integer> parseAllocations(String raw) {
+        Map<String, Integer> allocations = new LinkedHashMap<>();
+        if (raw == null || raw.isBlank()) {
+            return allocations;
+        }
+        String[] pairs = raw.split(",");
+        for (String pair : pairs) {
+            if (pair == null || pair.isBlank()) {
+                continue;
+            }
+            String[] parts = pair.split("=");
+            if (parts.length != 2) {
+                continue;
+            }
+            String key = parts[0].trim().toLowerCase(Locale.ROOT);
+            if (key.isBlank()) {
+                continue;
+            }
+            try {
+                int value = Integer.parseInt(parts[1].trim());
+                if (value < 0) {
+                    continue;
+                }
+                allocations.put(key, value);
+            } catch (NumberFormatException ignored) {
+            }
+        }
+        return allocations;
     }
 }
 

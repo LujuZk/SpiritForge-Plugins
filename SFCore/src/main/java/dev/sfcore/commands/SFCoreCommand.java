@@ -1,9 +1,16 @@
 package dev.sfcore.commands;
 
-import dev.sfcore.api.SFCoreAPI;
 import dev.sfcore.api.StatType;
+import dev.sfcore.managers.ManaManager;
 import dev.sfcore.managers.StatManager;
 import dev.sfcore.managers.TestMonitorManager;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.stream.Collectors;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.Bukkit;
@@ -15,15 +22,12 @@ import org.bukkit.entity.Player;
 import org.bukkit.util.StringUtil;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.*;
-import java.util.stream.Collectors;
-
 public class SFCoreCommand implements CommandExecutor, TabCompleter {
 
     private final StatManager statManager;
     private final TestMonitorManager testMonitor;
+    private final ManaManager manaManager;
 
-    // Aliases para stats comunes
     private static final Map<String, StatType> ALIASES = new LinkedHashMap<>();
 
     static {
@@ -37,56 +41,48 @@ public class SFCoreCommand implements CommandExecutor, TabCompleter {
         ALIASES.put("ls", StatType.LIFESTEAL);
     }
 
-    public SFCoreCommand(StatManager statManager, TestMonitorManager testMonitor) {
+    public SFCoreCommand(StatManager statManager, TestMonitorManager testMonitor, ManaManager manaManager) {
         this.statManager = statManager;
         this.testMonitor = testMonitor;
+        this.manaManager = manaManager;
     }
-
-    // ─── Command Executor ────────────────────────────────────────────
 
     @Override
     public boolean onCommand(@NotNull CommandSender sender, @NotNull Command cmd, @NotNull String label, String[] args) {
         if (!(sender instanceof Player player)) {
-            sender.sendMessage(Component.text("Solo jugadores pueden usar este comando.", NamedTextColor.RED));
+            sender.sendMessage("Solo jugadores pueden usar este comando.");
             return true;
         }
-
         if (!player.hasPermission("sfcore.admin")) {
             player.sendMessage(Component.text("Sin permiso.", NamedTextColor.RED));
             return true;
         }
-
         if (args.length < 1) {
             sendHelp(player);
             return true;
         }
 
-        switch (args[0].toLowerCase()) {
+        switch (args[0].toLowerCase(Locale.ROOT)) {
             case "test" -> handleTest(player, args);
             case "stats" -> handleStats(player, args);
+            case "mana" -> handleMana(player, args);
             default -> sendHelp(player);
         }
         return true;
     }
-
-    // ─── Test Subcommand ─────────────────────────────────────────────
 
     private void handleTest(Player player, String[] args) {
         if (args.length < 3) {
             player.sendMessage(Component.text("Uso: /sfcore test <stat|all> <on|off|add> [value]", NamedTextColor.YELLOW));
             return;
         }
-
-        String statArg = args[1].toLowerCase();
-        String action = args[2].toLowerCase();
-
-        // /sfcore test all on/off
+        String statArg = args[1].toLowerCase(Locale.ROOT);
+        String action = args[2].toLowerCase(Locale.ROOT);
         if (statArg.equals("all")) {
             handleTestAll(player, action);
             return;
         }
 
-        // Resolver stat type (por key o alias)
         StatType stat = resolveStatType(statArg);
         if (stat == null) {
             player.sendMessage(Component.text("Stat desconocido: " + statArg, NamedTextColor.RED));
@@ -98,17 +94,16 @@ public class SFCoreCommand implements CommandExecutor, TabCompleter {
                 testMonitor.enable(player.getUniqueId(), stat);
                 double total = statManager.getTotal(player, stat);
                 player.sendMessage(Component.text("[TEST] ", NamedTextColor.GRAY)
-                        .append(Component.text(stat.getKey(), NamedTextColor.GOLD))
-                        .append(Component.text(" monitor activado", NamedTextColor.GREEN))
-                        .append(Component.text(" | Valor actual: " + String.format("%.2f", total), NamedTextColor.YELLOW)));
+                    .append(Component.text(stat.getKey(), NamedTextColor.GOLD))
+                    .append(Component.text(" monitor activado", NamedTextColor.GREEN))
+                    .append(Component.text(" | Valor actual: " + String.format(Locale.US, "%.2f", total), NamedTextColor.YELLOW)));
             }
             case "off" -> {
                 testMonitor.disable(player.getUniqueId(), stat);
-                // Quitar bonus de test si existe
                 statManager.removeBonus(player, "test:" + stat.getKey());
                 player.sendMessage(Component.text("[TEST] ", NamedTextColor.GRAY)
-                        .append(Component.text(stat.getKey(), NamedTextColor.GOLD))
-                        .append(Component.text(" monitor desactivado + bonus test removido", NamedTextColor.RED)));
+                    .append(Component.text(stat.getKey(), NamedTextColor.GOLD))
+                    .append(Component.text(" monitor desactivado + bonus test removido", NamedTextColor.RED)));
             }
             case "add" -> {
                 if (args.length < 4) {
@@ -119,14 +114,14 @@ public class SFCoreCommand implements CommandExecutor, TabCompleter {
                     double value = Double.parseDouble(args[3]);
                     statManager.addBonus(player, "test:" + stat.getKey(), stat, value);
                     player.sendMessage(Component.text("[TEST] ", NamedTextColor.GRAY)
-                            .append(Component.text(stat.getKey(), NamedTextColor.GOLD))
-                            .append(Component.text(" bonus añadido: " + String.format("%.2f", value), NamedTextColor.GREEN))
-                            .append(Component.text(" (source: test:" + stat.getKey() + ")", NamedTextColor.GRAY)));
+                        .append(Component.text(stat.getKey(), NamedTextColor.GOLD))
+                        .append(Component.text(" bonus agregado: " + String.format(Locale.US, "%.2f", value), NamedTextColor.GREEN))
+                        .append(Component.text(" (source: test:" + stat.getKey() + ")", NamedTextColor.GRAY)));
                 } catch (NumberFormatException e) {
-                    player.sendMessage(Component.text("Valor inválido: " + args[3], NamedTextColor.RED));
+                    player.sendMessage(Component.text("Valor invalido: " + args[3], NamedTextColor.RED));
                 }
             }
-            default -> player.sendMessage(Component.text("Acción inválida. Usa: on, off, add", NamedTextColor.RED));
+            default -> player.sendMessage(Component.text("Accion invalida. Usa: on, off, add", NamedTextColor.RED));
         }
     }
 
@@ -134,20 +129,16 @@ public class SFCoreCommand implements CommandExecutor, TabCompleter {
         switch (action) {
             case "on" -> {
                 testMonitor.enableAll(player.getUniqueId());
-                player.sendMessage(Component.text("[TEST] ", NamedTextColor.GRAY)
-                        .append(Component.text("Todos los monitors activados", NamedTextColor.GREEN)));
+                player.sendMessage(Component.text("[TEST] todos los monitores activados", NamedTextColor.GREEN));
             }
             case "off" -> {
                 testMonitor.disableAll(player.getUniqueId());
                 statManager.clearSource(player, "test:");
-                player.sendMessage(Component.text("[TEST] ", NamedTextColor.GRAY)
-                        .append(Component.text("Todos los monitors desactivados + bonuses test removidos", NamedTextColor.RED)));
+                player.sendMessage(Component.text("[TEST] todos los monitores desactivados + bonuses test removidos", NamedTextColor.RED));
             }
             default -> player.sendMessage(Component.text("Para 'all' solo se puede usar on/off", NamedTextColor.RED));
         }
     }
-
-    // ─── Stats Subcommand ────────────────────────────────────────────
 
     private void handleStats(Player player, String[] args) {
         Player target = player;
@@ -160,40 +151,77 @@ public class SFCoreCommand implements CommandExecutor, TabCompleter {
         }
 
         Map<StatType, Double> totals = statManager.getAllTotals(target);
-
-        player.sendMessage(Component.text("═══ Stats de " + target.getName() + " ═══", NamedTextColor.GOLD));
-
+        player.sendMessage(Component.text("=== Stats de " + target.getName() + " ===", NamedTextColor.GOLD));
         for (StatType stat : StatType.values()) {
-            double value = totals.getOrDefault(stat, 0.0);
-            NamedTextColor valueColor = value > 0 ? NamedTextColor.GREEN : NamedTextColor.GRAY;
+            double value = totals.getOrDefault(stat, 0.0D);
+            NamedTextColor color = value > 0 ? NamedTextColor.GREEN : NamedTextColor.GRAY;
             player.sendMessage(Component.text("  " + stat.getKey(), NamedTextColor.YELLOW)
-                    .append(Component.text(" → ", NamedTextColor.DARK_GRAY))
-                    .append(Component.text(String.format("%.2f", value), valueColor)));
+                .append(Component.text(" -> ", NamedTextColor.DARK_GRAY))
+                .append(Component.text(String.format(Locale.US, "%.2f", value), color)));
         }
     }
 
-    // ─── Help ────────────────────────────────────────────────────────
-
-    private void sendHelp(Player player) {
-        player.sendMessage(Component.text("═══ SFCore Comandos ═══", NamedTextColor.GOLD));
-        player.sendMessage(Component.text("  /sfcore test <stat|all> on", NamedTextColor.YELLOW)
-                .append(Component.text(" — Activa monitor de stat", NamedTextColor.GRAY)));
-        player.sendMessage(Component.text("  /sfcore test <stat|all> off", NamedTextColor.YELLOW)
-                .append(Component.text(" — Desactiva monitor + quita bonus test", NamedTextColor.GRAY)));
-        player.sendMessage(Component.text("  /sfcore test <stat> add <value>", NamedTextColor.YELLOW)
-                .append(Component.text(" — Agrega bonus de test", NamedTextColor.GRAY)));
-        player.sendMessage(Component.text("  /sfcore stats [player]", NamedTextColor.YELLOW)
-                .append(Component.text(" — Muestra todos los stats", NamedTextColor.GRAY)));
+    private void handleMana(Player player, String[] args) {
+        if (manaManager == null || !manaManager.isEnabled()) {
+            player.sendMessage(Component.text("Sistema de mana deshabilitado.", NamedTextColor.RED));
+            return;
+        }
+        Player target = player;
+        if (args.length >= 2) {
+            Player maybe = Bukkit.getPlayer(args[1]);
+            if (maybe != null) {
+                target = maybe;
+            }
+        }
+        if (args.length >= 4) {
+            String action = args[2].toLowerCase(Locale.ROOT);
+            double value;
+            try {
+                value = Double.parseDouble(args[3]);
+            } catch (NumberFormatException e) {
+                player.sendMessage(Component.text("Valor invalido: " + args[3], NamedTextColor.RED));
+                return;
+            }
+            switch (action) {
+                case "set" -> manaManager.setMana(target, value);
+                case "add" -> manaManager.addMana(target, value);
+                case "spend" -> {
+                    if (!manaManager.spendMana(target, value)) {
+                        player.sendMessage(Component.text("Mana insuficiente.", NamedTextColor.RED));
+                    }
+                }
+                default -> {
+                    player.sendMessage(Component.text("Accion invalida: " + action, NamedTextColor.RED));
+                    return;
+                }
+            }
+        }
+        double mana = manaManager.getMana(target);
+        double max = manaManager.getMaxMana(target);
+        double regen = manaManager.getManaRegenPerSecond(target);
+        player.sendMessage(Component.text("Mana de " + target.getName() + ": ", NamedTextColor.YELLOW)
+            .append(Component.text(String.format(Locale.US, "%.1f", mana), NamedTextColor.AQUA))
+            .append(Component.text("/", NamedTextColor.GRAY))
+            .append(Component.text(String.format(Locale.US, "%.1f", max), NamedTextColor.AQUA))
+            .append(Component.text(" (regen ", NamedTextColor.GRAY))
+            .append(Component.text(String.format(Locale.US, "%.2f", regen), NamedTextColor.GREEN))
+            .append(Component.text("/s)", NamedTextColor.GRAY)));
     }
 
-    // ─── Tab Completer ───────────────────────────────────────────────
+    private void sendHelp(Player player) {
+        player.sendMessage(Component.text("=== SFCore Comandos ===", NamedTextColor.GOLD));
+        player.sendMessage(Component.text("  /sfcore test <stat|all> on", NamedTextColor.YELLOW));
+        player.sendMessage(Component.text("  /sfcore test <stat|all> off", NamedTextColor.YELLOW));
+        player.sendMessage(Component.text("  /sfcore test <stat> add <value>", NamedTextColor.YELLOW));
+        player.sendMessage(Component.text("  /sfcore stats [player]", NamedTextColor.YELLOW));
+        player.sendMessage(Component.text("  /sfcore mana [player] [set|add|spend <valor>]", NamedTextColor.YELLOW));
+    }
 
     @Override
     public List<String> onTabComplete(@NotNull CommandSender sender, @NotNull Command cmd, @NotNull String alias, String[] args) {
         List<String> completions = new ArrayList<>();
-
         if (args.length == 1) {
-            StringUtil.copyPartialMatches(args[0], List.of("test", "stats"), completions);
+            StringUtil.copyPartialMatches(args[0], List.of("test", "stats", "mana"), completions);
         } else if (args[0].equalsIgnoreCase("test")) {
             if (args.length == 2) {
                 List<String> options = new ArrayList<>();
@@ -213,23 +241,30 @@ public class SFCoreCommand implements CommandExecutor, TabCompleter {
                 StringUtil.copyPartialMatches(args[3], List.of("0.1", "0.5", "1", "5", "10"), completions);
             }
         } else if (args[0].equalsIgnoreCase("stats") && args.length == 2) {
-            List<String> playerNames = Bukkit.getOnlinePlayers().stream()
-                    .map(Player::getName)
-                    .collect(Collectors.toList());
+            List<String> playerNames = Bukkit.getOnlinePlayers().stream().map(Player::getName).collect(Collectors.toList());
             StringUtil.copyPartialMatches(args[1], playerNames, completions);
+        } else if (args[0].equalsIgnoreCase("mana")) {
+            if (args.length == 2) {
+                List<String> options = Bukkit.getOnlinePlayers().stream().map(Player::getName).collect(Collectors.toList());
+                options.add("set");
+                options.add("add");
+                options.add("spend");
+                StringUtil.copyPartialMatches(args[1], options, completions);
+            } else if (args.length == 3) {
+                StringUtil.copyPartialMatches(args[2], List.of("set", "add", "spend"), completions);
+            } else if (args.length == 4) {
+                StringUtil.copyPartialMatches(args[3], List.of("10", "25", "50"), completions);
+            }
         }
-
         Collections.sort(completions);
         return completions;
     }
 
-    // ─── Utilities ───────────────────────────────────────────────────
-
     private StatType resolveStatType(String input) {
-        // Primero intentar key exacto
         StatType stat = StatType.fromKey(input);
-        if (stat != null) return stat;
-        // Luego intentar alias
-        return ALIASES.get(input.toLowerCase());
+        if (stat != null) {
+            return stat;
+        }
+        return ALIASES.get(input.toLowerCase(Locale.ROOT));
     }
 }

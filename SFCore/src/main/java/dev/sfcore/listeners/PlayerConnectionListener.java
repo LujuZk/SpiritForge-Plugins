@@ -2,6 +2,7 @@ package dev.sfcore.listeners;
 
 import dev.sfcore.managers.StatManager;
 import dev.sfcore.managers.TestMonitorManager;
+import dev.sfcore.managers.ManaManager;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -12,21 +13,31 @@ public class PlayerConnectionListener implements Listener {
 
     private final StatManager statManager;
     private final TestMonitorManager testMonitor;
+    private final ManaManager manaManager;
 
-    public PlayerConnectionListener(StatManager statManager, TestMonitorManager testMonitor) {
+    public PlayerConnectionListener(StatManager statManager, TestMonitorManager testMonitor, ManaManager manaManager) {
         this.statManager = statManager;
         this.testMonitor = testMonitor;
+        this.manaManager = manaManager;
     }
 
     @EventHandler(priority = EventPriority.MONITOR)
     public void onJoin(PlayerJoinEvent event) {
-        statManager.loadPlayer(event.getPlayer());
+        var player = event.getPlayer();
+        statManager.loadPlayer(player.getUniqueId());
+        statManager.reapplyAll(player);
+        if (manaManager != null) {
+            manaManager.loadPlayer(player);
+        }
     }
 
     @EventHandler(priority = EventPriority.MONITOR)
     public void onQuit(PlayerQuitEvent event) {
         var uuid = event.getPlayer().getUniqueId();
         statManager.saveAndUnload(uuid);
+        if (manaManager != null) {
+            manaManager.saveAndUnload(uuid);
+        }
         testMonitor.disableAll(uuid);
     }
 }
