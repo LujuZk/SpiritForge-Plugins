@@ -9,6 +9,7 @@ import dev.sfcharacter.listeners.GUIListener;
 import dev.sfcharacter.listeners.PlayerConnectionListener;
 import dev.sfcharacter.listeners.SelectionProtectionListener;
 import dev.sfcharacter.managers.CharacterManager;
+import dev.sfcore.api.SFCoreAPI;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -23,26 +24,26 @@ public class SFCharacterPlugin extends JavaPlugin {
     public void onEnable() {
         saveDefaultConfig();
 
-        // Database
-        String dbFile = getConfig().getString("database.file", "characters.db");
-        database = new CharacterDatabase(getDataFolder(), dbFile);
+        var sfCorePlugin = getServer().getPluginManager().getPlugin("SFCore");
+        if (sfCorePlugin == null || !sfCorePlugin.isEnabled()) {
+            getLogger().severe("SFCore no está habilitado — SFCharacter no puede iniciarse.");
+            getServer().getPluginManager().disablePlugin(this);
+            return;
+        }
 
-        // Managers
+        database = new CharacterDatabase(SFCoreAPI.get().getDatabase("sfcharacter"));
+
         characterManager = new CharacterManager(this, database);
 
-        // API
         SFCharacterAPI.init(characterManager);
 
-        // GUIs
         selectGUI = new CharacterSelectGUI(this);
         classSelectGUI = new ClassSelectGUI(this);
 
-        // Commands
         CharacterCommand cmd = new CharacterCommand(this);
         getCommand("character").setExecutor(cmd);
         getCommand("character").setTabCompleter(cmd);
 
-        // Listeners
         var pm = getServer().getPluginManager();
         pm.registerEvents(new GUIListener(this), this);
         pm.registerEvents(new PlayerConnectionListener(this), this);
@@ -53,16 +54,16 @@ public class SFCharacterPlugin extends JavaPlugin {
 
     @Override
     public void onDisable() {
-        // Save all online players' character states
-        for (Player player : getServer().getOnlinePlayers()) {
-            if (characterManager.hasActiveCharacter(player.getUniqueId())
-                    && !characterManager.isInCharacterSelection(player.getUniqueId())) {
-                characterManager.saveCharacterState(player);
+        if (characterManager != null) {
+            for (Player player : getServer().getOnlinePlayers()) {
+                if (characterManager.hasActiveCharacter(player.getUniqueId())
+                        && !characterManager.isInCharacterSelection(player.getUniqueId())) {
+                    characterManager.saveCharacterState(player, true); // sync en onDisable
+                }
             }
         }
 
         SFCharacterAPI.shutdown();
-        if (database != null) database.close();
         getLogger().info("SFCharacter disabled");
     }
 

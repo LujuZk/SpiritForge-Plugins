@@ -5,7 +5,7 @@ api-version: '1.21'
 authors: [LujuZk]
 description: SpiritForge central stats manager
 load: STARTUP
-softdepend: [PlaceholderAPI]
+softdepend: [PlaceholderAPI],[SFCharacter]
 
 commands:
   sfcore:

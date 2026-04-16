@@ -2,7 +2,10 @@ name: SFCrafting
 version: 1.0.0
 main: dev.sfcrafting.SFCraftingPlugin
 api-version: '1.21'
-softdepend: [Oraxen, SkillTreePlugin, SFCharacter, MythicMobs, SFCore]
+
+depend: [SFCore]
+softdepend: [Oraxen, SkillTreePlugin,MythicMobs, SFCharacter]
+
 authors: [LujuZk]
 description: SpiritForge crafting and forging plugin
 

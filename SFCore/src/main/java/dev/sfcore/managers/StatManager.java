@@ -1,9 +1,12 @@
 package dev.sfcore.managers;
 
+import dev.sfcore.api.SFCoreAPI;
 import dev.sfcore.api.StatBonus;
 import dev.sfcore.api.StatType;
+import dev.sfcore.database.AsyncDatabaseExecutor;
 import dev.sfcore.database.StatDatabase;
 import org.bukkit.Bukkit;
+import dev.sfcore.util.CharacterSlotResolver;
 import org.bukkit.attribute.AttributeInstance;
 import org.bukkit.attribute.AttributeModifier;
 import org.bukkit.entity.Player;
@@ -29,8 +32,15 @@ public class StatManager {
         this.db = db;
     }
 
-    public void loadPlayer(UUID uuid) {
-        cache.put(uuid, new ArrayList<>(db.loadBonuses(uuid)));
+    public void loadPlayer(Player player) {
+        UUID uuid = player.getUniqueId();
+        int slot = CharacterSlotResolver.resolve(uuid);
+        cache.put(uuid, new ArrayList<>()); // cache vacia temporal
+        AsyncDatabaseExecutor async = SFCoreAPI.get().getAsyncExecutor();
+        async.thenOnMain(async.supplyAsync(() -> db.loadBonuses(uuid, slot)), bonuses -> {
+            cache.put(uuid, new ArrayList<>(bonuses));
+            if (player.isOnline()) reapplyAll(player);
+        });
     }
 
     public void saveAndUnload(UUID uuid) {
@@ -42,41 +52,62 @@ public class StatManager {
         // Nothing to flush — every mutation already hits the DB immediately.
     }
 
+    /**
+     * Recarga los bonuses del slot activo actual del jugador. Se llama al cambiar de
+     * personaje (CharacterSelectEvent) — el slot nuevo se resuelve vía
+     * {@link CharacterSlotResolver}, que ya refleja el estado post-switch.
+     */
+    public void reloadForActiveSlot(Player player) {
+        UUID uuid = player.getUniqueId();
+        int slot = CharacterSlotResolver.resolve(uuid);
+        cache.put(uuid, new ArrayList<>()); // limpiar cache del slot viejo
+        AsyncDatabaseExecutor async = SFCoreAPI.get().getAsyncExecutor();
+        async.thenOnMain(async.supplyAsync(() -> db.loadBonuses(uuid, slot)), bonuses -> {
+            cache.put(uuid, new ArrayList<>(bonuses));
+            if (player.isOnline()) reapplyAll(player);
+        });
+    }
+
     public void addBonus(Player player, String source, StatType stat, double value) {
         UUID uuid = player.getUniqueId();
+        int slot = CharacterSlotResolver.resolve(uuid);
         List<StatBonus> bonuses = cache.computeIfAbsent(uuid, u -> new ArrayList<>());
         bonuses.removeIf(b -> b.source().equals(source) && b.type() == stat);
         StatBonus bonus = new StatBonus(source, stat, value);
         bonuses.add(bonus);
-        db.upsertBonus(uuid, bonus);
         reapplyAll(player);
+        SFCoreAPI.get().getAsyncExecutor().runAsync(() -> db.upsertBonus(uuid, slot, bonus));
     }
 
     public void removeBonus(Player player, String source) {
         UUID uuid = player.getUniqueId();
+        int slot = CharacterSlotResolver.resolve(uuid);
         List<StatBonus> bonuses = cache.get(uuid);
         if (bonuses != null) bonuses.removeIf(b -> b.source().equals(source));
-        db.deleteBonus(uuid, source);
         reapplyAll(player);
+        SFCoreAPI.get().getAsyncExecutor().runAsync(() -> db.deleteBonus(uuid, slot, source));
     }
 
     public void clearSource(Player player, String sourcePrefix) {
         UUID uuid = player.getUniqueId();
+        int slot = CharacterSlotResolver.resolve(uuid);
         List<StatBonus> bonuses = cache.get(uuid);
         if (bonuses != null) bonuses.removeIf(b -> b.source().startsWith(sourcePrefix));
-        db.deleteBySourcePrefix(uuid, sourcePrefix);
         reapplyAll(player);
+        SFCoreAPI.get().getAsyncExecutor().runAsync(() -> db.deleteBySourcePrefix(uuid, slot, sourcePrefix));
     }
 
     public void addBonusesBulk(Player player, java.util.List<StatBonus> newBonuses) {
         UUID uuid = player.getUniqueId();
+        int slot = CharacterSlotResolver.resolve(uuid);
         List<StatBonus> bonuses = cache.computeIfAbsent(uuid, u -> new ArrayList<>());
         for (StatBonus b : newBonuses) {
             bonuses.removeIf(existing -> existing.source().equals(b.source()) && existing.type() == b.type());
             bonuses.add(b);
-            db.upsertBonus(uuid, b);
         }
         reapplyAll(player);
+        List<StatBonus> snapshot = List.copyOf(newBonuses);
+        SFCoreAPI.get().getAsyncExecutor().runAsync(() -> db.upsertBonusesBatch(uuid, slot, snapshot));
     }
 
     public double getTotal(Player player, StatType stat) {

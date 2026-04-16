@@ -22,15 +22,12 @@ dependencies {
     compileOnly(fileTree("../SFCore/build/libs") { include("SFCore-*.jar") })
     compileOnly(fileTree("../SFCrafting/build/libs") { include("SFCrafting-*.jar") })
     compileOnly(fileTree("../SFDrops/build/libs") { include("SFDrops-*.jar") })
-    implementation("org.xerial:sqlite-jdbc:3.45.3.0")
+    compileOnly(fileTree("../SFCharacter/build/libs") { include("SFCharacter-*.jar") })
 }
 
 tasks {
     shadowJar {
         archiveClassifier.set("")
-        minimize {
-            exclude(dependency("org.xerial:sqlite-jdbc:.*"))
-        }
     }
     build {
         dependsOn(shadowJar)

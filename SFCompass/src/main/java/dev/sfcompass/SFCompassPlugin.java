@@ -7,6 +7,7 @@ import dev.sfcompass.listeners.ZoneEnforcerTask;
 import dev.sfcompass.listeners.ZoneVisualTask;
 import dev.sfcompass.managers.CompassManager;
 import dev.sfcompass.managers.IslandManager;
+import dev.sfcore.api.SFCoreAPI;
 import org.bukkit.Color;
 import org.bukkit.boss.BarColor;
 import org.bukkit.event.EventHandler;
@@ -26,8 +27,13 @@ public class SFCompassPlugin extends JavaPlugin implements Listener {
     public void onEnable() {
         saveDefaultConfig();
 
-        String dbFile = getConfig().getString("database.file", "compass.db");
-        db = new CompassDatabase(getDataFolder(), dbFile);
+        var sfCorePlugin = getServer().getPluginManager().getPlugin("SFCore");
+        if (sfCorePlugin == null || !sfCorePlugin.isEnabled()) {
+            getLogger().severe("SFCore no está habilitado — SFCompass no puede iniciarse.");
+            getServer().getPluginManager().disablePlugin(this);
+            return;
+        }
+        db = new CompassDatabase(SFCoreAPI.get().getDatabase("sfcompass"));
 
         islandManager = new IslandManager(getConfig());
         compassManager = new CompassManager(this, db);
@@ -79,6 +85,15 @@ public class SFCompassPlugin extends JavaPlugin implements Listener {
 
         compassListener.setZoneVisualTask(zoneVisualTask);
 
+        var sfCharacter = pm.getPlugin("SFCharacter");
+        if (sfCharacter != null && sfCharacter.isEnabled()) {
+            pm.registerEvents(
+                    new dev.sfcompass.listeners.CharacterSelectCompassListener(compassManager), this);
+            getLogger().info("SFCharacter detectado — per-character scoping de compass activado.");
+        } else {
+            getLogger().info("SFCharacter no detectado — compass en single-slot mode (slot 0).");
+        }
+
         getLogger().info("SFCompass enabled — " + islandManager.getAllIslands().size() + " islands loaded.");
     }
 
@@ -86,7 +101,7 @@ public class SFCompassPlugin extends JavaPlugin implements Listener {
     public void onDisable() {
         if (zoneEnforcerTask != null) zoneEnforcerTask.cancel();
         if (zoneVisualTask != null) zoneVisualTask.cancel();
-        if (db != null) db.close();
+        // No cerramos la DB: el pool lo maneja SFCore en su propio onDisable()
         getLogger().info("SFCompass disabled.");
     }
 

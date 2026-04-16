@@ -17,15 +17,13 @@ repositories {
 
 dependencies {
     compileOnly("io.papermc.paper:paper-api:1.21.1-R0.1-SNAPSHOT")
-    implementation("org.xerial:sqlite-jdbc:3.45.3.0")
+    compileOnly(fileTree("../SFCore/build/libs") { include("SFCore-*.jar") })
+    compileOnly(fileTree("../SFCharacter/build/libs") { include("SFCharacter-*.jar") })
 }
 
 tasks {
     shadowJar {
         archiveClassifier.set("")
-        minimize {
-            exclude(dependency("org.xerial:sqlite-jdbc:.*"))
-        }
     }
     build {
         dependsOn(shadowJar)

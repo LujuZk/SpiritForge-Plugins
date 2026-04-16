@@ -93,4 +93,19 @@ public class PlayerSkillData {
     public void resetNodes(SkillType skill) {
         unlockedNodes.put(skill, new HashSet<>());
     }
+
+    /**
+     * Deep copy para pasar datos al async thread sin race conditions.
+     */
+    public PlayerSkillData copy() {
+        PlayerSkillData copy = new PlayerSkillData(playerUUID);
+        for (SkillType type : SkillType.values()) {
+            copy.levels.put(type, levels.getOrDefault(type, 1));
+            copy.xp.put(type, xp.getOrDefault(type, 0.0));
+            copy.availablePoints.put(type, availablePoints.getOrDefault(type, 0));
+            copy.unlockedNodes.put(type, new HashSet<>(
+                    unlockedNodes.getOrDefault(type, Collections.emptySet())));
+        }
+        return copy;
+    }
 }

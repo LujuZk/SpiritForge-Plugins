@@ -1,72 +1,77 @@
 package dev.sfcompass.database;
 
-import java.io.File;
-import java.sql.*;
+import dev.sfcore.database.SFDatabase;
+import dev.sfcore.database.SqlDialect;
+
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.UUID;
 import java.util.logging.Logger;
 
 public class CompassDatabase {
 
-    private final Connection connection;
     private static final Logger log = Logger.getLogger("SFCompass");
 
-    public CompassDatabase(File dataFolder, String fileName) {
-        dataFolder.mkdirs();
-        File dbFile = new File(dataFolder, fileName);
-        try {
-            Class.forName("org.sqlite.JDBC");
-            connection = DriverManager.getConnection("jdbc:sqlite:" + dbFile.getAbsolutePath());
-            try (Statement pragma = connection.createStatement()) {
-                pragma.execute("PRAGMA journal_mode=WAL;");
-            }
-            initTables();
-            log.info("[SFCompass] Database initialized at " + dbFile.getAbsolutePath());
-        } catch (Exception e) {
+    private final SFDatabase sfDatabase;
+    private final String table;
+
+    private final String sqlSelect;
+    private final String sqlUpsert;
+
+    public CompassDatabase(SFDatabase sfDatabase) {
+        this.sfDatabase = sfDatabase;
+        SqlDialect dialect = sfDatabase.dialect();
+        this.table = sfDatabase.getTableName("compass_levels");
+
+        this.sqlSelect = "SELECT level FROM " + table
+                + " WHERE player_uuid = ? AND character_slot = ?";
+        this.sqlUpsert = dialect.upsert(
+                table,
+                new String[]{"player_uuid", "character_slot"},
+                new String[]{"level"});
+
+        String create = "CREATE TABLE IF NOT EXISTS " + table + " ("
+                + "player_uuid "    + dialect.uuidType() + " NOT NULL, "
+                + "character_slot " + dialect.intType()  + " NOT NULL, "
+                + "level "          + dialect.intType()  + " NOT NULL DEFAULT 1, "
+                + "PRIMARY KEY (player_uuid, character_slot)"
+                + ")";
+
+        try (Connection conn = sfDatabase.getConnection();
+             Statement stmt = conn.createStatement()) {
+            stmt.execute(create);
+            log.info("[SFCompass] Database lista (" + dialect.id() + ", tabla '" + table + "')");
+        } catch (SQLException e) {
             throw new RuntimeException("Failed to initialize CompassDatabase", e);
         }
     }
 
-    private void initTables() throws SQLException {
-        try (Statement stmt = connection.createStatement()) {
-            stmt.execute("""
-                CREATE TABLE IF NOT EXISTS compass_levels (
-                    player_uuid TEXT PRIMARY KEY,
-                    level       INTEGER DEFAULT 1
-                )
-                """);
-        }
-    }
-
-    public int loadLevel(UUID uuid) {
-        try (PreparedStatement ps = connection.prepareStatement(
-                "SELECT level FROM compass_levels WHERE player_uuid = ?")) {
+    public int loadLevel(UUID uuid, int slot) {
+        try (Connection conn = sfDatabase.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sqlSelect)) {
             ps.setString(1, uuid.toString());
-            ResultSet rs = ps.executeQuery();
-            if (rs.next()) {
-                return rs.getInt("level");
+            ps.setInt(2, slot);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) return rs.getInt("level");
             }
         } catch (SQLException e) {
-            log.warning("[SFCompass] Error loading level for " + uuid + ": " + e.getMessage());
+            log.warning("[SFCompass] Error loading level for " + uuid + " slot " + slot + ": " + e.getMessage());
         }
         return -1;
     }
 
-    public void saveLevel(UUID uuid, int level) {
-        try (PreparedStatement ps = connection.prepareStatement(
-                "INSERT OR REPLACE INTO compass_levels (player_uuid, level) VALUES (?, ?)")) {
+    public void saveLevel(UUID uuid, int slot, int level) {
+        try (Connection conn = sfDatabase.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sqlUpsert)) {
             ps.setString(1, uuid.toString());
-            ps.setInt(2, level);
+            ps.setInt(2, slot);
+            ps.setInt(3, level);
             ps.executeUpdate();
         } catch (SQLException e) {
-            log.warning("[SFCompass] Error saving level for " + uuid + ": " + e.getMessage());
-        }
-    }
-
-    public void close() {
-        try {
-            if (connection != null && !connection.isClosed()) connection.close();
-        } catch (SQLException e) {
-            log.warning("[SFCompass] Error closing database: " + e.getMessage());
+            log.warning("[SFCompass] Error saving level for " + uuid + " slot " + slot + ": " + e.getMessage());
         }
     }
 }

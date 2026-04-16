@@ -1,5 +1,9 @@
 package dev.sfcore.api;
 
+import dev.sfcore.database.AsyncDatabaseExecutor;
+import dev.sfcore.database.SFDatabase;
+import dev.sfcore.database.SFDatabaseFactory;
+import dev.sfcore.database.SqlDialect;
 import dev.sfcore.managers.StatManager;
 import dev.sfcore.managers.ManaManager;
 import org.bukkit.entity.Player;
@@ -13,10 +17,15 @@ public final class SFCoreAPI {
     private static SFCoreAPI instance;
     private final StatManager manager;
     private final ManaManager manaManager;
+    private final SFDatabaseFactory databaseFactory;
+    private final AsyncDatabaseExecutor asyncExecutor;
 
-    private SFCoreAPI(StatManager manager, ManaManager manaManager) {
+    private SFCoreAPI(StatManager manager, ManaManager manaManager, SFDatabaseFactory databaseFactory,
+                      AsyncDatabaseExecutor asyncExecutor) {
         this.manager = manager;
         this.manaManager = manaManager;
+        this.databaseFactory = databaseFactory;
+        this.asyncExecutor = asyncExecutor;
     }
 
     public static SFCoreAPI get() {
@@ -24,12 +33,37 @@ public final class SFCoreAPI {
         return instance;
     }
 
-    public static void init(StatManager manager, ManaManager manaManager) {
-        instance = new SFCoreAPI(manager, manaManager);
+
+    public static void init(StatManager manager, manaManager, SFDatabaseFactory databaseFactory,
+                            AsyncDatabaseExecutor asyncExecutor) {
+        instance = new SFCoreAPI(manager, manaManager, databaseFactory, asyncExecutor);
     }
 
     public static void shutdown() {
         instance = null;
+    }
+
+    // ─── Database API ────────────────────────────────────────────────
+
+    /**
+     * Devuelve el handle de base de datos del plugin consumidor.
+     * El motor (SQLite/MySQL) y las rutas/prefijos de tabla los resuelve SFCore
+     * a partir de su config.yml global. El consumidor solo debe usar
+     * {@code db.getConnection()} en try-with-resources y {@code db.getTableName("...")}
+     * para resolver nombres de tabla lógicos.
+     */
+    public SFDatabase getDatabase(String namespace) {
+        return databaseFactory.get(namespace);
+    }
+
+    /** Dialecto SQL activo (upserts, tipos, etc.) — compartido entre namespaces. */
+    public SqlDialect getDialect() {
+        return databaseFactory.dialect();
+    }
+
+    /** Executor async compartido para operaciones de DB no bloqueantes. */
+    public AsyncDatabaseExecutor getAsyncExecutor() {
+        return asyncExecutor;
     }
 
     public void addBonus(Player player, String source, StatType stat, double value) {

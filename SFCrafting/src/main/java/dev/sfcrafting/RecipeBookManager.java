@@ -1,5 +1,8 @@
 package dev.sfcrafting;
 
+import dev.sfcore.api.SFCoreAPI;
+import dev.sfcore.database.AsyncDatabaseExecutor;
+import dev.sfcore.util.CharacterSlotResolver;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -18,6 +21,7 @@ public final class RecipeBookManager {
     private final RecipeBookDatabaseManager database;
     private final SkillBridge skillBridge;
     private final Map<UUID, Set<String>> discoveryCache = new HashMap<>();
+    private final Map<UUID, Integer> slotCache = new HashMap<>();
     private final Set<String> trackableDiscoveries = new HashSet<>();
     private List<ForgeRecipe> smelterRecipes;
     private List<ForgeRecipe> anvilRecipes;
@@ -61,29 +65,49 @@ public final class RecipeBookManager {
     }
 
     public void loadPlayer(UUID uuid) {
-        Set<String> discoveries = database.loadDiscoveries(uuid);
-        discoveryCache.put(uuid, discoveries);
+        int slot = CharacterSlotResolver.resolve(uuid);
+        slotCache.put(uuid, slot);
+        discoveryCache.put(uuid, new HashSet<>()); // cache vacia temporal
+        AsyncDatabaseExecutor async = SFCoreAPI.get().getAsyncExecutor();
+        async.thenOnMain(async.supplyAsync(() -> database.loadDiscoveries(uuid, slot)), discoveries -> {
+            discoveryCache.put(uuid, discoveries);
+        });
     }
 
     public void saveAndUnload(UUID uuid) {
         Set<String> discoveries = discoveryCache.remove(uuid);
-        if (discoveries != null && !discoveries.isEmpty()) {
-            database.saveDiscoveriesBatch(uuid, discoveries);
+        Integer slot = slotCache.remove(uuid);
+        if (discoveries != null && !discoveries.isEmpty() && slot != null) {
+            Set<String> snapshot = Set.copyOf(discoveries);
+            SFCoreAPI.get().getAsyncExecutor().runAsync(
+                    () -> database.saveDiscoveriesBatch(uuid, slot, snapshot));
         }
     }
 
     public void saveAll() {
         for (var entry : discoveryCache.entrySet()) {
             if (!entry.getValue().isEmpty()) {
-                database.saveDiscoveriesBatch(entry.getKey(), entry.getValue());
+                Integer slot = slotCache.get(entry.getKey());
+                if (slot != null) {
+                    database.saveDiscoveriesBatch(entry.getKey(), slot, entry.getValue());
+                }
             }
         }
+    }
+
+    public void reloadForActiveSlot(UUID uuid) {
+        discoveryCache.remove(uuid);
+        slotCache.remove(uuid);
+        loadPlayer(uuid);
     }
 
     public boolean addDiscovery(UUID uuid, String materialId) {
         Set<String> discoveries = discoveryCache.computeIfAbsent(uuid, k -> new HashSet<>());
         if (discoveries.add(materialId)) {
-            database.saveDiscovery(uuid, materialId);
+            Integer slot = slotCache.get(uuid);
+            if (slot != null) {
+                database.saveDiscovery(uuid, slot, materialId);
+            }
             return true;
         }
         return false;

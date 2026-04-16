@@ -1,5 +1,7 @@
 package dev.sfcrafting;
 
+import dev.sfcore.api.SFCoreAPI;
+
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -37,9 +39,15 @@ public final class SFCraftingPlugin extends JavaPlugin {
             pluginCommand.setTabCompleter(command);
         }
 
-        if (getConfig().getBoolean("forge.recetario.enabled", true)) {
-            recipeBookDb = new RecipeBookDatabaseManager(this);
-            recipeBookDb.initialize();
+        var sfCorePluginInstance = getServer().getPluginManager().getPlugin("SFCore");
+        boolean recetarioEnabled = getConfig().getBoolean("forge.recetario.enabled", true)
+                && sfCorePluginInstance != null && sfCorePluginInstance.isEnabled();
+        if (getConfig().getBoolean("forge.recetario.enabled", true) && !recetarioEnabled) {
+            getLogger().severe("SFCore no está habilitado — recetario deshabilitado (forja/fundición siguen activas).");
+        }
+        if (recetarioEnabled) {
+            recipeBookDb = new RecipeBookDatabaseManager(this, SFCoreAPI.get().getDatabase("sfcrafting"));
+            SkillBridge skillBridge = new SkillBridge(this);
             recipeBookManager = new RecipeBookManager(this, forgeManager, recipeBookDb, skillBridge);
             forgeManager.setRecipeBookManager(recipeBookManager);
 
@@ -57,6 +65,15 @@ public final class SFCraftingPlugin extends JavaPlugin {
 
             for (var player : getServer().getOnlinePlayers()) {
                 recipeBookManager.loadPlayer(player.getUniqueId());
+            }
+
+            var sfCharacter = getServer().getPluginManager().getPlugin("SFCharacter");
+            if (sfCharacter != null && sfCharacter.isEnabled()) {
+                getServer().getPluginManager().registerEvents(
+                        new CharacterSelectRecipeListener(recipeBookManager), this);
+                getLogger().info("SFCharacter detectado — per-character scoping del recetario activado.");
+            } else {
+                getLogger().info("SFCharacter no detectado — recetario en single-slot mode (slot 0).");
             }
 
             getLogger().info("Recetario habilitado.");
@@ -83,9 +100,6 @@ public final class SFCraftingPlugin extends JavaPlugin {
     public void onDisable() {
         if (recipeBookManager != null) {
             recipeBookManager.saveAll();
-        }
-        if (recipeBookDb != null) {
-            recipeBookDb.close();
         }
         if (auraManager != null) {
             auraManager.shutdown();

@@ -2,6 +2,8 @@ package dev.skilltree.managers;
 
 import dev.sfcore.api.SFCoreAPI;
 import dev.sfcore.api.StatType;
+import dev.sfcore.database.AsyncDatabaseExecutor;
+import dev.sfcore.util.CharacterSlotResolver;
 import dev.skilltree.SkillTreePlugin;
 import dev.skilltree.models.PlayerSkillData;
 import dev.skilltree.models.SkillGraph;
@@ -16,13 +18,13 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
+import java.util.concurrent.CompletableFuture;
 
 public class SkillManager {
 
     private final SkillTreePlugin plugin;
-    // Cache en memoria mientras el jugador está online
     private final Map<UUID, PlayerSkillData> cache = new HashMap<>();
-    // Jugadores con debug de XP activado (en memoria, se pierde al reiniciar)
+    private final Map<UUID, Integer> slotCache = new HashMap<>();
     private final Set<UUID> debugPlayers = new HashSet<>();
 
     public SkillManager(SkillTreePlugin plugin) {
@@ -32,15 +34,52 @@ public class SkillManager {
     // ─── Cache ────────────────────────────────────────────────────────────────
 
     public PlayerSkillData getData(Player player) {
-        return cache.computeIfAbsent(player.getUniqueId(),
-                uuid -> plugin.getDatabaseManager().loadPlayer(uuid));
+        return cache.computeIfAbsent(player.getUniqueId(), uuid -> {
+            int slot = CharacterSlotResolver.resolve(uuid);
+            slotCache.put(uuid, slot);
+            return plugin.getDatabaseManager().loadPlayer(uuid, slot);
+        });
     }
 
     public void loadPlayer(Player player) {
-        cache.put(player.getUniqueId(),
-                plugin.getDatabaseManager().loadPlayer(player.getUniqueId()));
-        // Sync bonuses with SFCore 1 tick later so SFCore's MONITOR join handler fires first
-        plugin.getServer().getScheduler().runTask(plugin, () -> syncSFCoreBonuses(player));
+        UUID uuid = player.getUniqueId();
+        int slot = CharacterSlotResolver.resolve(uuid);
+        slotCache.put(uuid, slot);
+        AsyncDatabaseExecutor async = SFCoreAPI.get().getAsyncExecutor();
+        async.thenOnMain(async.supplyAsync(() -> plugin.getDatabaseManager().loadPlayer(uuid, slot)), data -> {
+            cache.put(uuid, data);
+            if (player.isOnline()) syncSFCoreBonuses(player);
+        });
+    }
+
+    public void reloadForActiveSlot(Player player) {
+        UUID uuid = player.getUniqueId();
+        AsyncDatabaseExecutor async = SFCoreAPI.get().getAsyncExecutor();
+        // Guardar datos del slot viejo async, luego cargar nuevo
+        PlayerSkillData oldData = cache.get(uuid);
+        Integer oldSlot = slotCache.get(uuid);
+
+        int newSlot = CharacterSlotResolver.resolve(uuid);
+        slotCache.put(uuid, newSlot);
+
+        Runnable loadNew = () -> async.thenOnMain(
+                async.supplyAsync(() -> plugin.getDatabaseManager().loadPlayer(uuid, newSlot)),
+                data -> {
+                    cache.put(uuid, data);
+                    if (player.isOnline()) syncSFCoreBonuses(player);
+                }
+        );
+
+        if (oldData != null && oldSlot != null) {
+            PlayerSkillData snapshot = oldData.copy();
+            CompletableFuture<Void> saveFuture = async.supplyAsync(() -> {
+                plugin.getDatabaseManager().savePlayer(snapshot, oldSlot);
+                return null;
+            });
+            async.thenOnMain(saveFuture, v -> loadNew.run());
+        } else {
+            loadNew.run();
+        }
     }
 
     private void syncSFCoreBonuses(Player player) {
@@ -64,14 +103,23 @@ public class SkillManager {
     }
 
     public void saveAndUnload(Player player) {
-        PlayerSkillData data = cache.remove(player.getUniqueId());
-        if (data != null) {
-            plugin.getDatabaseManager().savePlayer(data);
+        UUID uuid = player.getUniqueId();
+        PlayerSkillData data = cache.remove(uuid);
+        Integer slot = slotCache.remove(uuid);
+        if (data != null && slot != null) {
+            PlayerSkillData snapshot = data.copy();
+            SFCoreAPI.get().getAsyncExecutor().runAsync(
+                    () -> plugin.getDatabaseManager().savePlayer(snapshot, slot));
         }
     }
 
     public void saveAll() {
-        cache.values().forEach(plugin.getDatabaseManager()::savePlayer);
+        cache.forEach((uuid, data) -> {
+            Integer slot = slotCache.get(uuid);
+            if (slot != null) {
+                plugin.getDatabaseManager().savePlayer(data, slot);
+            }
+        });
     }
 
     // ─── Debug ──────────────────────────────────────────────────────────────
@@ -167,6 +215,7 @@ public class SkillManager {
 
     public void resetPlayer(UUID uuid) {
         cache.remove(uuid);
-        plugin.getDatabaseManager().resetPlayer(uuid);
+        int slot = slotCache.getOrDefault(uuid, CharacterSlotResolver.resolve(uuid));
+        plugin.getDatabaseManager().resetPlayer(uuid, slot);
     }
 }
