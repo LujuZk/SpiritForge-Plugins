@@ -18,7 +18,7 @@ export const CONNECTORS = [
 ];
 
 export const SKILL_TYPES = [
-    "SWORD", "AXE", "MINING", "FARMING", "FISHING", "BOW", "TRIDENT", "SMITHING", "WOODCUTTING"
+    "SWORD", "AXE", "MINING", "FARMING", "FISHING", "BOW", "TRIDENT", "SMITHING", "WOODCUTTING", "SPELLCRAFTING"
 ];
 
 export const TREE_MODES = ["POINTS", "LEVEL"];

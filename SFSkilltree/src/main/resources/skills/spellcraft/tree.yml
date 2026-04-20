@@ -1,0 +1,90 @@
+id: spellcraft
+display-name: ⚔ SpellCraft
+skill-type: spellcrafting
+nodes:
+  node_0_2_1:
+    name: "1"
+    description: ""
+    cost: 1
+    requires: []
+    requires-all: false
+    exclusive-with: []
+    effect-type: none
+    effect-value: 0
+  node_3_0_2:
+    name: "2"
+    description: ""
+    cost: 2
+    requires:
+      - node_0_2_1
+    requires-all: false
+    exclusive-with: []
+    effect-type: none
+    effect-value: 0
+  node_4_4_3:
+    name: "3"
+    description: ""
+    cost: 3
+    requires:
+      - node_0_2_1
+    requires-all: false
+    exclusive-with: []
+    effect-type: none
+    effect-value: 0
+grid:
+  - page: 0
+    cells:
+      - col: 0
+        row: 2
+        type: node
+        node-id: node_0_2_1
+      - col: 1
+        row: 1
+        type: connector
+        connector-id: connector_diag_up
+      - col: 1
+        row: 3
+        type: connector
+        connector-id: connector_diag_down
+      - col: 2
+        row: 0
+        type: connector
+        connector-id: elbow_left_up
+      - col: 2
+        row: 4
+        type: connector
+        connector-id: elbow_left_down
+      - col: 3
+        row: 0
+        type: node
+        node-id: node_3_0_2
+      - col: 3
+        row: 4
+        type: node
+        node-id: node_4_4_3
+paths:
+  - from: node_0_2_1
+    to: node_3_0_2
+    cells:
+      - 1,1
+      - 2,0
+  - from: node_0_2_1
+    to: node_3_0_2
+    cells:
+      - 1,1
+      - 2,0
+  - from: node_0_2_1
+    to: node_4_4_3
+    cells:
+      - 1,3
+      - 2,4
+  - from: node_0_2_1
+    to: node_4_4_3
+    cells:
+      - 1,3
+      - 2,4
+edges:
+  - from: node_0_2_1
+    to: node_3_0_2
+  - from: node_0_2_1
+    to: node_4_4_3

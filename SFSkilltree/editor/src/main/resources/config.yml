@@ -57,11 +57,12 @@ skills:
     display-name: ✨ Spellcrafting
     template-values:
       fire_burst: 30
-      holy_guard: 25
+      heal_wave: 25
     crystal-multipliers:
-      basic: 1.0
-      refined: 1.5
-      ancient: 2.0
+      basic_crystal: 1
+      rare_crystal: 1.5
+      epic_crystal: 2
+      legendary_crystal: 3
   woodcutting:
     display-name: Tala
     block-values:
@@ -80,6 +81,8 @@ skills:
       "2": 2
       "3": 3
       "4": 5
+  spellcraft:
+    display-name: ⚔ SpellCraft
 weapon-skills:
   sword:
     display-name: ⚔ Espada
