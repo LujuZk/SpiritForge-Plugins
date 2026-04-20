@@ -21,9 +21,10 @@ public class SkillTreeGUI {
     private static final String GUI_TITLE = "✦ Árbol de Habilidades ✦";
 
     // Slots para cada skill activo en el inventario 3x9 (27 slots)
-    private static final int SLOT_MINING = 11;
-    private static final int SLOT_SMITHING = 13;
-    private static final int SLOT_WOODCUTTING = 15;
+    private static final int SLOT_MINING = 10;
+    private static final int SLOT_SMITHING = 12;
+    private static final int SLOT_WOODCUTTING = 14;
+    private static final int SLOT_SPELLCRAFTING = 16;
 
     private final SkillTreePlugin plugin;
 
@@ -46,6 +47,7 @@ public class SkillTreeGUI {
         inv.setItem(SLOT_MINING, buildSkillItem(SkillType.MINING, data, Material.DIAMOND_PICKAXE));
         inv.setItem(SLOT_SMITHING, buildSkillItem(SkillType.SMITHING, data, Material.ANVIL));
         inv.setItem(SLOT_WOODCUTTING, buildSkillItem(SkillType.WOODCUTTING, data, Material.OAK_LOG));
+        inv.setItem(SLOT_SPELLCRAFTING, buildSkillItem(SkillType.SPELLCRAFTING, data, Material.ENCHANTED_BOOK));
 
         // Guardar y limpiar el inventario del jugador
         plugin.getInventoryManager().saveAndClearInventory(player);
@@ -120,6 +122,7 @@ public class SkillTreeGUI {
             case SLOT_MINING -> SkillType.MINING;
             case SLOT_SMITHING -> SkillType.SMITHING;
             case SLOT_WOODCUTTING -> SkillType.WOODCUTTING;
+            case SLOT_SPELLCRAFTING -> SkillType.SPELLCRAFTING;
             default -> null;
         };
     }

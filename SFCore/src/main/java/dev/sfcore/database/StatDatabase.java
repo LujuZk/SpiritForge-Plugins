@@ -26,6 +26,9 @@ public class StatDatabase {
     private final String sqlDelete;
     private final String sqlDeleteByPrefix;
     private final String sqlDeleteAll;
+    private final String sqlSelectMana;
+    private final String sqlUpsertMana;
+    private final String sqlDeleteResources;
 
     public StatDatabase(SFDatabase sfDatabase) {
         this.sfDatabase = sfDatabase;
@@ -45,6 +48,11 @@ public class StatDatabase {
         this.sqlDeleteAll = "DELETE FROM " + table
                 + " WHERE player_uuid = ? AND character_slot = ?";
 
+        String resourcesTable = sfDatabase.getTableName("player_resources");
+        this.sqlSelectMana = "SELECT mana_current FROM " + resourcesTable + " WHERE player_uuid = ?";
+        this.sqlUpsertMana = dialect.upsert(resourcesTable, new String[]{"player_uuid"}, new String[]{"mana_current"});
+        this.sqlDeleteResources = "DELETE FROM " + resourcesTable + " WHERE player_uuid = ?";
+
         try {
             initTables();
             log.info("[SFCore] StatDatabase lista (" + dialect.id() + ", tabla '" + table + "')");
@@ -63,8 +71,8 @@ public class StatDatabase {
                 + "PRIMARY KEY (player_uuid, character_slot, source)"
                 + ")";
         String index = "CREATE INDEX IF NOT EXISTS idx_" + table + "_player ON " + table + "(player_uuid)";
-        String resourcesTable = sfDatabase.getTableName("player_resources");
-        String createResources = "CREATE TABLE IF NOT EXISTS " + resourcesTable + " ("
+        String resTable = sfDatabase.getTableName("player_resources");
+        String createResources = "CREATE TABLE IF NOT EXISTS " + resTable + " ("
                 + "player_uuid " + dialect.uuidType() + " NOT NULL PRIMARY KEY, "
                 + "mana_current " + dialect.doubleType() + " NOT NULL"
                 + ")";
@@ -164,10 +172,20 @@ public class StatDatabase {
         }
     }
 
+    public void deleteAll(UUID uuid, int slot) {
+        try (Connection conn = sfDatabase.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sqlDeleteAll)) {
+            ps.setString(1, uuid.toString());
+            ps.setInt(2, slot);
+            ps.executeUpdate();
+        } catch (SQLException e) {
+            log.warning("[SFCore] Error deleting all bonuses for " + uuid + " slot " + slot + ": " + e.getMessage());
+        }
+    }
+
     public Double loadMana(UUID uuid) {
         try (Connection conn = sfDatabase.getConnection();
-             PreparedStatement ps = conn.prepareStatement(
-                "SELECT mana_current FROM player_resources WHERE player_uuid = ?")) {
+             PreparedStatement ps = conn.prepareStatement(sqlSelectMana)) {
             ps.setString(1, uuid.toString());
             try (ResultSet rs = ps.executeQuery()) {
                 if (rs.next()) {
@@ -182,8 +200,7 @@ public class StatDatabase {
 
     public void upsertMana(UUID uuid, double manaCurrent) {
         try (Connection conn = sfDatabase.getConnection();
-             PreparedStatement ps = conn.prepareStatement(
-                "INSERT OR REPLACE INTO player_resources (player_uuid, mana_current) VALUES (?, ?)")) {
+             PreparedStatement ps = conn.prepareStatement(sqlUpsertMana)) {
             ps.setString(1, uuid.toString());
             ps.setDouble(2, manaCurrent);
             ps.executeUpdate();
@@ -194,16 +211,11 @@ public class StatDatabase {
 
     public void deleteResources(UUID uuid) {
         try (Connection conn = sfDatabase.getConnection();
-             PreparedStatement ps = conn.prepareStatement(
-                "DELETE FROM player_resources WHERE player_uuid = ?")) {
+             PreparedStatement ps = conn.prepareStatement(sqlDeleteResources)) {
             ps.setString(1, uuid.toString());
             ps.executeUpdate();
         } catch (SQLException e) {
             log.warning("[SFCore] Error deleting resources for " + uuid + ": " + e.getMessage());
         }
-    }
-
-    public void close() {
-        // No persistent connection to close; each operation uses its own connection.
     }
 }

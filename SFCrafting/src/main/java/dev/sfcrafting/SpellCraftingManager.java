@@ -197,6 +197,10 @@ public final class SpellCraftingManager {
 
         String className = characterBridge.getActiveClassDisplay(player);
         ItemStack spellItem = buildSpellItem(player, template, pointsTotal, pointsUsed, allocatedPoints, classKey, className);
+
+        plugin.getServer().getPluginManager().callEvent(
+                new SpellCraftCompleteEvent(player, template.key(), crystal.key(), pointsUsed));
+
         return new CraftResult(true, ChatColor.GREEN + "Hechizo creado: " + ChatColor.AQUA + template.displayName(), spellItem);
     }
 

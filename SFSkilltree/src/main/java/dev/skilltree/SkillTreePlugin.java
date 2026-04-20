@@ -9,6 +9,7 @@ import dev.skilltree.listeners.GatheringListener;
 import dev.skilltree.listeners.GUIListener;
 import dev.skilltree.listeners.MiningListener;
 import dev.skilltree.listeners.SmithingListener;
+import dev.skilltree.listeners.SpellcraftingListener;
 import dev.skilltree.listeners.WoodcuttingListener;
 import dev.skilltree.managers.SkillManager;
 import dev.skilltree.managers.SkillPointManager;
@@ -77,10 +78,11 @@ public class SkillTreePlugin extends JavaPlugin {
         // getServer().getPluginManager().registerEvents(new CombatListener(this), this);
         // getServer().getPluginManager().registerEvents(new GatheringListener(this), this);
 
-        // Smithing XP — condicional a SFCrafting
+        // Smithing + Spellcrafting XP — condicional a SFCrafting
         if (getServer().getPluginManager().getPlugin("SFCrafting") != null) {
             getServer().getPluginManager().registerEvents(new SmithingListener(this), this);
-            getLogger().info("SFCrafting detectado — XP de Herrería habilitada.");
+            getServer().getPluginManager().registerEvents(new SpellcraftingListener(this), this);
+            getLogger().info("SFCrafting detectado — XP de Herrería y Spellcrafting habilitadas.");
         }
 
         // Mining + Woodcutting XP — condicional a SFDrops
